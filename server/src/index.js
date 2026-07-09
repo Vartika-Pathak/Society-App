@@ -7,16 +7,23 @@ import inviteRoutes from './routes/invites.js';
 import visitRoutes from './routes/visits.js';
 import staffRoutes from './routes/staff.js';
 import serviceRequestRoutes from './routes/service-requests.js';
+import noticeRoutes from './routes/notices.js';
+import grievanceRoutes from './routes/grievances.js';
+import galleryRoutes, { uploadsDir } from './routes/gallery.js';
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use('/uploads', express.static(uploadsDir));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/invites', inviteRoutes);
 app.use('/api/visits', visitRoutes);
 app.use('/api/staff', staffRoutes);
 app.use('/api/service-requests', serviceRequestRoutes);
+app.use('/api/notices', noticeRoutes);
+app.use('/api/grievances', grievanceRoutes);
+app.use('/api/gallery', galleryRoutes);
 
 app.get('/api/health', (req, res) => res.json({ ok: true }));
 

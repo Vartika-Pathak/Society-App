@@ -28,6 +28,13 @@ const CATEGORIES = [
   { key: 'maintenance_service', label: 'Maintenance / vendor' }
 ];
 
+const GRIEVANCE_CATEGORIES = [
+  { key: 'maintenance', label: 'Maintenance' },
+  { key: 'security', label: 'Security' },
+  { key: 'noise', label: 'Noise' },
+  { key: 'other', label: 'Other' }
+];
+
 const emptyForm = {
   visitor_type: 'guest',
   guest_name: '',
@@ -48,6 +55,12 @@ export default function ResidentDashboard() {
   const [error, setError] = useState('');
   const [creating, setCreating] = useState(false);
 
+  const [grievances, setGrievances] = useState([]);
+  const [grievanceCategory, setGrievanceCategory] = useState('maintenance');
+  const [grievanceDescription, setGrievanceDescription] = useState('');
+  const [grievanceError, setGrievanceError] = useState('');
+  const [submittingGrievance, setSubmittingGrievance] = useState(false);
+
   function update(field, value) {
     setForm((f) => ({ ...f, [field]: value }));
   }
@@ -61,17 +74,37 @@ export default function ResidentDashboard() {
   async function loadHistory() {
     setHistory(await api.get('/visits'));
   }
+  async function loadGrievances() {
+    setGrievances(await api.get('/grievances/mine'));
+  }
 
   useEffect(() => {
     loadInvites().catch((err) => setError(err.message));
     loadPending().catch((err) => setError(err.message));
     loadHistory().catch((err) => setError(err.message));
+    loadGrievances().catch((err) => setError(err.message));
     const id = setInterval(() => {
       loadPending().catch((err) => setError(err.message));
       loadHistory().catch((err) => setError(err.message));
+      loadGrievances().catch((err) => setError(err.message));
     }, 5000);
     return () => clearInterval(id);
   }, []);
+
+  async function handleRaiseGrievance(e) {
+    e.preventDefault();
+    setGrievanceError('');
+    setSubmittingGrievance(true);
+    try {
+      await api.post('/grievances', { category: grievanceCategory, description: grievanceDescription });
+      setGrievanceDescription('');
+      await loadGrievances();
+    } catch (err) {
+      setGrievanceError(err.message);
+    } finally {
+      setSubmittingGrievance(false);
+    }
+  }
 
   async function handleCreateInvite(e) {
     e.preventDefault();
@@ -193,6 +226,40 @@ export default function ResidentDashboard() {
             </div>
           ))}
         </div>
+      </div>
+
+      <div className="card">
+        <h2>Raise a grievance</h2>
+        <p className="hint-text">Share an issue with the society admin and track its resolution here.</p>
+        <form onSubmit={handleRaiseGrievance}>
+          <label>Category</label>
+          <select value={grievanceCategory} onChange={(e) => setGrievanceCategory(e.target.value)}>
+            {GRIEVANCE_CATEGORIES.map((c) => <option key={c.key} value={c.key}>{c.label}</option>)}
+          </select>
+          <label>Description</label>
+          <textarea value={grievanceDescription} onChange={(e) => setGrievanceDescription(e.target.value)} required />
+          {grievanceError && <div className="error-text">{grievanceError}</div>}
+          <button className="primary" type="submit" disabled={submittingGrievance}>
+            {submittingGrievance ? 'Submitting...' : 'Submit grievance'}
+          </button>
+        </form>
+
+        {grievances.length > 0 && (
+          <div style={{ marginTop: 20 }}>
+            <h3>My grievances</h3>
+            {grievances.map((g) => (
+              <div key={g.id} className="list-row" style={{ alignItems: 'flex-start', flexDirection: 'column', gap: 6 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                  <strong>{GRIEVANCE_CATEGORIES.find((c) => c.key === g.category)?.label || g.category}</strong>
+                  <StatusBadge status={g.status} />
+                </div>
+                <div>{g.description}</div>
+                {g.admin_note && <div className="hint-text">Admin note: {g.admin_note}</div>}
+                <div className="hint-text">Raised {g.created_at}</div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="card">

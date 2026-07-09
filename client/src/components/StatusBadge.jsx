@@ -4,7 +4,10 @@ const LABELS = {
   approved: 'Approved',
   denied: 'Denied',
   on_premises: 'On premises',
-  departed: 'Departed'
+  departed: 'Departed',
+  open: 'Open',
+  in_progress: 'In progress',
+  resolved: 'Resolved'
 };
 
 export default function StatusBadge({ status }) {

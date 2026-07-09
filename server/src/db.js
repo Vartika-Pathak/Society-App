@@ -94,6 +94,37 @@ CREATE TABLE IF NOT EXISTS audit_log (
   note TEXT,
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
+
+CREATE TABLE IF NOT EXISTS notices (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  author_id INTEGER NOT NULL REFERENCES users(id),
+  author_name TEXT NOT NULL,
+  author_role TEXT NOT NULL,
+  title TEXT NOT NULL,
+  body TEXT NOT NULL,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS grievances (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  resident_id INTEGER NOT NULL REFERENCES users(id),
+  flat_number TEXT NOT NULL,
+  category TEXT NOT NULL CHECK (category IN ('maintenance','security','noise','other')),
+  description TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'open' CHECK (status IN ('open','in_progress','resolved')),
+  admin_note TEXT,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS gallery_photos (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  uploaded_by INTEGER NOT NULL REFERENCES users(id),
+  event_name TEXT NOT NULL,
+  caption TEXT,
+  filename TEXT NOT NULL,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
 `);
 
 // Add columns to invites for pre-existing DBs created before category support was added.
@@ -144,6 +175,12 @@ function seed() {
     INSERT INTO service_requests (vendor_name, flat_number, scheduled_date, scheduled_start, scheduled_end)
     VALUES ('CoolFix AC Repair', 'A-101', ?, '09:00', '17:00')
   `).run(today);
+
+  const admin = db.prepare(`SELECT id FROM users WHERE email = 'admin@demo.com'`).get();
+  db.prepare(`
+    INSERT INTO notices (author_id, author_name, author_role, title, body)
+    VALUES (?, 'Society Admin', 'admin', 'Welcome to the new Society App', 'Use this board for society-wide updates. Residents can raise grievances and browse the event gallery from the nav bar above.')
+  `).run(admin.id);
 
   console.log('Seeded demo data. Demo logins (password: password123):');
   console.log('  resident@demo.com / guard@demo.com / admin@demo.com');

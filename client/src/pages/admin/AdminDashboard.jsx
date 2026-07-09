@@ -46,6 +46,65 @@ function EscalationQueue() {
   );
 }
 
+const GRIEVANCE_CATEGORIES = {
+  maintenance: 'Maintenance', security: 'Security', noise: 'Noise', other: 'Other'
+};
+
+function Grievances() {
+  const [grievances, setGrievances] = useState([]);
+  const [notes, setNotes] = useState({});
+  const [error, setError] = useState('');
+
+  async function load() {
+    setGrievances(await api.get('/grievances'));
+  }
+  useEffect(() => {
+    load();
+    const id = setInterval(load, 5000);
+    return () => clearInterval(id);
+  }, []);
+
+  async function updateStatus(g, status) {
+    setError('');
+    try {
+      await api.patch(`/grievances/${g.id}`, { status, admin_note: notes[g.id] });
+      await load();
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
+  return (
+    <div className="card">
+      <h2>Grievances</h2>
+      <p className="hint-text">Issues raised by residents. Update the status as you work through them.</p>
+      {error && <div className="error-text">{error}</div>}
+      {grievances.length === 0 && <div className="empty-state">No grievances raised yet.</div>}
+      {grievances.map((g) => (
+        <div key={g.id} className="banner banner-info">
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <strong>{GRIEVANCE_CATEGORIES[g.category] || g.category} · {g.flat_number}</strong>
+            <StatusBadge status={g.status} />
+          </div>
+          <div style={{ marginTop: 6 }}>{g.description}</div>
+          <div className="hint-text">Raised {g.created_at}</div>
+          <label>Admin note (optional)</label>
+          <input
+            defaultValue={g.admin_note || ''}
+            onChange={(e) => setNotes((n) => ({ ...n, [g.id]: e.target.value }))}
+            placeholder="e.g. Plumber scheduled for tomorrow"
+          />
+          <div style={{ marginTop: 10 }}>
+            <button className="secondary" onClick={() => updateStatus(g, 'open')}>Mark open</button>
+            <button className="secondary" style={{ marginLeft: 8 }} onClick={() => updateStatus(g, 'in_progress')}>Mark in progress</button>
+            <button className="success" style={{ marginLeft: 8 }} onClick={() => updateStatus(g, 'resolved')}>Mark resolved</button>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function StaffRegistry() {
   const [staff, setStaff] = useState([]);
   const [form, setForm] = useState({ name: '', id_card_number: '', category: 'household_help', flat_number: '', shift_start: '06:00', shift_end: '21:00' });
@@ -249,6 +308,7 @@ export default function AdminDashboard() {
     <div>
       <h1>Admin Dashboard</h1>
       <EscalationQueue />
+      <Grievances />
       <div className="grid grid-2">
         <StaffRegistry />
         <ServiceRequests />
