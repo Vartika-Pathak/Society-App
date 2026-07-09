@@ -309,6 +309,40 @@ tbody tr:last-child td { border-bottom: none; }
 .gallery-caption strong { font-size: 0.9rem; display: block; }
 .gallery-caption span { font-size: 0.78rem; color: var(--muted); }
 
+/* Landing page */
+.landing { max-width: 760px; margin: 0 auto; }
+
+.landing-hero {
+  text-align: center;
+  padding: 48px 20px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.landing-title { font-size: 2rem; margin: 10px 0 0; }
+.landing-tagline { color: var(--muted); font-size: 1.05rem; max-width: 480px; margin: 4px 0 8px; }
+
+.landing-cta { display: flex; gap: 12px; margin-top: 18px; flex-wrap: wrap; justify-content: center; }
+
+.primary-link, .secondary-link {
+  display: inline-block;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 11px 24px;
+  border-radius: var(--radius-sm);
+  transition: all 0.15s ease;
+}
+.primary-link { background: var(--primary); color: #fff; }
+.primary-link:hover { background: var(--primary-dark); }
+.secondary-link { background: #fff; color: var(--text); border: 1px solid var(--border); }
+.secondary-link:hover { border-color: var(--tan); background: var(--surface-alt); }
+
+.landing-about h2 { margin-top: 0; }
+.landing-about p { color: var(--text); line-height: 1.65; margin: 0 0 14px; }
+.landing-about p:last-child { margin-bottom: 0; }
+
 @media (max-width: 640px) {
   .content { padding: 16px 12px 40px; }
   .card { padding: 16px; border-radius: var(--radius-sm); }
@@ -316,4 +350,6 @@ tbody tr:last-child td { border-bottom: none; }
   .topbar { padding: 12px 16px; }
   .otp-box { font-size: 1.4rem; letter-spacing: 3px; padding: 10px 14px; }
   .gallery-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+  .landing-hero { padding: 32px 16px 28px; }
+  .landing-title { font-size: 1.6rem; }
 }

@@ -1,5 +1,7 @@
 import { Routes, Route, Navigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from './context/AuthContext.jsx';
+import Logo from './components/Logo.jsx';
+import Landing from './pages/Landing.jsx';
 import Login from './pages/Login.jsx';
 import Signup from './pages/Signup.jsx';
 import ResidentDashboard from './pages/resident/ResidentDashboard.jsx';
@@ -23,7 +25,7 @@ function RequireAuth({ children }) {
 
 function Home() {
   const { user } = useAuth();
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user) return <Landing />;
   if (user.role === 'resident') return <Navigate to="/resident" replace />;
   if (user.role === 'guard') return <Navigate to="/guard" replace />;
   if (user.role === 'admin') return <Navigate to="/admin" replace />;
@@ -64,7 +66,7 @@ export default function App() {
     <div className="app-shell">
       <header className="topbar">
         <div className="topbar-left">
-          <Link to="/" className="brand">🏢 Society App</Link>
+          <Link to="/" className="brand"><Logo /></Link>
           <NavTabs />
         </div>
         {user && (
