@@ -377,7 +377,7 @@ tbody tr:last-child td { border-bottom: none; }
 
 .hero-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   align-items: stretch;
   gap: 0;
   padding: 0;
@@ -388,16 +388,20 @@ tbody tr:last-child td { border-bottom: none; }
 
 .hero-grid > div:first-child {
   padding: 60px 48px;
-  background: rgba(255, 255, 255, 0.95);
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0) 60%);
   z-index: 10;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  position: relative;
-  color: var(--text);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  color: white;
 }
-.landing-title { font-size: 2.4rem; margin: 0 0 14px; font-family: Georgia, "Times New Roman", serif; color: var(--navy); }
-.landing-tagline { color: var(--muted); font-size: 1.08rem; line-height: 1.6; max-width: 480px; margin: 0 0 24px; }
+.landing-title { font-size: 2.4rem; margin: 0 0 14px; font-family: Georgia, "Times New Roman", serif; color: white; }
+.landing-tagline { color: rgba(255, 255, 255, 0.95); font-size: 1.08rem; line-height: 1.6; max-width: 480px; margin: 0 0 24px; }
 
 .landing-cta { display: flex; gap: 12px; flex-wrap: wrap; }
 
@@ -412,14 +416,15 @@ tbody tr:last-child td { border-bottom: none; }
 }
 
 .hero-image-carousel {
-  position: relative;
+  position: absolute;
   border-radius: 0;
   overflow: hidden;
   box-shadow: none;
-  min-height: 500px;
   width: 100%;
   height: 100%;
   z-index: 1;
+  top: 0;
+  left: 0;
 }
 
 .hero-image-carousel img {
@@ -549,11 +554,11 @@ tbody tr:last-child td { border-bottom: none; }
 .footer-meta { justify-content: flex-end; color: #8fa0b3; font-size: 0.8rem; }
 
 @media (max-width: 800px) {
-  .hero-grid { grid-template-columns: 1fr; height: auto; }
-  .hero-grid > div:first-child { padding: 40px 24px; }
-  .hero-mark { order: -1; padding: 24px; }
-  .hero-image-carousel { order: -1; min-height: 300px; height: auto; }
+  .hero-grid { grid-template-columns: 1fr; height: auto; position: relative; }
+  .hero-grid > div:first-child { position: relative; width: 100%; padding: 40px 24px; background: linear-gradient(to bottom, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.2) 100%); }
+  .hero-image-carousel { position: relative; order: -1; min-height: 300px; height: auto; }
   .hero-image-carousel img { min-height: 300px; }
+  .hero-mark { order: -1; padding: 24px; }
   .feature-grid { grid-template-columns: 1fr; }
   .amenities-section { grid-template-columns: 1fr; }
   .landing-footer { grid-template-columns: 1fr; }
