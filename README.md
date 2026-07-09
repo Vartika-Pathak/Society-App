@@ -1,6 +1,6 @@
-# Society App
+# The Grand Pavilion — Society App
 
-A residential society management app. Its core is visitor management: residents invite guests with an OTP, and a gate guard checks in five kinds of visitors (guest, cab/delivery, household help, maintenance/vendor, emergency), with resident approval and admin escalation for anyone who can't be auto-verified. Every check-in is written to an audit trail. Alongside that, every role can post/read a society Notice board, browse an event photo Gallery, and residents can raise Grievances that the admin tracks through to resolution.
+A residential society management app, branded for "The Grand Pavilion" (Noida, India). Logged-out visitors land on a marketing-style home page (logo, about, amenities, contact); logged-in residents/guards/admins get the working app. Its core is visitor management: residents invite guests with an OTP, and a gate guard checks in five kinds of visitors (guest, cab/delivery, household help, maintenance/vendor, emergency), with resident approval and admin escalation for anyone who can't be auto-verified. Every check-in is written to an audit trail. Alongside that, every role can post/read a society Notice board, browse an event photo Gallery, and residents can raise Grievances that the admin tracks through to resolution.
 
 This was built for you to learn from — the code favors clarity over cleverness. Start reading at `server/src/services/visitService.js`, it's the heart of the app.
 
@@ -54,11 +54,13 @@ server/               Express API
   uploads/               Gallery photo files (created automatically, not committed)
 
 client/                React (Vite) frontend
+  src/pages/Landing.jsx  Public home page for logged-out visitors (hero, amenities, about, footer)
   src/pages/resident/   Invite guests, approve/deny, visit history, raise grievances
   src/pages/guard/      Gate check-in screen for all 5 visitor types
   src/pages/admin/      Escalation queue, staff/vendor registries, audit trail, grievances
   src/pages/Notices.jsx  Shared notice board (all roles)
   src/pages/Gallery.jsx  Shared event photo gallery (all roles)
+  src/components/Logo.jsx   Hand-coded SVG mark + wordmark, used in the topbar and landing hero
   src/context/AuthContext.jsx   Login/signup state, stored in localStorage
   src/api.js            Tiny fetch wrapper that attaches the JWT (plus a multipart upload helper)
 ```

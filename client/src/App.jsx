@@ -39,7 +39,22 @@ function dashboardPathFor(role) {
 function NavTabs() {
   const { user } = useAuth();
   const location = useLocation();
-  if (!user) return null;
+
+  if (!user) {
+    const marketingLinks = [
+      { to: '/', label: 'Home' },
+      { to: '/#about', label: 'About Us' },
+      { to: '/#amenities', label: 'Amenities' },
+      { to: '/#contact', label: 'Contact' }
+    ];
+    return (
+      <nav className="nav-tabs">
+        {marketingLinks.map((t) => (
+          <Link key={t.label} to={t.to} className="nav-tab">{t.label}</Link>
+        ))}
+      </nav>
+    );
+  }
 
   const dashboardPath = dashboardPathFor(user.role);
   const tabs = [
@@ -69,10 +84,15 @@ export default function App() {
           <Link to="/" className="brand"><Logo /></Link>
           <NavTabs />
         </div>
-        {user && (
+        {user ? (
           <div className="topbar-user">
             <span>{user.name} · <span className="role-pill">{user.role}</span>{user.flat_number ? ` · ${user.flat_number}` : ''}</span>
             <button onClick={logout} className="btn-link">Log out</button>
+          </div>
+        ) : (
+          <div className="topbar-user">
+            <Link to="/login" className="nav-tab">Log in</Link>
+            <Link to="/signup" className="secondary-link" style={{ padding: '7px 16px' }}>Sign up</Link>
           </div>
         )}
       </header>
