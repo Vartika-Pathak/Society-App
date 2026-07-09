@@ -47,7 +47,6 @@ export default function Gallery() {
 
   return (
     <div>
-      <h1>Gallery</h1>
       {error && <div className="error-text" style={{ marginBottom: 16 }}>{error}</div>}
 
       {user.role === 'admin' && (
@@ -66,6 +65,19 @@ export default function Gallery() {
           </form>
         </div>
       )}
+
+      <div className="gallery-hero">
+        <div className="gallery-hero-content">
+          <h1 className="gallery-hero-title">Society Gallery</h1>
+          <p className="gallery-hero-subtitle">Explore our community events and beautiful moments captured</p>
+          <button className="gallery-hero-button">View Events</button>
+        </div>
+        {photos.length > 0 && (
+          <div className="gallery-hero-image">
+            <img src={`/uploads/${photos[0].filename}`} alt={photos[0].event_name} />
+          </div>
+        )}
+      </div>
 
       <div className="card">
         <h2>Society events</h2>
