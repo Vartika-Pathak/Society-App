@@ -33,7 +33,7 @@ function EscalationQueue() {
       {error && <div className="error-text">{error}</div>}
       {escalations.length === 0 && <div className="empty-state">Nothing escalated right now.</div>}
       {escalations.map((v) => (
-        <div key={v.id} className="card" style={{ background: '#fff8ee' }}>
+        <div key={v.id} className="banner banner-warn">
           <strong>{v.visitor_name}</strong> {v.visitor_phone ? `· ${v.visitor_phone}` : ''}
           <div className="hint-text">For flat {v.flat_number} · arrived {v.created_at}</div>
           <div style={{ marginTop: 10 }}>
@@ -96,21 +96,23 @@ function StaffRegistry() {
       {error && <div className="error-text">{error}</div>}
       <button className="primary" onClick={add} type="button">Register staff</button>
 
-      <table style={{ marginTop: 16 }}>
-        <thead><tr><th>Name</th><th>ID card</th><th>Category</th><th>Flat</th><th>Shift</th><th>Active</th></tr></thead>
-        <tbody>
-          {staff.map((s) => (
-            <tr key={s.id}>
-              <td>{s.name}</td>
-              <td>{s.id_card_number}</td>
-              <td>{s.category.replace('_', ' ')}</td>
-              <td>{s.flat_number || 'society-wide'}</td>
-              <td>{s.shift_start}–{s.shift_end}</td>
-              <td><button className="secondary" onClick={() => toggleActive(s)}>{s.active ? 'Deactivate' : 'Activate'}</button></td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className="table-wrap" style={{ marginTop: 16 }}>
+        <table>
+          <thead><tr><th>Name</th><th>ID card</th><th>Category</th><th>Flat</th><th>Shift</th><th>Active</th></tr></thead>
+          <tbody>
+            {staff.map((s) => (
+              <tr key={s.id}>
+                <td>{s.name}</td>
+                <td>{s.id_card_number}</td>
+                <td>{s.category.replace('_', ' ')}</td>
+                <td>{s.flat_number || 'society-wide'}</td>
+                <td>{s.shift_start}–{s.shift_end}</td>
+                <td><button className="secondary" onClick={() => toggleActive(s)}>{s.active ? 'Deactivate' : 'Activate'}</button></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
@@ -159,20 +161,22 @@ function ServiceRequests() {
       {error && <div className="error-text">{error}</div>}
       <button className="primary" onClick={add} type="button">Schedule request</button>
 
-      <table style={{ marginTop: 16 }}>
-        <thead><tr><th>Vendor</th><th>Flat</th><th>Date</th><th>Window</th><th>Status</th></tr></thead>
-        <tbody>
-          {requests.map((r) => (
-            <tr key={r.id}>
-              <td>{r.vendor_name}</td>
-              <td>{r.flat_number || 'society-wide'}</td>
-              <td>{r.scheduled_date}</td>
-              <td>{r.scheduled_start}–{r.scheduled_end}</td>
-              <td>{r.status}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className="table-wrap" style={{ marginTop: 16 }}>
+        <table>
+          <thead><tr><th>Vendor</th><th>Flat</th><th>Date</th><th>Window</th><th>Status</th></tr></thead>
+          <tbody>
+            {requests.map((r) => (
+              <tr key={r.id}>
+                <td>{r.vendor_name}</td>
+                <td>{r.flat_number || 'society-wide'}</td>
+                <td>{r.scheduled_date}</td>
+                <td>{r.scheduled_start}–{r.scheduled_end}</td>
+                <td>{r.status}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
@@ -204,36 +208,38 @@ function AuditTrail() {
   return (
     <div className="card">
       <h2>Full audit trail</h2>
-      <table>
-        <thead><tr><th>Visitor</th><th>Flat</th><th>Type</th><th>Status</th><th>Arrived</th><th></th></tr></thead>
-        <tbody>
-          {visits.map((v) => (
-            <>
-              <tr key={v.id}>
-                <td>{v.visitor_name}</td>
-                <td>{v.flat_number}</td>
-                <td>{v.visitor_type.replace('_', ' ')}</td>
-                <td><StatusBadge status={v.status} /></td>
-                <td>{v.created_at}</td>
-                <td><button className="secondary" onClick={() => expand(v.id)}>{expanded === v.id ? 'Hide' : 'Details'}</button></td>
-              </tr>
-              {expanded === v.id && (
-                <tr key={`${v.id}-detail`}>
-                  <td colSpan={6}>
-                    <ul style={{ margin: 0 }}>
-                      {events.map((e) => (
-                        <li key={e.id}>
-                          <strong>{e.created_at}</strong> — {e.event_type} {e.actor_role ? `(${e.actor_role})` : ''} {e.note ? `— ${e.note}` : ''}
-                        </li>
-                      ))}
-                    </ul>
-                  </td>
+      <div className="table-wrap">
+        <table>
+          <thead><tr><th>Visitor</th><th>Flat</th><th>Type</th><th>Status</th><th>Arrived</th><th></th></tr></thead>
+          <tbody>
+            {visits.map((v) => (
+              <>
+                <tr key={v.id}>
+                  <td>{v.visitor_name}</td>
+                  <td>{v.flat_number}</td>
+                  <td>{v.visitor_type.replace('_', ' ')}</td>
+                  <td><StatusBadge status={v.status} /></td>
+                  <td>{v.created_at}</td>
+                  <td><button className="secondary" onClick={() => expand(v.id)}>{expanded === v.id ? 'Hide' : 'Details'}</button></td>
                 </tr>
-              )}
-            </>
-          ))}
-        </tbody>
-      </table>
+                {expanded === v.id && (
+                  <tr key={`${v.id}-detail`}>
+                    <td colSpan={6}>
+                      <ul style={{ margin: 0 }}>
+                        {events.map((e) => (
+                          <li key={e.id}>
+                            <strong>{e.created_at}</strong> — {e.event_type} {e.actor_role ? `(${e.actor_role})` : ''} {e.note ? `— ${e.note}` : ''}
+                          </li>
+                        ))}
+                      </ul>
+                    </td>
+                  </tr>
+                )}
+              </>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

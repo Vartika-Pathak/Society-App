@@ -14,8 +14,9 @@ function ResultBanner({ result }) {
   if (!result) return null;
   const isEntry = result.status === 'on_premises';
   const isPending = result.status === 'awaiting_resident';
+  const tone = isEntry ? 'banner-success' : isPending ? 'banner-warn' : 'banner-danger';
   return (
-    <div className="card" style={{ background: isEntry ? '#e6f6ee' : isPending ? '#fff8ee' : '#fdecec' }}>
+    <div className={`banner ${tone}`} style={{ marginBottom: 20 }}>
       <strong>{result.visitor_name}</strong> — <StatusBadge status={result.status} />
       {isEntry && <div className="hint-text">Gate opened. Remember to log departure when they leave.</div>}
       {isPending && <div className="hint-text">Resident notified. Waiting for their response (auto-escalates to admin after 2 min).</div>}
@@ -199,7 +200,7 @@ export default function GuardGate() {
             <h2>Currently on premises</h2>
             {onPremises.length === 0 && <div className="empty-state">No visitors currently checked in.</div>}
             {onPremises.map((v) => (
-              <div key={v.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid var(--border)' }}>
+              <div key={v.id} className="list-row">
                 <div>
                   <strong>{v.visitor_name}</strong>
                   <div className="hint-text">{v.flat_number} · {v.visitor_type.replace('_', ' ')} · entered {v.entry_time}</div>
