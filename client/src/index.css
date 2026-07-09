@@ -483,8 +483,8 @@ tbody tr:last-child td { border-bottom: none; }
 }
 .primary-link { background: var(--primary); color: #fff; }
 .primary-link:hover { background: var(--primary-dark); }
-.secondary-link { background: rgba(255, 255, 255, 0.2); color: #fff; border: 1px solid rgba(255, 255, 255, 0.4); }
-.secondary-link:hover { border-color: rgba(255, 255, 255, 0.8); background: rgba(255, 255, 255, 0.3); }
+.secondary-link { background: #fff; color: var(--text); border: 1px solid var(--border); }
+.secondary-link:hover { border-color: var(--sky); background: var(--surface-alt); }
 
 .book-tour-btn {
   background: var(--primary);
