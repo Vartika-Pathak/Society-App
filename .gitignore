@@ -1,0 +1,5 @@
+node_modules/
+server/society.db
+server/society.db-*
+client/dist/
+.env
