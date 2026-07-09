@@ -1,6 +1,6 @@
-# Society App — Visitor Management
+# Society App
 
-A residential society visitor-management system: residents invite guests with an OTP, and a gate guard checks in five kinds of visitors (guest, cab/delivery, household help, maintenance/vendor, emergency), with resident approval and admin escalation for anyone who can't be auto-verified. Every check-in is written to an audit trail.
+A residential society management app. Its core is visitor management: residents invite guests with an OTP, and a gate guard checks in five kinds of visitors (guest, cab/delivery, household help, maintenance/vendor, emergency), with resident approval and admin escalation for anyone who can't be auto-verified. Every check-in is written to an audit trail. Alongside that, every role can post/read a society Notice board, browse an event photo Gallery, and residents can raise Grievances that the admin tracks through to resolution.
 
 This was built for you to learn from — the code favors clarity over cleverness. Start reading at `server/src/services/visitService.js`, it's the heart of the app.
 
@@ -36,6 +36,12 @@ New accounts can also be created via the Sign up page (residents must give a fla
    - **Emergency services**: let in immediately; resident and admin are notified after the fact.
 3. Every decision — arrival, ID check, resident/admin response, entry, denial, departure — is written to `audit_log` and viewable per-visit from the Admin dashboard's "Full audit trail".
 
+## The other modules
+
+- **Notices** (`/notices`): any logged-in role can post a title + body; everyone sees the full board, newest first.
+- **Gallery** (`/gallery`): admin uploads event/festival photos (stored on disk under `server/uploads/`, served at `/uploads/<filename>`); every role can browse them.
+- **Grievances**: from the Resident dashboard, pick a category (maintenance/security/noise/other) and describe the issue. It shows up on the Admin dashboard, where the admin moves it through open → in progress → resolved, optionally with a note the resident can see.
+
 ## Project layout
 
 ```
@@ -43,18 +49,22 @@ server/               Express API
   src/db.js            SQLite schema + demo seed data
   src/auth.js           JWT + role-check middleware
   src/services/visitService.js   All check-in/approval/escalation logic (start here)
-  src/routes/           One file per resource (auth, invites, visits, staff, service-requests)
+  src/routes/           One file per resource (auth, invites, visits, staff, service-requests,
+                         notices, grievances, gallery)
+  uploads/               Gallery photo files (created automatically, not committed)
 
 client/                React (Vite) frontend
-  src/pages/resident/   Invite guests, approve/deny, visit history
+  src/pages/resident/   Invite guests, approve/deny, visit history, raise grievances
   src/pages/guard/      Gate check-in screen for all 5 visitor types
-  src/pages/admin/      Escalation queue, staff/vendor registries, audit trail
+  src/pages/admin/      Escalation queue, staff/vendor registries, audit trail, grievances
+  src/pages/Notices.jsx  Shared notice board (all roles)
+  src/pages/Gallery.jsx  Shared event photo gallery (all roles)
   src/context/AuthContext.jsx   Login/signup state, stored in localStorage
-  src/api.js            Tiny fetch wrapper that attaches the JWT
+  src/api.js            Tiny fetch wrapper that attaches the JWT (plus a multipart upload helper)
 ```
 
-## Notes on this first version
+## Notes on this version
 
 - **No SMS/push**: OTPs and approval requests are in-app only (shown on screen / polled every 5 seconds). To add real SMS, you'd plug a provider (e.g. Twilio) into `invites.js` where the OTP is generated.
 - **Anyone can sign up as any role** for demo simplicity. In a real deployment, guard/admin accounts would be provisioned by the society, not self-signup.
-- **Scope**: this is visitor management only — no maintenance billing, complaints, or notices yet. The data model and route structure are set up so those could be added as new tables/routes later without touching this code.
+- **Gallery storage is local disk**, fine for a single-server demo. A production deployment would want cloud storage (S3 etc.) instead of `server/uploads/`.
