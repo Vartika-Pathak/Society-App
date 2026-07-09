@@ -65,9 +65,9 @@ export default function GuardGate() {
     setResult(null);
     setSubmitting(true);
     try {
-      const payload = { visitor_type: type, flat_number: flatNumber };
+      const payload = { visitor_type: type, flat_number: flatNumber, otp_code: otpCode || undefined };
       if (type === 'guest') {
-        Object.assign(payload, { visitor_name: visitorName, visitor_phone: visitorPhone, otp_code: otpCode || undefined, identifiable });
+        Object.assign(payload, { visitor_name: visitorName, visitor_phone: visitorPhone, identifiable });
       } else if (type === 'cab_delivery') {
         Object.assign(payload, { visitor_name: visitorName, reference_code: referenceCode, verified });
       } else if (type === 'household_help') {
@@ -115,13 +115,18 @@ export default function GuardGate() {
           <h2>{VISITOR_TYPES.find((v) => v.key === type).label}</h2>
           <form onSubmit={submit}>
             <label>Flat number</label>
-            <input value={flatNumber} onChange={(e) => setFlatNumber(e.target.value)} placeholder="e.g. A-101" required={type !== 'guest' || !otpCode} />
+            <input value={flatNumber} onChange={(e) => setFlatNumber(e.target.value)} placeholder="e.g. A-101" required={type === 'emergency' || !otpCode} />
+
+            {type !== 'emergency' && (
+              <>
+                <label>Visitor OTP (from a resident's pre-approval invite, if any)</label>
+                <input value={otpCode} onChange={(e) => setOtpCode(e.target.value)} placeholder="6-digit code" />
+                <p className="hint-text">If the visitor has a valid OTP for this category, flat number and entry are resolved automatically — skip the fields below.</p>
+              </>
+            )}
 
             {type === 'guest' && (
               <>
-                <label>Guest OTP (from visitor, if pre-invited)</label>
-                <input value={otpCode} onChange={(e) => setOtpCode(e.target.value)} placeholder="6-digit code" />
-                <p className="hint-text">If the visitor has a valid OTP, flat number and entry are resolved automatically.</p>
                 <label>Visitor name (if no OTP)</label>
                 <input value={visitorName} onChange={(e) => setVisitorName(e.target.value)} />
                 <label>Visitor phone</label>
@@ -135,8 +140,8 @@ export default function GuardGate() {
 
             {type === 'cab_delivery' && (
               <>
-                <label>Visitor / driver name</label>
-                <input value={visitorName} onChange={(e) => setVisitorName(e.target.value)} required />
+                <label>Visitor / driver name (if no OTP)</label>
+                <input value={visitorName} onChange={(e) => setVisitorName(e.target.value)} required={!otpCode} />
                 <label>Order / ride reference code</label>
                 <input value={referenceCode} onChange={(e) => setReferenceCode(e.target.value)} />
                 <label>
@@ -148,19 +153,19 @@ export default function GuardGate() {
 
             {type === 'household_help' && (
               <>
-                <label>Visitor name</label>
+                <label>Visitor name (if no OTP)</label>
                 <input value={visitorName} onChange={(e) => setVisitorName(e.target.value)} />
-                <label>Staff ID card number</label>
-                <input value={idCardNumber} onChange={(e) => setIdCardNumber(e.target.value)} placeholder="e.g. HH-1001" required />
+                <label>Staff ID card number (if no OTP)</label>
+                <input value={idCardNumber} onChange={(e) => setIdCardNumber(e.target.value)} placeholder="e.g. HH-1001" required={!otpCode} />
               </>
             )}
 
             {type === 'maintenance_service' && (
               <>
-                <label>Visitor / vendor name</label>
+                <label>Visitor / vendor name (if no OTP)</label>
                 <input value={visitorName} onChange={(e) => setVisitorName(e.target.value)} />
-                <label>Matching scheduled request</label>
-                <select value={serviceRequestId} onChange={(e) => setServiceRequestId(e.target.value)} required>
+                <label>Matching scheduled request (if no OTP)</label>
+                <select value={serviceRequestId} onChange={(e) => setServiceRequestId(e.target.value)} required={!otpCode}>
                   <option value="">Select today's scheduled request...</option>
                   {serviceRequests.map((r) => (
                     <option key={r.id} value={r.id}>

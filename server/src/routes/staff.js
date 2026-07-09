@@ -5,7 +5,7 @@ import { requireAuth, requireRole } from '../auth.js';
 const router = Router();
 
 router.get('/', requireAuth, requireRole('admin', 'guard'), (req, res) => {
-  res.json(db.prepare('SELECT * FROM staff_registry ORDER BY created_at DESC').all());
+  res.json(db.prepare('SELECT * FROM staff_registry ORDER BY created_at DESC, id DESC').all());
 });
 
 router.post('/', requireAuth, requireRole('admin'), (req, res) => {

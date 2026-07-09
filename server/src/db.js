@@ -25,8 +25,14 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS invites (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   resident_id INTEGER NOT NULL REFERENCES users(id),
+  visitor_type TEXT NOT NULL DEFAULT 'guest' CHECK (visitor_type IN ('guest','cab_delivery','household_help','maintenance_service')),
   guest_name TEXT NOT NULL,
   guest_phone TEXT,
+  reference_code TEXT,
+  id_card_number TEXT,
+  scheduled_date TEXT,
+  scheduled_start TEXT,
+  scheduled_end TEXT,
   otp_code TEXT NOT NULL,
   status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending','used','expired')),
   expires_at TEXT NOT NULL,
@@ -89,6 +95,20 @@ CREATE TABLE IF NOT EXISTS audit_log (
   created_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 `);
+
+// Add columns to invites for pre-existing DBs created before category support was added.
+function ensureColumn(table, column, definition) {
+  const existing = db.prepare(`PRAGMA table_info(${table})`).all();
+  if (!existing.some((c) => c.name === column)) {
+    db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
+  }
+}
+ensureColumn('invites', 'visitor_type', "TEXT NOT NULL DEFAULT 'guest'");
+ensureColumn('invites', 'reference_code', 'TEXT');
+ensureColumn('invites', 'id_card_number', 'TEXT');
+ensureColumn('invites', 'scheduled_date', 'TEXT');
+ensureColumn('invites', 'scheduled_start', 'TEXT');
+ensureColumn('invites', 'scheduled_end', 'TEXT');
 
 function seed() {
   const userCount = db.prepare('SELECT COUNT(*) AS c FROM users').get().c;

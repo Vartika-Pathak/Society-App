@@ -55,32 +55,42 @@ function denyEntry(visit, actorRole, actorId, note) {
   return getVisit(visit.id);
 }
 
+// --- Shared OTP fast-path: any of the 4 pre-invitable categories can be
+// admitted instantly if the resident already created a matching invite. ---
+
+function tryOtpEntry(visitor_type, otp_code, guard_id, overrides = {}) {
+  if (!otp_code) return null;
+
+  const invite = db.prepare(`
+    SELECT * FROM invites WHERE otp_code = ? AND visitor_type = ? AND status = 'pending'
+  `).get(otp_code, visitor_type);
+
+  if (!invite || new Date(invite.expires_at) <= new Date()) return null;
+
+  const resident = db.prepare('SELECT flat_number FROM users WHERE id = ?').get(invite.resident_id);
+  const visit = createVisit({
+    visitor_name: invite.guest_name,
+    visitor_phone: invite.guest_phone,
+    visitor_type,
+    flat_number: resident.flat_number,
+    invite_id: invite.id,
+    reference_code: invite.reference_code,
+    status: 'on_premises',
+    entry_time: new Date().toISOString().replace('T', ' ').slice(0, 19),
+    actor_id: guard_id,
+    ...overrides
+  });
+  db.prepare(`UPDATE invites SET status = 'used' WHERE id = ?`).run(invite.id);
+  logAudit(visit.id, 'otp_verified', 'guard', guard_id, 'pre-approved invite matched');
+  logAudit(visit.id, 'entry_granted', 'guard', guard_id, 'OTP verified, auto-approved');
+  return getVisit(visit.id);
+}
+
 // --- Visitor-type check-in handlers -----------------------------------
 
 function checkInGuest({ visitor_name, visitor_phone, flat_number, otp_code, identifiable, guard_id }) {
-  if (otp_code) {
-    const invite = db.prepare(`
-      SELECT * FROM invites WHERE otp_code = ? AND status = 'pending'
-    `).get(otp_code);
-
-    if (invite && new Date(invite.expires_at) > new Date()) {
-      const resident = db.prepare('SELECT flat_number FROM users WHERE id = ?').get(invite.resident_id);
-      const visit = createVisit({
-        visitor_name: visitor_name || invite.guest_name,
-        visitor_phone: visitor_phone || invite.guest_phone,
-        visitor_type: 'guest',
-        flat_number: resident.flat_number,
-        invite_id: invite.id,
-        status: 'on_premises',
-        entry_time: new Date().toISOString().replace('T', ' ').slice(0, 19),
-        actor_id: guard_id
-      });
-      db.prepare(`UPDATE invites SET status = 'used' WHERE id = ?`).run(invite.id);
-      logAudit(visit.id, 'otp_verified', 'guard', guard_id, 'pre-approved invite matched');
-      logAudit(visit.id, 'entry_granted', 'guard', guard_id, 'OTP verified, auto-approved');
-      return getVisit(visit.id);
-    }
-  }
+  const otpVisit = tryOtpEntry('guest', otp_code, guard_id);
+  if (otpVisit) return otpVisit;
 
   // No/invalid OTP: guard logs identifiability
   const visit = createVisit({
@@ -102,7 +112,10 @@ function checkInGuest({ visitor_name, visitor_phone, flat_number, otp_code, iden
   return visit;
 }
 
-function checkInCabDelivery({ visitor_name, flat_number, reference_code, verified, guard_id }) {
+function checkInCabDelivery({ visitor_name, flat_number, reference_code, verified, otp_code, guard_id }) {
+  const otpVisit = tryOtpEntry('cab_delivery', otp_code, guard_id);
+  if (otpVisit) return otpVisit;
+
   const visit = createVisit({
     visitor_name, visitor_type: 'cab_delivery', flat_number,
     reference_code: reference_code || null,
@@ -116,7 +129,10 @@ function checkInCabDelivery({ visitor_name, flat_number, reference_code, verifie
   return visit;
 }
 
-function checkInHouseholdHelp({ visitor_name, flat_number, id_card_number, guard_id }) {
+function checkInHouseholdHelp({ visitor_name, flat_number, id_card_number, otp_code, guard_id }) {
+  const otpVisit = tryOtpEntry('household_help', otp_code, guard_id);
+  if (otpVisit) return otpVisit;
+
   const staff = db.prepare(`
     SELECT * FROM staff_registry WHERE id_card_number = ? AND category = 'household_help' AND active = 1
   `).get(id_card_number);
@@ -137,7 +153,10 @@ function checkInHouseholdHelp({ visitor_name, flat_number, id_card_number, guard
   return visit;
 }
 
-function checkInMaintenanceService({ visitor_name, flat_number, service_request_id, guard_id }) {
+function checkInMaintenanceService({ visitor_name, flat_number, service_request_id, otp_code, guard_id }) {
+  const otpVisit = tryOtpEntry('maintenance_service', otp_code, guard_id);
+  if (otpVisit) return otpVisit;
+
   const today = new Date().toISOString().slice(0, 10);
   const request = db.prepare(`
     SELECT * FROM service_requests
@@ -250,25 +269,25 @@ export function depart(visitId, actorId) {
 export function getPendingForResident(flatNumber) {
   runEscalationSweep();
   return db.prepare(`
-    SELECT * FROM visits WHERE flat_number = ? AND status = 'awaiting_resident' ORDER BY created_at DESC
+    SELECT * FROM visits WHERE flat_number = ? AND status = 'awaiting_resident' ORDER BY created_at DESC, id DESC
   `).all(flatNumber);
 }
 
 export function getEscalations() {
   runEscalationSweep();
-  return db.prepare(`SELECT * FROM visits WHERE status = 'awaiting_admin' ORDER BY created_at ASC`).all();
+  return db.prepare(`SELECT * FROM visits WHERE status = 'awaiting_admin' ORDER BY created_at ASC, id ASC`).all();
 }
 
 export function listVisits({ flat_number } = {}) {
   runEscalationSweep();
   if (flat_number) {
-    return db.prepare(`SELECT * FROM visits WHERE flat_number = ? ORDER BY created_at DESC`).all(flat_number);
+    return db.prepare(`SELECT * FROM visits WHERE flat_number = ? ORDER BY created_at DESC, id DESC`).all(flat_number);
   }
-  return db.prepare(`SELECT * FROM visits ORDER BY created_at DESC`).all();
+  return db.prepare(`SELECT * FROM visits ORDER BY created_at DESC, id DESC`).all();
 }
 
 export function getAuditTrail(visitId) {
-  return db.prepare(`SELECT * FROM audit_log WHERE visit_id = ? ORDER BY created_at ASC`).all(visitId);
+  return db.prepare(`SELECT * FROM audit_log WHERE visit_id = ? ORDER BY created_at ASC, id ASC`).all(visitId);
 }
 
 export function getVisitOrThrow(id) {

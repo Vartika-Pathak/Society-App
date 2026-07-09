@@ -21,15 +21,36 @@ function CountdownToEscalation({ notifiedAt }) {
   );
 }
 
+const CATEGORIES = [
+  { key: 'guest', label: 'Guest' },
+  { key: 'cab_delivery', label: 'Cab / Delivery' },
+  { key: 'household_help', label: 'Household help' },
+  { key: 'maintenance_service', label: 'Maintenance / vendor' }
+];
+
+const emptyForm = {
+  visitor_type: 'guest',
+  guest_name: '',
+  guest_phone: '',
+  reference_code: '',
+  id_card_number: '',
+  scheduled_date: new Date().toISOString().slice(0, 10),
+  scheduled_start: '09:00',
+  scheduled_end: '17:00'
+};
+
 export default function ResidentDashboard() {
   const { user } = useAuth();
-  const [guestName, setGuestName] = useState('');
-  const [guestPhone, setGuestPhone] = useState('');
+  const [form, setForm] = useState(emptyForm);
   const [invites, setInvites] = useState([]);
   const [pending, setPending] = useState([]);
   const [history, setHistory] = useState([]);
   const [error, setError] = useState('');
   const [creating, setCreating] = useState(false);
+
+  function update(field, value) {
+    setForm((f) => ({ ...f, [field]: value }));
+  }
 
   async function loadInvites() {
     setInvites(await api.get('/invites/mine'));
@@ -42,12 +63,12 @@ export default function ResidentDashboard() {
   }
 
   useEffect(() => {
-    loadInvites();
-    loadPending();
-    loadHistory();
+    loadInvites().catch((err) => setError(err.message));
+    loadPending().catch((err) => setError(err.message));
+    loadHistory().catch((err) => setError(err.message));
     const id = setInterval(() => {
-      loadPending();
-      loadHistory();
+      loadPending().catch((err) => setError(err.message));
+      loadHistory().catch((err) => setError(err.message));
     }, 5000);
     return () => clearInterval(id);
   }, []);
@@ -57,9 +78,8 @@ export default function ResidentDashboard() {
     setError('');
     setCreating(true);
     try {
-      await api.post('/invites', { guest_name: guestName, guest_phone: guestPhone });
-      setGuestName('');
-      setGuestPhone('');
+      await api.post('/invites', form);
+      setForm({ ...emptyForm, visitor_type: form.visitor_type });
       await loadInvites();
     } catch (err) {
       setError(err.message);
@@ -84,13 +104,51 @@ export default function ResidentDashboard() {
 
       <div className="grid grid-2">
         <div className="card">
-          <h2>Invite a guest</h2>
-          <p className="hint-text">Creates a one-time OTP. Share it with your guest — they give it to the gate guard for instant entry.</p>
+          <h2>Create a pre-approval invite</h2>
+          <p className="hint-text">Creates a one-time OTP for the gate guard. Share it with the visitor for instant entry.</p>
+
+          <label>Category</label>
+          <select value={form.visitor_type} onChange={(e) => update('visitor_type', e.target.value)}>
+            {CATEGORIES.map((c) => <option key={c.key} value={c.key}>{c.label}</option>)}
+          </select>
+
           <form onSubmit={handleCreateInvite}>
-            <label>Guest name</label>
-            <input value={guestName} onChange={(e) => setGuestName(e.target.value)} required />
-            <label>Guest phone (optional)</label>
-            <input value={guestPhone} onChange={(e) => setGuestPhone(e.target.value)} />
+            <label>
+              {form.visitor_type === 'guest' && 'Guest name'}
+              {form.visitor_type === 'cab_delivery' && 'Driver / rider name'}
+              {form.visitor_type === 'household_help' && 'Staff name'}
+              {form.visitor_type === 'maintenance_service' && 'Vendor name'}
+            </label>
+            <input value={form.guest_name} onChange={(e) => update('guest_name', e.target.value)} required />
+
+            <label>Phone (optional)</label>
+            <input value={form.guest_phone} onChange={(e) => update('guest_phone', e.target.value)} />
+
+            {form.visitor_type === 'cab_delivery' && (
+              <>
+                <label>Order / ride reference code (optional)</label>
+                <input value={form.reference_code} onChange={(e) => update('reference_code', e.target.value)} />
+              </>
+            )}
+
+            {form.visitor_type === 'household_help' && (
+              <>
+                <label>Staff ID card number</label>
+                <input value={form.id_card_number} onChange={(e) => update('id_card_number', e.target.value)} required />
+              </>
+            )}
+
+            {form.visitor_type === 'maintenance_service' && (
+              <>
+                <label>Scheduled date</label>
+                <input type="date" value={form.scheduled_date} onChange={(e) => update('scheduled_date', e.target.value)} required />
+                <div className="grid grid-2">
+                  <div><label>Start</label><input type="time" value={form.scheduled_start} onChange={(e) => update('scheduled_start', e.target.value)} required /></div>
+                  <div><label>End</label><input type="time" value={form.scheduled_end} onChange={(e) => update('scheduled_end', e.target.value)} required /></div>
+                </div>
+              </>
+            )}
+
             {error && <div className="error-text">{error}</div>}
             <button className="primary" type="submit" disabled={creating}>
               {creating ? 'Creating...' : 'Create invite'}
@@ -101,11 +159,12 @@ export default function ResidentDashboard() {
             <div style={{ marginTop: 20 }}>
               <h3>Recent invites</h3>
               <table>
-                <thead><tr><th>Guest</th><th>OTP</th><th>Status</th></tr></thead>
+                <thead><tr><th>Name</th><th>Category</th><th>OTP</th><th>Status</th></tr></thead>
                 <tbody>
                   {invites.slice(0, 5).map((inv) => (
                     <tr key={inv.id}>
                       <td>{inv.guest_name}</td>
+                      <td>{CATEGORIES.find((c) => c.key === inv.visitor_type)?.label || inv.visitor_type}</td>
                       <td><span className="otp-box" style={{ fontSize: '1rem', padding: '2px 8px' }}>{inv.otp_code}</span></td>
                       <td>{inv.status}</td>
                     </tr>
