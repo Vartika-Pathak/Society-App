@@ -102,8 +102,7 @@ export default function Landing() {
             a notice board everyone actually reads, and grievances that get tracked to resolution.
           </p>
           <div className="landing-cta">
-            <Link to="/login" className="primary-link">Log in</Link>
-            <Link to="/signup" className="secondary-link">Sign up</Link>
+            <button className="book-tour-btn">Book a Tour</button>
           </div>
         </div>
         <div className="hero-image-carousel">
