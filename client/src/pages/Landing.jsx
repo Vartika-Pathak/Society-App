@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { LogoMark } from '../components/Logo.jsx';
 
@@ -70,12 +70,27 @@ const AMENITIES = [
 
 export default function Landing() {
   const { hash } = useLocation();
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const images = [
+    'home-image-1.png',
+    'home-image-2.png',
+    'home-image-3.png',
+    'home-image-4.png',
+    'home-image-5.png'
+  ];
 
   useEffect(() => {
     if (!hash) return;
     const el = document.getElementById(hash.slice(1));
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }, [hash]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prev) => (prev + 1) % images.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [images.length]);
 
   return (
     <div className="landing">
@@ -91,8 +106,18 @@ export default function Landing() {
             <Link to="/signup" className="secondary-link">Sign up</Link>
           </div>
         </div>
-        <div className="hero-mark">
-          <LogoMark size={180} />
+        <div className="hero-image-carousel">
+          <img src={images[currentImageIndex]} alt="The Grand Pavilion" />
+          <div className="carousel-dots">
+            {images.map((_, index) => (
+              <button
+                key={index}
+                className={`carousel-dot ${index === currentImageIndex ? 'active' : ''}`}
+                onClick={() => setCurrentImageIndex(index)}
+                aria-label={`Go to image ${index + 1}`}
+              />
+            ))}
+          </div>
         </div>
       </section>
 
