@@ -175,38 +175,6 @@ export default function About() {
           </div>
         </section>
 
-        {/* Committee */}
-        <section className="bg-secondary/30 rounded-3xl p-8 md:p-16 border">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-12">
-            <div>
-              <h2 className="text-3xl font-serif font-medium mb-4">Building Committee</h2>
-              <p className="text-muted-foreground max-w-xl">
-                Elected annually by the residents, the committee volunteers their time to handle building maintenance, finances, and community events.
-              </p>
-            </div>
-            <Link href="/contact">
-              <Button variant="outline" className="rounded-full shrink-0 bg-background">Contact Committee</Button>
-            </Link>
-          </div>
-          
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { role: "President", name: "Sarah Jenkins", flat: "4A" },
-              { role: "Treasurer", name: "David Chen", flat: "7C" },
-              { role: "Secretary", name: "Elena Rodriguez", flat: "2B" },
-              { role: "Social Chair", name: "Marcus Johnson", flat: "5D" }
-            ].map((member, i) => (
-              <div key={i} className="bg-background rounded-xl p-6 border shadow-sm text-center">
-                <div className="h-16 w-16 mx-auto rounded-full bg-primary/10 text-primary flex items-center justify-center mb-4 text-xl font-serif">
-                  {member.name.charAt(0)}
-                </div>
-                <h3 className="font-medium text-lg mb-1">{member.name}</h3>
-                <p className="text-sm text-primary font-medium mb-2">{member.role}</p>
-                <p className="text-xs text-muted-foreground">Flat {member.flat}</p>
-              </div>
-            ))}
-          </div>
-        </section>
 
       </div>
     </div>
