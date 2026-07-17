@@ -4,7 +4,7 @@ import { useGetCommunityStats, useGetUpcomingEvents, useGetLatestNewsPosts } fro
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Users, Calendar, Newspaper, Image as ImageIcon, ArrowRight, MapPin, Clock } from "lucide-react";
+import { Waves, Dumbbell, Car, Wifi, TreePine, ShieldCheck, ArrowRight, MapPin, Clock } from "lucide-react";
 import { format } from "date-fns";
 
 export default function Home() {
@@ -50,49 +50,28 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Stats Strip */}
+      {/* Amenities Strip */}
       <section className="border-y bg-card z-10 relative">
         <div className="container mx-auto px-4 md:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-y md:divide-y-0 divide-border">
-            <div className="p-8 text-center flex flex-col items-center justify-center">
-              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4 text-primary">
-                <Users className="h-6 w-6" />
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 divide-x divide-y lg:divide-y-0 divide-border">
+            {[
+              { icon: Waves,       label: "Swimming Pool",   desc: "25m heated pool" },
+              { icon: Dumbbell,    label: "Gym & Fitness",   desc: "Open 6am – 10pm" },
+              { icon: TreePine,    label: "Roof Terrace",    desc: "City views & seating" },
+              { icon: Car,         label: "Secure Parking",  desc: "Residents & visitors" },
+              { icon: Wifi,        label: "High-Speed Wi-Fi",desc: "All common areas" },
+              { icon: ShieldCheck, label: "24/7 Concierge",  desc: "Always on hand" },
+            ].map(({ icon: Icon, label, desc }) => (
+              <div key={label} className="p-6 text-center flex flex-col items-center justify-center gap-3">
+                <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                  <Icon className="h-6 w-6" />
+                </div>
+                <div>
+                  <p className="font-medium text-foreground text-sm leading-tight">{label}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{desc}</p>
+                </div>
               </div>
-              <h3 className="text-3xl font-serif font-medium mb-1">
-                {statsLoading ? <Skeleton className="h-9 w-16 mx-auto" /> : stats?.totalMembers || 0}
-              </h3>
-              <p className="text-sm text-muted-foreground font-medium uppercase tracking-wider">Neighbors</p>
-            </div>
-            
-            <div className="p-8 text-center flex flex-col items-center justify-center">
-              <div className="h-12 w-12 rounded-full bg-accent/50 flex items-center justify-center mb-4 text-accent-foreground">
-                <Calendar className="h-6 w-6" />
-              </div>
-              <h3 className="text-3xl font-serif font-medium mb-1">
-                {statsLoading ? <Skeleton className="h-9 w-16 mx-auto" /> : stats?.upcomingEventsCount || 0}
-              </h3>
-              <p className="text-sm text-muted-foreground font-medium uppercase tracking-wider">Upcoming Events</p>
-            </div>
-            
-            <div className="p-8 text-center flex flex-col items-center justify-center">
-              <div className="h-12 w-12 rounded-full bg-secondary flex items-center justify-center mb-4 text-foreground">
-                <Newspaper className="h-6 w-6" />
-              </div>
-              <h3 className="text-3xl font-serif font-medium mb-1">
-                {statsLoading ? <Skeleton className="h-9 w-16 mx-auto" /> : stats?.totalNewsPosts || 0}
-              </h3>
-              <p className="text-sm text-muted-foreground font-medium uppercase tracking-wider">News Posts</p>
-            </div>
-            
-            <div className="p-8 text-center flex flex-col items-center justify-center">
-              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4 text-primary">
-                <ImageIcon className="h-6 w-6" />
-              </div>
-              <h3 className="text-3xl font-serif font-medium mb-1">
-                {statsLoading ? <Skeleton className="h-9 w-16 mx-auto" /> : stats?.totalGalleryPhotos || 0}
-              </h3>
-              <p className="text-sm text-muted-foreground font-medium uppercase tracking-wider">Gallery Photos</p>
-            </div>
+            ))}
           </div>
         </div>
       </section>
