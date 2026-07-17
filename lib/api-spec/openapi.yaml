@@ -3,13 +3,27 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Pavilion community website API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: members
+    description: Resident members
+  - name: events
+    description: Community events
+  - name: news
+    description: News and blog posts
+  - name: gallery
+    description: Photo gallery
+  - name: join
+    description: Membership join requests
+  - name: contact
+    description: Contact messages
+  - name: stats
+    description: Community statistics
 paths:
   /healthz:
     get:
@@ -24,6 +38,303 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /members:
+    get:
+      operationId: listMembers
+      tags: [members]
+      summary: List all active members
+      responses:
+        "200":
+          description: List of members
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Member"
+
+  /members/{id}:
+    get:
+      operationId: getMember
+      tags: [members]
+      summary: Get a member by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Member found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Member"
+        "404":
+          description: Member not found
+
+  /events:
+    get:
+      operationId: listEvents
+      tags: [events]
+      summary: List all events
+      responses:
+        "200":
+          description: List of events
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Event"
+    post:
+      operationId: createEvent
+      tags: [events]
+      summary: Create a new event
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EventInput"
+      responses:
+        "201":
+          description: Event created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Event"
+
+  /events/upcoming:
+    get:
+      operationId: getUpcomingEvents
+      tags: [events]
+      summary: Get upcoming events (next 5)
+      responses:
+        "200":
+          description: Upcoming events
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Event"
+
+  /events/{id}:
+    get:
+      operationId: getEvent
+      tags: [events]
+      summary: Get an event by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Event found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Event"
+        "404":
+          description: Event not found
+    delete:
+      operationId: deleteEvent
+      tags: [events]
+      summary: Delete an event
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Event deleted
+
+  /news:
+    get:
+      operationId: listNewsPosts
+      tags: [news]
+      summary: List all news posts
+      responses:
+        "200":
+          description: List of news posts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/NewsPost"
+    post:
+      operationId: createNewsPost
+      tags: [news]
+      summary: Create a news post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewsPostInput"
+      responses:
+        "201":
+          description: Post created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NewsPost"
+
+  /news/latest:
+    get:
+      operationId: getLatestNewsPosts
+      tags: [news]
+      summary: Get the 3 latest news posts
+      responses:
+        "200":
+          description: Latest news posts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/NewsPost"
+
+  /news/{id}:
+    get:
+      operationId: getNewsPost
+      tags: [news]
+      summary: Get a news post by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: News post found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NewsPost"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteNewsPost
+      tags: [news]
+      summary: Delete a news post
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Post deleted
+
+  /gallery:
+    get:
+      operationId: listGalleryPhotos
+      tags: [gallery]
+      summary: List all gallery photos
+      responses:
+        "200":
+          description: List of gallery photos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GalleryPhoto"
+    post:
+      operationId: addGalleryPhoto
+      tags: [gallery]
+      summary: Add a photo to the gallery
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GalleryPhotoInput"
+      responses:
+        "201":
+          description: Photo added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GalleryPhoto"
+
+  /gallery/{id}:
+    delete:
+      operationId: deleteGalleryPhoto
+      tags: [gallery]
+      summary: Delete a gallery photo
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Photo deleted
+
+  /join-requests:
+    post:
+      operationId: submitJoinRequest
+      tags: [join]
+      summary: Submit a membership join request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/JoinRequestInput"
+      responses:
+        "201":
+          description: Join request submitted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JoinRequest"
+
+  /contact:
+    post:
+      operationId: sendContact
+      tags: [contact]
+      summary: Send a contact message
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContactMessageInput"
+      responses:
+        "201":
+          description: Message sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactMessage"
+
+  /stats:
+    get:
+      operationId: getCommunityStats
+      tags: [stats]
+      summary: Get community statistics
+      responses:
+        "200":
+          description: Community stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommunityStats"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +345,211 @@ components:
       required:
         - status
 
+    Member:
+      type: object
+      required: [id, name, flatNumber, joinedAt]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        flatNumber:
+          type: string
+        bio:
+          type: ["string", "null"]
+        avatarUrl:
+          type: ["string", "null"]
+        joinedAt:
+          type: string
+          format: date-time
+
+    Event:
+      type: object
+      required: [id, title, date, location, createdAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: ["string", "null"]
+        date:
+          type: string
+          format: date-time
+        location:
+          type: string
+        organizer:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+
+    EventInput:
+      type: object
+      required: [title, date, location]
+      properties:
+        title:
+          type: string
+          minLength: 1
+        description:
+          type: string
+        date:
+          type: string
+          format: date-time
+        location:
+          type: string
+          minLength: 1
+        organizer:
+          type: string
+
+    NewsPost:
+      type: object
+      required: [id, title, content, author, publishedAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        content:
+          type: string
+        excerpt:
+          type: ["string", "null"]
+        author:
+          type: string
+        imageUrl:
+          type: ["string", "null"]
+        publishedAt:
+          type: string
+          format: date-time
+
+    NewsPostInput:
+      type: object
+      required: [title, content, author]
+      properties:
+        title:
+          type: string
+          minLength: 1
+        content:
+          type: string
+          minLength: 1
+        excerpt:
+          type: string
+        author:
+          type: string
+          minLength: 1
+        imageUrl:
+          type: string
+
+    GalleryPhoto:
+      type: object
+      required: [id, imageUrl, uploadedAt]
+      properties:
+        id:
+          type: integer
+        imageUrl:
+          type: string
+        title:
+          type: ["string", "null"]
+        description:
+          type: ["string", "null"]
+        uploadedBy:
+          type: ["string", "null"]
+        uploadedAt:
+          type: string
+          format: date-time
+
+    GalleryPhotoInput:
+      type: object
+      required: [imageUrl]
+      properties:
+        imageUrl:
+          type: string
+          minLength: 1
+        title:
+          type: string
+        description:
+          type: string
+        uploadedBy:
+          type: string
+
+    JoinRequestInput:
+      type: object
+      required: [name, email, flatNumber]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        email:
+          type: string
+        flatNumber:
+          type: string
+          minLength: 1
+        message:
+          type: string
+
+    JoinRequest:
+      type: object
+      required: [id, name, email, flatNumber, status, submittedAt]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        flatNumber:
+          type: string
+        message:
+          type: ["string", "null"]
+        status:
+          type: string
+        submittedAt:
+          type: string
+          format: date-time
+
+    ContactMessageInput:
+      type: object
+      required: [name, email, subject, message]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        email:
+          type: string
+        subject:
+          type: string
+          minLength: 1
+        message:
+          type: string
+          minLength: 1
+
+    ContactMessage:
+      type: object
+      required: [id, name, email, subject, message, submittedAt]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        subject:
+          type: string
+        message:
+          type: string
+        submittedAt:
+          type: string
+          format: date-time
+
+    CommunityStats:
+      type: object
+      required: [totalMembers, upcomingEventsCount, totalNewsPosts, totalGalleryPhotos]
+      properties:
+        totalMembers:
+          type: integer
+        upcomingEventsCount:
+          type: integer
+        totalNewsPosts:
+          type: integer
+        totalGalleryPhotos:
+          type: integer
