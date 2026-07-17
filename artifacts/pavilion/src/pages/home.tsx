@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "wouter";
+import { Button } from "@/components/ui/button";
 import { Waves, Dumbbell, Car, Wifi, TreePine, ShieldCheck, ArrowRight, MapPin, Award } from "lucide-react";
 
 export default function Home() {
