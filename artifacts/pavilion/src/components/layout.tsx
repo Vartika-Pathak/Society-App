@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Menu, X, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { LogIn } from "lucide-react";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -50,9 +51,14 @@ export function Layout({ children }: LayoutProps) {
                   {link.label}
                 </Link>
               ))}
-              <Link href="/join">
-                <Button className="rounded-full px-6 font-medium shadow-sm">
-                  Join Community
+              <Link href="/login">
+                <Button variant="outline" className="rounded-full px-5 font-medium">
+                  Log in
+                </Button>
+              </Link>
+              <Link href="/signup">
+                <Button className="rounded-full px-5 font-medium shadow-sm">
+                  Sign up
                 </Button>
               </Link>
             </nav>
@@ -84,10 +90,15 @@ export function Layout({ children }: LayoutProps) {
                   {link.label}
                 </Link>
               ))}
-              <div className="pt-6 pb-2">
-                <Link href="/join" onClick={() => setIsMobileMenuOpen(false)}>
+              <div className="pt-6 pb-2 flex flex-col gap-3">
+                <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                  <Button variant="outline" className="w-full rounded-full" size="lg">
+                    Log in
+                  </Button>
+                </Link>
+                <Link href="/signup" onClick={() => setIsMobileMenuOpen(false)}>
                   <Button className="w-full rounded-full" size="lg">
-                    Join Community
+                    Sign up
                   </Button>
                 </Link>
               </div>

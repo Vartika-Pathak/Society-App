@@ -15,27 +15,34 @@ export default function Home() {
   return (
     <div className="flex flex-col w-full">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-primary/5 pt-20 pb-32">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80')] bg-cover bg-center opacity-[0.03]" />
-        <div className="container relative mx-auto px-4 md:px-8 text-center max-w-4xl">
-          <span className="inline-block py-1 px-3 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6 tracking-wide uppercase">
+      <section className="relative overflow-hidden min-h-[560px] flex items-center">
+        {/* Full background image */}
+        <img
+          src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1800&q=80"
+          alt="Modern apartment building"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/90 via-primary/70 to-primary/30" />
+        <div className="container relative mx-auto px-4 md:px-8 py-24 max-w-5xl">
+          <span className="inline-block py-1 px-3 rounded-full bg-white/20 text-white text-sm font-medium mb-6 tracking-wide uppercase backdrop-blur-sm">
             Welcome to the building
           </span>
-          <h1 className="text-5xl md:text-7xl font-serif font-medium text-foreground mb-8 leading-tight tracking-tight">
+          <h1 className="text-5xl md:text-7xl font-serif font-medium text-white mb-8 leading-tight tracking-tight max-w-3xl">
             Your home, <br className="hidden md:block" />
-            <span className="text-primary italic font-light">our community.</span>
+            <span className="italic font-light text-white/80">our community.</span>
           </h1>
-          <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed">
-            Pavilion is the central hub for our residents. Discover upcoming events, read the latest announcements, and connect with your neighbors.
+          <p className="text-lg md:text-xl text-white/80 mb-10 max-w-2xl leading-relaxed">
+            Pavilion is the central hub for our residents. Discover upcoming events, read the latest announcements, and connect with your neighbours.
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/join">
-              <Button size="lg" className="rounded-full px-8 h-14 text-base shadow-md w-full sm:w-auto">
-                Join the Directory
+          <div className="flex flex-col sm:flex-row items-start gap-4">
+            <Link href="/signup">
+              <Button size="lg" className="rounded-full px-8 h-14 text-base shadow-md w-full sm:w-auto bg-white text-primary hover:bg-white/90">
+                Join the Community
               </Button>
             </Link>
             <Link href="/events">
-              <Button size="lg" variant="outline" className="rounded-full px-8 h-14 text-base bg-background/50 backdrop-blur w-full sm:w-auto">
+              <Button size="lg" variant="outline" className="rounded-full px-8 h-14 text-base border-white/60 text-white hover:bg-white/10 backdrop-blur w-full sm:w-auto">
                 View Calendar
               </Button>
             </Link>
@@ -86,6 +93,37 @@ export default function Home() {
               </h3>
               <p className="text-sm text-muted-foreground font-medium uppercase tracking-wider">Gallery Photos</p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Community Photo Strip */}
+      <section className="py-16 bg-secondary/30">
+        <div className="container mx-auto px-4 md:px-8">
+          <div className="flex items-end justify-between mb-8">
+            <div>
+              <h2 className="text-2xl font-serif font-medium mb-1">Life at Pavilion</h2>
+              <p className="text-muted-foreground text-sm">Moments from our community.</p>
+            </div>
+            <Link href="/gallery" className="flex items-center text-primary text-sm font-medium hover:underline">
+              View gallery <ArrowRight className="ml-1.5 h-4 w-4" />
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {[
+              { src: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=600&q=80", alt: "Residents lounge" },
+              { src: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=600&q=80", alt: "Common area" },
+              { src: "https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=600&q=80", alt: "Garden terrace" },
+              { src: "https://images.unsplash.com/photo-1599619351208-3e6c839d6828?auto=format&fit=crop&w=600&q=80", alt: "Building entrance" },
+            ].map((photo, i) => (
+              <Link key={i} href="/gallery" className="group overflow-hidden rounded-2xl aspect-square block">
+                <img
+                  src={photo.src}
+                  alt={photo.alt}
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+              </Link>
+            ))}
           </div>
         </div>
       </section>

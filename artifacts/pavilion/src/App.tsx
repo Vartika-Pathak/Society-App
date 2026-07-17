@@ -13,6 +13,8 @@ import NewsPost from './pages/news-post';
 import Gallery from './pages/gallery';
 import Join from './pages/join';
 import Contact from './pages/contact';
+import Login from './pages/login';
+import Signup from './pages/signup';
 import NotFound from '@/pages/not-found';
 
 const queryClient = new QueryClient();
@@ -29,6 +31,8 @@ function Router() {
       <Route path="/gallery" component={Gallery} />
       <Route path="/join" component={Join} />
       <Route path="/contact" component={Contact} />
+      <Route path="/login" component={Login} />
+      <Route path="/signup" component={Signup} />
       <Route component={NotFound} />
     </Switch>
   );
