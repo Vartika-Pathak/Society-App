@@ -1,15 +1,12 @@
 import React from "react";
 import { Link } from "wouter";
-import { useGetCommunityStats, useGetUpcomingEvents, useGetLatestNewsPosts } from "@workspace/api-client-react";
+import { useGetLatestNewsPosts } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Waves, Dumbbell, Car, Wifi, TreePine, ShieldCheck, ArrowRight, MapPin, Clock } from "lucide-react";
+import { Waves, Dumbbell, Car, Wifi, TreePine, ShieldCheck, ArrowRight, Newspaper } from "lucide-react";
 import { format } from "date-fns";
 
 export default function Home() {
-  const { data: stats, isLoading: statsLoading } = useGetCommunityStats();
-  const { data: upcomingEvents, isLoading: eventsLoading } = useGetUpcomingEvents();
   const { data: latestNews, isLoading: newsLoading } = useGetLatestNewsPosts();
 
   return (
@@ -173,61 +170,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Upcoming Events */}
-        <section className="bg-secondary/50 rounded-3xl p-8 md:p-12 border">
-          <div className="flex items-end justify-between mb-10">
-            <div>
-              <h2 className="text-3xl font-serif font-medium mb-3">Social Calendar</h2>
-              <p className="text-muted-foreground">Get together with your neighbors.</p>
-            </div>
-            <Link href="/events" className="hidden md:flex items-center text-primary font-medium hover:underline">
-              Full Calendar <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {eventsLoading ? (
-              Array.from({ length: 4 }).map((_, i) => (
-                <Skeleton key={i} className="h-32 w-full rounded-xl" />
-              ))
-            ) : upcomingEvents?.length ? (
-              upcomingEvents.slice(0, 4).map((event) => (
-                <Card key={event.id} className="border-none shadow-sm hover:shadow-md transition-shadow group">
-                  <CardContent className="p-6 flex items-start gap-6">
-                    <div className="flex flex-col items-center justify-center min-w-16 h-16 rounded-xl bg-primary/10 text-primary border border-primary/20 shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                      <span className="text-sm font-bold uppercase tracking-wider">{format(new Date(event.date), 'MMM')}</span>
-                      <span className="text-2xl font-serif leading-none mt-0.5">{format(new Date(event.date), 'dd')}</span>
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-serif font-medium mb-2 group-hover:text-primary transition-colors">
-                        {event.title}
-                      </h3>
-                      <div className="flex flex-col gap-1.5 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-2">
-                          <Clock className="h-4 w-4 shrink-0" />
-                          <span>{format(new Date(event.date), 'h:mm a')}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <MapPin className="h-4 w-4 shrink-0" />
-                          <span className="line-clamp-1">{event.location}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
-            ) : (
-              <div className="col-span-full py-12 text-center">
-                <p className="text-muted-foreground">No upcoming events right now. Check back later!</p>
-              </div>
-            )}
-          </div>
-          <div className="mt-8 md:hidden text-center">
-            <Link href="/events">
-              <Button variant="outline" className="rounded-full bg-background w-full">View Calendar</Button>
-            </Link>
-          </div>
-        </section>
 
       </div>
     </div>
