@@ -1,13 +1,8 @@
 import React from "react";
 import { Link } from "wouter";
-import { useGetLatestNewsPosts } from "@workspace/api-client-react";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Waves, Dumbbell, Car, Wifi, TreePine, ShieldCheck, ArrowRight, Newspaper, MapPin, Award } from "lucide-react";
-import { format } from "date-fns";
+import { Waves, Dumbbell, Car, Wifi, TreePine, ShieldCheck, ArrowRight, MapPin, Award } from "lucide-react";
 
 export default function Home() {
-  const { data: latestNews, isLoading: newsLoading } = useGetLatestNewsPosts();
 
   return (
     <div className="flex flex-col w-full">
@@ -106,70 +101,6 @@ export default function Home() {
 
       <div className="container mx-auto px-4 md:px-8 py-24 space-y-24">
         
-        {/* Latest News */}
-        <section>
-          <div className="flex items-end justify-between mb-10">
-            <div>
-              <h2 className="text-3xl font-serif font-medium mb-3">Notice Board</h2>
-              <p className="text-muted-foreground">The latest announcements and community updates.</p>
-            </div>
-            <Link href="/news" className="hidden md:flex items-center text-primary font-medium hover:underline">
-              All News <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {newsLoading ? (
-              Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="flex flex-col space-y-4">
-                  <Skeleton className="h-48 w-full rounded-xl" />
-                  <Skeleton className="h-6 w-3/4" />
-                  <Skeleton className="h-4 w-1/2" />
-                </div>
-              ))
-            ) : latestNews?.length ? (
-              latestNews.map((post) => (
-                <Link key={post.id} href={`/news/${post.id}`} className="group flex flex-col cursor-pointer">
-                  <div className="overflow-hidden rounded-xl mb-5 bg-muted aspect-video relative">
-                    {post.imageUrl ? (
-                      <img 
-                        src={post.imageUrl} 
-                        alt={post.title} 
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-                        <Newspaper className="h-10 w-10 opacity-20" />
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-3 text-sm text-muted-foreground mb-3">
-                    <span className="font-medium text-primary bg-primary/5 px-2 py-0.5 rounded">Announcement</span>
-                    <time>{format(new Date(post.publishedAt), 'MMM d, yyyy')}</time>
-                  </div>
-                  <h3 className="text-xl font-serif font-medium mb-2 group-hover:text-primary transition-colors line-clamp-2">
-                    {post.title}
-                  </h3>
-                  {post.excerpt && (
-                    <p className="text-muted-foreground line-clamp-2 leading-relaxed">
-                      {post.excerpt}
-                    </p>
-                  )}
-                </Link>
-              ))
-            ) : (
-              <div className="col-span-full py-12 text-center bg-muted/30 rounded-xl border border-dashed">
-                <p className="text-muted-foreground">No news posted yet.</p>
-              </div>
-            )}
-          </div>
-          <div className="mt-8 md:hidden text-center">
-            <Link href="/news">
-              <Button variant="outline" className="rounded-full w-full">View All News</Button>
-            </Link>
-          </div>
-        </section>
-
         {/* About the Building */}
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Text side */}

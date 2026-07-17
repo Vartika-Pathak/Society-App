@@ -17,7 +17,7 @@ export function Layout({ children }: LayoutProps) {
     { href: "/about", label: "About" },
 
     { href: "/events", label: "Events" },
-    { href: "/news", label: "News" },
+
     { href: "/gallery", label: "Gallery" },
     { href: "/contact", label: "Contact" },
   ];
