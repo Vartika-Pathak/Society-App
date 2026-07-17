@@ -93,6 +93,88 @@ export default function About() {
           </div>
         </section>
 
+        {/* Unit Plan */}
+        <section>
+          <div className="text-center max-w-2xl mx-auto mb-14">
+            <h2 className="text-3xl font-serif font-medium mb-4">Unit Plan</h2>
+            <p className="text-muted-foreground">Choose from a range of thoughtfully designed apartments to suit every lifestyle.</p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[
+              {
+                image: "/floorplans/unit-1bed-a.jpg",
+                type: "1 Bedroom (Type A)",
+                total: "575 Sq. Ft.",
+                builtUp: "490 Sq. Ft.",
+                carpet: "430 Sq. Ft.",
+              },
+              {
+                image: "/floorplans/unit-1bed-study.jpg",
+                type: "1 Bed + Study",
+                total: "720 Sq. Ft.",
+                builtUp: "610 Sq. Ft.",
+                carpet: "535 Sq. Ft.",
+              },
+              {
+                image: "/floorplans/unit-2bed-a.jpg",
+                type: "2 Bedroom (Type A)",
+                total: "930 Sq. Ft.",
+                builtUp: "785 Sq. Ft.",
+                carpet: "690 Sq. Ft.",
+              },
+              {
+                image: "/floorplans/unit-2bed-study.jpg",
+                type: "2 Bed + Study",
+                total: "1,120 Sq. Ft.",
+                builtUp: "945 Sq. Ft.",
+                carpet: "830 Sq. Ft.",
+              },
+              {
+                image: "/floorplans/unit-3bed-a.jpg",
+                type: "3 Bedroom (Type A)",
+                total: "1,380 Sq. Ft.",
+                builtUp: "1,165 Sq. Ft.",
+                carpet: "1,020 Sq. Ft.",
+              },
+              {
+                image: "/floorplans/unit-penthouse.jpg",
+                type: "Penthouse Suite",
+                total: "2,450 Sq. Ft.",
+                builtUp: "2,100 Sq. Ft.",
+                carpet: "1,860 Sq. Ft.",
+              },
+            ].map((unit) => (
+              <div key={unit.type} className="flex flex-col rounded-2xl border bg-card shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                <div className="aspect-[4/3] bg-[#f5ede0] overflow-hidden">
+                  <img
+                    src={unit.image}
+                    alt={`${unit.type} floor plan`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="p-6">
+                  <h3 className="text-lg font-serif font-medium text-primary mb-4">{unit.type}</h3>
+                  <div className="space-y-1.5 text-sm text-muted-foreground">
+                    <div className="flex justify-between">
+                      <span>Total Area</span>
+                      <span className="font-medium text-foreground">{unit.total}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Built Up Area</span>
+                      <span className="font-medium text-foreground">{unit.builtUp}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Carpet Area</span>
+                      <span className="font-medium text-foreground">{unit.carpet}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
         {/* Committee */}
         <section className="bg-secondary/30 rounded-3xl p-8 md:p-16 border">
           <div className="flex flex-col md:flex-row items-center justify-between gap-8 mb-12">
