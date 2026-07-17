@@ -3,7 +3,7 @@ import { Link } from "wouter";
 import { useGetLatestNewsPosts } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Waves, Dumbbell, Car, Wifi, TreePine, ShieldCheck, ArrowRight, Newspaper } from "lucide-react";
+import { Waves, Dumbbell, Car, Wifi, TreePine, ShieldCheck, ArrowRight, Newspaper, MapPin, Award } from "lucide-react";
 import { format } from "date-fns";
 
 export default function Home() {
@@ -170,6 +170,62 @@ export default function Home() {
           </div>
         </section>
 
+        {/* About the Building */}
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+          {/* Text side */}
+          <div>
+            <h2 className="text-4xl font-serif font-medium text-foreground mb-3">Pavilion</h2>
+            <div className="flex items-center gap-1.5 text-primary mb-8">
+              <MapPin className="h-4 w-4 shrink-0" />
+              <span className="text-sm font-medium">Riverside Quarter, London</span>
+            </div>
+            <div className="space-y-5 text-muted-foreground leading-relaxed text-[15px]">
+              <p>
+                Pavilion is a contemporary residential development set within a beautifully landscaped riverside setting. Thoughtfully designed for modern living, it offers a curated collection of one, two, and three-bedroom apartments alongside expansive penthouse suites — each finished to an exceptional standard with floor-to-ceiling glazing and private balconies.
+              </p>
+              <p>
+                Residents enjoy exclusive access to a private health club, 25-metre swimming pool, landscaped roof terrace, and a dedicated concierge. The building's central location places world-class dining, culture, and transport links just minutes away, making Pavilion as well-connected as it is refined.
+              </p>
+              <p>
+                Pavilion has been recognised with the <span className="text-foreground font-medium">"Best Residential Development — London"</span> award at the 2024 Property Excellence Awards and the <span className="text-foreground font-medium">"Outstanding Community Living"</span> commendation at the National Homes Awards.
+              </p>
+            </div>
+          </div>
+
+          {/* Awards / highlights side */}
+          <div className="flex flex-col gap-5">
+            {[
+              {
+                icon: Award,
+                title: "Best Residential Development — London",
+                subtitle: "Property Excellence Awards 2024",
+              },
+              {
+                icon: Award,
+                title: "Outstanding Community Living",
+                subtitle: "National Homes Awards 2023",
+              },
+              {
+                icon: MapPin,
+                title: "Riverside Quarter, London",
+                subtitle: "Close to tube, rail & riverside walks",
+              },
+            ].map(({ icon: Icon, title, subtitle }) => (
+              <div
+                key={title}
+                className="flex items-start gap-5 p-6 rounded-2xl border bg-card shadow-sm"
+              >
+                <div className="h-11 w-11 shrink-0 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                  <Icon className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="font-medium text-foreground leading-snug">{title}</p>
+                  <p className="text-sm text-muted-foreground mt-1">{subtitle}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
 
       </div>
     </div>
