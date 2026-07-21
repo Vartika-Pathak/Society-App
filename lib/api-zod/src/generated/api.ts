@@ -346,6 +346,7 @@ export const SignupResponse = zod.object({
   "name": zod.string(),
   "email": zod.string(),
   "flatNumber": zod.string(),
+  "role": zod.enum(['resident', 'guard', 'admin']),
   "createdAt": zod.coerce.date()
 })
 
@@ -363,6 +364,7 @@ export const LoginResponse = zod.object({
   "name": zod.string(),
   "email": zod.string(),
   "flatNumber": zod.string(),
+  "role": zod.enum(['resident', 'guard', 'admin']),
   "createdAt": zod.coerce.date()
 })
 
@@ -381,6 +383,7 @@ export const GetCurrentUserResponse = zod.object({
   "name": zod.string(),
   "email": zod.string(),
   "flatNumber": zod.string(),
+  "role": zod.enum(['resident', 'guard', 'admin']),
   "createdAt": zod.coerce.date()
 })
 

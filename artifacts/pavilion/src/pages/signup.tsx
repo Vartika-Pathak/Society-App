@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
 import { Building2, Mail, Lock, Eye, EyeOff, User, Hash } from "lucide-react";
 import { useSignup, getGetCurrentUserQueryKey, type SignupMutationError } from "@workspace/api-client-react";
+import { useAuth } from "@/context/auth-context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,6 +15,16 @@ export default function Signup() {
   const { toast } = useToast();
   const [, navigate] = useLocation();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
+
+  // Navigate only once useAuth's own query has actually picked up the new
+  // session — navigating straight from the mutation's onSuccess races
+  // React Query's (microtask-batched) cache notification against wouter's
+  // (synchronous) route change, so the dashboard's auth guard can mount
+  // and redirect away before the cache update ever reaches it.
+  useEffect(() => {
+    if (user) navigate("/dashboard");
+  }, [user, navigate]);
 
   const signup = useSignup({
     mutation: {
@@ -23,7 +34,6 @@ export default function Signup() {
           title: "Account created!",
           description: "Welcome to the Pavilion community.",
         });
-        navigate("/");
       },
       onError: (error: SignupMutationError) => {
         toast({

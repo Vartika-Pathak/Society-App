@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
 import { Building2, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { useLogin, getGetCurrentUserQueryKey, type LoginMutationError } from "@workspace/api-client-react";
+import { useAuth } from "@/context/auth-context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,6 +16,13 @@ export default function Login() {
   const { toast } = useToast();
   const [, navigate] = useLocation();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
+
+  // See signup.tsx for why navigation waits on useAuth's own state instead
+  // of firing directly from the mutation's onSuccess.
+  useEffect(() => {
+    if (user) navigate("/dashboard");
+  }, [user, navigate]);
 
   const login = useLogin({
     mutation: {
@@ -24,7 +32,6 @@ export default function Login() {
           title: "Welcome back!",
           description: "You've been signed in to Pavilion.",
         });
-        navigate("/");
       },
       onError: (error: LoginMutationError) => {
         toast({

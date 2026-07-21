@@ -5,11 +5,13 @@
  * Pavilion community website API
  * OpenAPI spec version: 0.1.0
  */
+import type { AuthUserRole } from './authUserRole';
 
 export interface AuthUser {
   id: number;
   name: string;
   email: string;
   flatNumber: string;
+  role: AuthUserRole;
   createdAt: Date;
 }

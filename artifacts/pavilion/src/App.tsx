@@ -4,6 +4,7 @@ import { TooltipProvider } from '@/components/ui/tooltip';
 import { Route, Switch, Router as WouterRouter } from 'wouter';
 
 import { AuthProvider } from './context/auth-context';
+import { RequireAuth } from './components/require-auth';
 import { Layout } from './components/layout';
 import Home from './pages/home';
 import About from './pages/about';
@@ -15,6 +16,7 @@ import Join from './pages/join';
 import Contact from './pages/contact';
 import Login from './pages/login';
 import Signup from './pages/signup';
+import Dashboard from './pages/dashboard';
 import NotFound from '@/pages/not-found';
 
 const queryClient = new QueryClient();
@@ -32,6 +34,11 @@ function Router() {
       <Route path="/contact" component={Contact} />
       <Route path="/login" component={Login} />
       <Route path="/signup" component={Signup} />
+      <Route path="/dashboard">
+        <RequireAuth>
+          <Dashboard />
+        </RequireAuth>
+      </Route>
       <Route component={NotFound} />
     </Switch>
   );

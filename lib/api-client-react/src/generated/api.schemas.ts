@@ -146,11 +146,21 @@ export interface LoginInput {
   password: string;
 }
 
+export type AuthUserRole = typeof AuthUserRole[keyof typeof AuthUserRole];
+
+
+export const AuthUserRole = {
+  resident: 'resident',
+  guard: 'guard',
+  admin: 'admin',
+} as const;
+
 export interface AuthUser {
   id: number;
   name: string;
   email: string;
   flatNumber: string;
+  role: AuthUserRole;
   createdAt: string;
 }
 

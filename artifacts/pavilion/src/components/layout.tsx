@@ -55,6 +55,14 @@ export function Layout({ children }: LayoutProps) {
               ))}
               {user ? (
                 <>
+                  <Link
+                    href="/dashboard"
+                    className={`text-sm font-medium transition-colors hover:text-primary ${
+                      location === "/dashboard" ? "text-primary" : "text-muted-foreground"
+                    }`}
+                  >
+                    Dashboard
+                  </Link>
                   <span className="text-sm font-medium text-muted-foreground">
                     Hi, {user.name.split(" ")[0]}
                   </span>
@@ -112,18 +120,25 @@ export function Layout({ children }: LayoutProps) {
               ))}
               <div className="pt-6 pb-2 flex flex-col gap-3">
                 {user ? (
-                  <Button
-                    variant="outline"
-                    className="w-full rounded-full"
-                    size="lg"
-                    disabled={isLoggingOut}
-                    onClick={() => {
-                      logout();
-                      setIsMobileMenuOpen(false);
-                    }}
-                  >
-                    {isLoggingOut ? "Logging out…" : `Log out (${user.name.split(" ")[0]})`}
-                  </Button>
+                  <>
+                    <Link href="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>
+                      <Button variant="outline" className="w-full rounded-full" size="lg">
+                        Dashboard
+                      </Button>
+                    </Link>
+                    <Button
+                      variant="outline"
+                      className="w-full rounded-full"
+                      size="lg"
+                      disabled={isLoggingOut}
+                      onClick={() => {
+                        logout();
+                        setIsMobileMenuOpen(false);
+                      }}
+                    >
+                      {isLoggingOut ? "Logging out…" : `Log out (${user.name.split(" ")[0]})`}
+                    </Button>
+                  </>
                 ) : (
                   <>
                     <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>

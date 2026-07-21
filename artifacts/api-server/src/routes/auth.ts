@@ -15,6 +15,7 @@ function toAuthUser(user: User) {
     name: user.name,
     email: user.email,
     flatNumber: user.flatNumber,
+    role: user.role,
     createdAt: user.createdAt.toISOString(),
   };
 }

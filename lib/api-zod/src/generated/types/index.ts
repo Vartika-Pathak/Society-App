@@ -7,6 +7,7 @@
  */
 
 export * from './authUser';
+export * from './authUserRole';
 export * from './communityStats';
 export * from './contactMessage';
 export * from './contactMessageInput';
