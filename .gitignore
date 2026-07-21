@@ -9,7 +9,8 @@ out-tsc
 .expo-shared
 
 # local SQLite database
-/data
+/data/*
+!/data/.gitkeep
 *.db
 *.db-shm
 *.db-wal
