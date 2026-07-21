@@ -11,6 +11,7 @@ import authRouter from "./auth";
 import visitsRouter from "./visits";
 import maintenanceRouter from "./maintenance";
 import complaintsRouter from "./complaints";
+import emergencyRouter from "./emergency";
 
 const router: IRouter = Router();
 
@@ -26,5 +27,6 @@ router.use(authRouter);
 router.use(visitsRouter);
 router.use(maintenanceRouter);
 router.use(complaintsRouter);
+router.use(emergencyRouter);
 
 export default router;

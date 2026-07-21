@@ -21,6 +21,7 @@ import Entry from './pages/entry';
 import Gate from './pages/gate';
 import Maintenance from './pages/maintenance';
 import Complain from './pages/complain';
+import Emergency from './pages/emergency';
 import NotFound from '@/pages/not-found';
 
 const queryClient = new QueryClient();
@@ -61,6 +62,11 @@ function Router() {
       <Route path="/complain">
         <RequireAuth>
           <Complain />
+        </RequireAuth>
+      </Route>
+      <Route path="/emergency">
+        <RequireAuth>
+          <Emergency />
         </RequireAuth>
       </Route>
       <Route component={NotFound} />

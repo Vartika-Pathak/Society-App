@@ -18,6 +18,8 @@ export * from './complaintStatusInput';
 export * from './complaintStatusInputStatus';
 export * from './contactMessage';
 export * from './contactMessageInput';
+export * from './emergencyAlert';
+export * from './emergencyAlertStatus';
 export * from './event';
 export * from './eventInput';
 export * from './galleryPhoto';

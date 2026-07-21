@@ -32,6 +32,8 @@ tags:
     description: Maintenance requests — residents report issues with photos, staff track them to resolution
   - name: complaints
     description: Complaints — residents raise an issue by category, guard/admin track it to resolution
+  - name: emergency
+    description: Emergency alerts — one-tap alert visible to neighbors, guard, and admin until resolved
 paths:
   /healthz:
     get:
@@ -637,6 +639,80 @@ paths:
         "404":
           description: Complaint not found
 
+  /emergency-alerts:
+    post:
+      operationId: raiseEmergencyAlert
+      tags: [emergency]
+      summary: Raise an emergency alert (or return the caller's existing active one)
+      responses:
+        "201":
+          description: Alert active
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmergencyAlert"
+        "401":
+          description: Not signed in
+
+  /emergency-alerts/mine:
+    get:
+      operationId: getMyEmergencyAlert
+      tags: [emergency]
+      summary: The caller's own active alert, if any
+      responses:
+        "200":
+          description: Caller's active alert
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmergencyAlert"
+        "204":
+          description: No active alert for the caller
+        "401":
+          description: Not signed in
+
+  /emergency-alerts/active:
+    get:
+      operationId: listActiveEmergencyAlerts
+      tags: [emergency]
+      summary: All currently active alerts — visible to every signed-in resident, guard, and admin
+      responses:
+        "200":
+          description: Active alerts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/EmergencyAlert"
+        "401":
+          description: Not signed in
+
+  /emergency-alerts/{id}/resolve:
+    post:
+      operationId: resolveEmergencyAlert
+      tags: [emergency]
+      summary: Mark an alert resolved — the reporting resident, or any guard/admin
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Alert resolved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmergencyAlert"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not the reporting resident, a guard, or an admin
+        "404":
+          description: Alert not found
+
 components:
   schemas:
     HealthStatus:
@@ -1104,3 +1180,31 @@ components:
           enum: [open, in_progress, resolved]
         resolutionNote:
           type: string
+
+    EmergencyAlert:
+      type: object
+      required:
+        [
+          id,
+          status,
+          residentName,
+          residentFlatNumber,
+          createdAt,
+          resolvedAt,
+        ]
+      properties:
+        id:
+          type: integer
+        status:
+          type: string
+          enum: [active, resolved]
+        residentName:
+          type: string
+        residentFlatNumber:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        resolvedAt:
+          type: ["string", "null"]
+          format: date-time

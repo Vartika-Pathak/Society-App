@@ -373,3 +373,21 @@ export interface ComplaintStatusInput {
   resolutionNote?: string;
 }
 
+export type EmergencyAlertStatus = typeof EmergencyAlertStatus[keyof typeof EmergencyAlertStatus];
+
+
+export const EmergencyAlertStatus = {
+  active: 'active',
+  resolved: 'resolved',
+} as const;
+
+export interface EmergencyAlert {
+  id: number;
+  status: EmergencyAlertStatus;
+  residentName: string;
+  residentFlatNumber: string;
+  createdAt: string;
+  /** @nullable */
+  resolvedAt: string | null;
+}
+

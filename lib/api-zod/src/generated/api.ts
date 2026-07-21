@@ -600,3 +600,60 @@ export const UpdateComplaintStatusResponse = zod.object({
 })
 
 
+/**
+ * @summary Raise an emergency alert (or return the caller's existing active one)
+ */
+export const RaiseEmergencyAlertResponse = zod.object({
+  "id": zod.number(),
+  "status": zod.enum(['active', 'resolved']),
+  "residentName": zod.string(),
+  "residentFlatNumber": zod.string(),
+  "createdAt": zod.coerce.date(),
+  "resolvedAt": zod.coerce.date().nullable()
+})
+
+
+/**
+ * @summary The caller's own active alert, if any
+ */
+export const GetMyEmergencyAlertResponse = zod.object({
+  "id": zod.number(),
+  "status": zod.enum(['active', 'resolved']),
+  "residentName": zod.string(),
+  "residentFlatNumber": zod.string(),
+  "createdAt": zod.coerce.date(),
+  "resolvedAt": zod.coerce.date().nullable()
+})
+
+
+/**
+ * @summary All currently active alerts — visible to every signed-in resident, guard, and admin
+ */
+export const ListActiveEmergencyAlertsResponseItem = zod.object({
+  "id": zod.number(),
+  "status": zod.enum(['active', 'resolved']),
+  "residentName": zod.string(),
+  "residentFlatNumber": zod.string(),
+  "createdAt": zod.coerce.date(),
+  "resolvedAt": zod.coerce.date().nullable()
+})
+export const ListActiveEmergencyAlertsResponse = zod.array(ListActiveEmergencyAlertsResponseItem)
+
+
+/**
+ * @summary Mark an alert resolved — the reporting resident, or any guard/admin
+ */
+export const ResolveEmergencyAlertParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const ResolveEmergencyAlertResponse = zod.object({
+  "id": zod.number(),
+  "status": zod.enum(['active', 'resolved']),
+  "residentName": zod.string(),
+  "residentFlatNumber": zod.string(),
+  "createdAt": zod.coerce.date(),
+  "resolvedAt": zod.coerce.date().nullable()
+})
+
+

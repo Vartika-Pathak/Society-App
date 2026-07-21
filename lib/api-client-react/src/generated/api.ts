@@ -27,6 +27,7 @@ import type {
   ComplaintStatusInput,
   ContactMessage,
   ContactMessageInput,
+  EmergencyAlert,
   Event,
   EventInput,
   GalleryPhoto,
@@ -2517,5 +2518,301 @@ export const useUpdateComplaintStatus = <TError = ErrorType<void>,
         TContext
       > => {
       return useMutation(getUpdateComplaintStatusMutationOptions(options));
+    }
+
+export const getRaiseEmergencyAlertUrl = () => {
+
+
+
+
+  return `/api/emergency-alerts`
+}
+
+/**
+ * @summary Raise an emergency alert (or return the caller's existing active one)
+ */
+export const raiseEmergencyAlert = async ( options?: RequestInit): Promise<EmergencyAlert> => {
+
+  return customFetch<EmergencyAlert>(getRaiseEmergencyAlertUrl(),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getRaiseEmergencyAlertMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof raiseEmergencyAlert>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof raiseEmergencyAlert>>, TError,void, TContext> => {
+
+const mutationKey = ['raiseEmergencyAlert'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof raiseEmergencyAlert>>, void> = () => {
+
+
+          return  raiseEmergencyAlert(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RaiseEmergencyAlertMutationResult = NonNullable<Awaited<ReturnType<typeof raiseEmergencyAlert>>>
+
+    export type RaiseEmergencyAlertMutationError = ErrorType<void>
+
+    /**
+ * @summary Raise an emergency alert (or return the caller's existing active one)
+ */
+export const useRaiseEmergencyAlert = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof raiseEmergencyAlert>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof raiseEmergencyAlert>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getRaiseEmergencyAlertMutationOptions(options));
+    }
+
+export const getGetMyEmergencyAlertUrl = () => {
+
+
+
+
+  return `/api/emergency-alerts/mine`
+}
+
+/**
+ * @summary The caller's own active alert, if any
+ */
+export const getMyEmergencyAlert = async ( options?: RequestInit): Promise<EmergencyAlert | void> => {
+
+  return customFetch<EmergencyAlert | void>(getGetMyEmergencyAlertUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetMyEmergencyAlertQueryKey = () => {
+    return [
+    `/api/emergency-alerts/mine`
+    ] as const;
+    }
+
+
+export const getGetMyEmergencyAlertQueryOptions = <TData = Awaited<ReturnType<typeof getMyEmergencyAlert>>, TError = ErrorType<void>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getMyEmergencyAlert>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetMyEmergencyAlertQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getMyEmergencyAlert>>> = ({ signal }) => getMyEmergencyAlert({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getMyEmergencyAlert>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetMyEmergencyAlertQueryResult = NonNullable<Awaited<ReturnType<typeof getMyEmergencyAlert>>>
+export type GetMyEmergencyAlertQueryError = ErrorType<void>
+
+
+/**
+ * @summary The caller's own active alert, if any
+ */
+
+export function useGetMyEmergencyAlert<TData = Awaited<ReturnType<typeof getMyEmergencyAlert>>, TError = ErrorType<void>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getMyEmergencyAlert>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetMyEmergencyAlertQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getListActiveEmergencyAlertsUrl = () => {
+
+
+
+
+  return `/api/emergency-alerts/active`
+}
+
+/**
+ * @summary All currently active alerts — visible to every signed-in resident, guard, and admin
+ */
+export const listActiveEmergencyAlerts = async ( options?: RequestInit): Promise<EmergencyAlert[]> => {
+
+  return customFetch<EmergencyAlert[]>(getListActiveEmergencyAlertsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListActiveEmergencyAlertsQueryKey = () => {
+    return [
+    `/api/emergency-alerts/active`
+    ] as const;
+    }
+
+
+export const getListActiveEmergencyAlertsQueryOptions = <TData = Awaited<ReturnType<typeof listActiveEmergencyAlerts>>, TError = ErrorType<void>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listActiveEmergencyAlerts>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListActiveEmergencyAlertsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listActiveEmergencyAlerts>>> = ({ signal }) => listActiveEmergencyAlerts({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listActiveEmergencyAlerts>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListActiveEmergencyAlertsQueryResult = NonNullable<Awaited<ReturnType<typeof listActiveEmergencyAlerts>>>
+export type ListActiveEmergencyAlertsQueryError = ErrorType<void>
+
+
+/**
+ * @summary All currently active alerts — visible to every signed-in resident, guard, and admin
+ */
+
+export function useListActiveEmergencyAlerts<TData = Awaited<ReturnType<typeof listActiveEmergencyAlerts>>, TError = ErrorType<void>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listActiveEmergencyAlerts>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListActiveEmergencyAlertsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getResolveEmergencyAlertUrl = (id: number,) => {
+
+
+
+
+  return `/api/emergency-alerts/${id}/resolve`
+}
+
+/**
+ * @summary Mark an alert resolved — the reporting resident, or any guard/admin
+ */
+export const resolveEmergencyAlert = async (id: number, options?: RequestInit): Promise<EmergencyAlert> => {
+
+  return customFetch<EmergencyAlert>(getResolveEmergencyAlertUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getResolveEmergencyAlertMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof resolveEmergencyAlert>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof resolveEmergencyAlert>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['resolveEmergencyAlert'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof resolveEmergencyAlert>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  resolveEmergencyAlert(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ResolveEmergencyAlertMutationResult = NonNullable<Awaited<ReturnType<typeof resolveEmergencyAlert>>>
+
+    export type ResolveEmergencyAlertMutationError = ErrorType<void>
+
+    /**
+ * @summary Mark an alert resolved — the reporting resident, or any guard/admin
+ */
+export const useResolveEmergencyAlert = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof resolveEmergencyAlert>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof resolveEmergencyAlert>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+      return useMutation(getResolveEmergencyAlertMutationOptions(options));
     }
 

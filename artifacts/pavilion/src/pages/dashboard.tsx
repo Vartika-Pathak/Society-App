@@ -2,9 +2,14 @@ import React from "react";
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/context/auth-context";
+import { useListActiveEmergencyAlerts, getListActiveEmergencyAlertsQueryKey } from "@workspace/api-client-react";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { DoorOpen, Wrench, MessageSquareWarning, CalendarCheck, Siren, ShieldCheck } from "lucide-react";
+
+// Matches the polling interval on the Emergency page — the dashboard banner
+// should surface a new alert without anyone needing to refresh.
+const ALERT_POLL_INTERVAL_MS = 5000;
 
 interface FeatureTile {
   title: string;
@@ -42,6 +47,7 @@ const featureTiles: FeatureTile[] = [
     title: "Emergency / Alerts",
     description: "Alert neighbors, the guard, and the admin immediately in an emergency.",
     icon: Siren,
+    href: "/emergency",
   },
 ];
 
@@ -81,6 +87,9 @@ function FeatureTileCard({ tile }: { tile: FeatureTile }) {
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const activeAlerts = useListActiveEmergencyAlerts({
+    query: { queryKey: getListActiveEmergencyAlertsQueryKey(), refetchInterval: ALERT_POLL_INTERVAL_MS },
+  });
 
   return (
     <div className="w-full">
@@ -96,6 +105,27 @@ export default function Dashboard() {
       </div>
 
       <div className="container mx-auto px-4 md:px-8 py-16">
+        {activeAlerts.data && activeAlerts.data.length > 0 && (
+          <Link href="/emergency">
+            <div className="mb-10 flex items-center gap-3 rounded-lg border border-destructive bg-destructive/10 p-4 cursor-pointer hover:bg-destructive/15 transition-colors">
+              <Siren className="h-6 w-6 text-destructive shrink-0 animate-pulse" />
+              <div>
+                <p className="font-medium text-destructive">
+                  {activeAlerts.data.length === 1
+                    ? "1 active emergency alert"
+                    : `${activeAlerts.data.length} active emergency alerts`}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  {activeAlerts.data
+                    .map((a) => `${a.residentName} (Flat ${a.residentFlatNumber})`)
+                    .join(", ")}
+                  {" — tap to view"}
+                </p>
+              </div>
+            </div>
+          </Link>
+        )}
+
         {(user?.role === "guard" || user?.role === "admin") && (
           <div className="mb-10">
             <h2 className="text-xl font-serif font-medium mb-6">Gate duty</h2>
