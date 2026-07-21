@@ -250,3 +250,65 @@ export interface VisitDecisionInput {
   approve: boolean;
 }
 
+export type MaintenanceRequestCategory = typeof MaintenanceRequestCategory[keyof typeof MaintenanceRequestCategory];
+
+
+export const MaintenanceRequestCategory = {
+  plumbing: 'plumbing',
+  electrical: 'electrical',
+  appliance: 'appliance',
+  structural: 'structural',
+  other: 'other',
+} as const;
+
+export type MaintenanceRequestStatus = typeof MaintenanceRequestStatus[keyof typeof MaintenanceRequestStatus];
+
+
+export const MaintenanceRequestStatus = {
+  open: 'open',
+  in_progress: 'in_progress',
+  resolved: 'resolved',
+} as const;
+
+export interface MaintenanceRequest {
+  id: number;
+  category: MaintenanceRequestCategory;
+  description: string;
+  photoUrls: string[];
+  status: MaintenanceRequestStatus;
+  residentName: string;
+  residentFlatNumber: string;
+  createdAt: string;
+}
+
+export type MaintenanceRequestInputCategory = typeof MaintenanceRequestInputCategory[keyof typeof MaintenanceRequestInputCategory];
+
+
+export const MaintenanceRequestInputCategory = {
+  plumbing: 'plumbing',
+  electrical: 'electrical',
+  appliance: 'appliance',
+  structural: 'structural',
+  other: 'other',
+} as const;
+
+export interface MaintenanceRequestInput {
+  category: MaintenanceRequestInputCategory;
+  /** @minLength 1 */
+  description: string;
+  photos?: Blob[];
+}
+
+export type MaintenanceStatusInputStatus = typeof MaintenanceStatusInputStatus[keyof typeof MaintenanceStatusInputStatus];
+
+
+export const MaintenanceStatusInputStatus = {
+  open: 'open',
+  in_progress: 'in_progress',
+  resolved: 'resolved',
+} as const;
+
+export interface MaintenanceStatusInput {
+  status: MaintenanceStatusInputStatus;
+}
+

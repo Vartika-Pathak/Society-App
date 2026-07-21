@@ -474,3 +474,66 @@ export const DecideVisitResponse = zod.object({
 })
 
 
+/**
+ * @summary List maintenance requests — residents see only their own, guard/admin see everyone's
+ */
+export const ListMaintenanceRequestsResponseItem = zod.object({
+  "id": zod.number(),
+  "category": zod.enum(['plumbing', 'electrical', 'appliance', 'structural', 'other']),
+  "description": zod.string(),
+  "photoUrls": zod.array(zod.string()),
+  "status": zod.enum(['open', 'in_progress', 'resolved']),
+  "residentName": zod.string(),
+  "residentFlatNumber": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+export const ListMaintenanceRequestsResponse = zod.array(ListMaintenanceRequestsResponseItem)
+
+
+/**
+ * @summary Report a maintenance issue, optionally with photos
+ */
+
+
+
+export const CreateMaintenanceRequestBody = zod.object({
+  "category": zod.enum(['plumbing', 'electrical', 'appliance', 'structural', 'other']),
+  "description": zod.string().min(1),
+  "photos": zod.array(zod.instanceof(File)).optional()
+})
+
+export const CreateMaintenanceRequestResponse = zod.object({
+  "id": zod.number(),
+  "category": zod.enum(['plumbing', 'electrical', 'appliance', 'structural', 'other']),
+  "description": zod.string(),
+  "photoUrls": zod.array(zod.string()),
+  "status": zod.enum(['open', 'in_progress', 'resolved']),
+  "residentName": zod.string(),
+  "residentFlatNumber": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Update a maintenance request's status (guard/admin only)
+ */
+export const UpdateMaintenanceStatusParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const UpdateMaintenanceStatusBody = zod.object({
+  "status": zod.enum(['open', 'in_progress', 'resolved'])
+})
+
+export const UpdateMaintenanceStatusResponse = zod.object({
+  "id": zod.number(),
+  "category": zod.enum(['plumbing', 'electrical', 'appliance', 'structural', 'other']),
+  "description": zod.string(),
+  "photoUrls": zod.array(zod.string()),
+  "status": zod.enum(['open', 'in_progress', 'resolved']),
+  "residentName": zod.string(),
+  "residentFlatNumber": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+
+

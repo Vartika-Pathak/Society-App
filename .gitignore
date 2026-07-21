@@ -15,6 +15,10 @@ out-tsc
 *.db-shm
 *.db-wal
 
+# uploaded files (maintenance photos, etc.)
+artifacts/api-server/uploads/*
+!artifacts/api-server/uploads/.gitkeep
+
 # dependencies
 node_modules
 

@@ -25,6 +25,7 @@ const featureTiles: FeatureTile[] = [
     title: "Maintenance",
     description: "Report a repair or maintenance issue, with photos, to the building staff.",
     icon: Wrench,
+    href: "/maintenance",
   },
   {
     title: "Complain",

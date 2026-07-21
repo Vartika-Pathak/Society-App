@@ -32,6 +32,9 @@ import type {
   JoinRequest,
   JoinRequestInput,
   LoginInput,
+  MaintenanceRequest,
+  MaintenanceRequestInput,
+  MaintenanceStatusInput,
   Member,
   NewsPost,
   NewsPostInput,
@@ -2065,5 +2068,231 @@ export const useDecideVisit = <TError = ErrorType<void>,
         TContext
       > => {
       return useMutation(getDecideVisitMutationOptions(options));
+    }
+
+export const getListMaintenanceRequestsUrl = () => {
+
+
+
+
+  return `/api/maintenance`
+}
+
+/**
+ * @summary List maintenance requests — residents see only their own, guard/admin see everyone's
+ */
+export const listMaintenanceRequests = async ( options?: RequestInit): Promise<MaintenanceRequest[]> => {
+
+  return customFetch<MaintenanceRequest[]>(getListMaintenanceRequestsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListMaintenanceRequestsQueryKey = () => {
+    return [
+    `/api/maintenance`
+    ] as const;
+    }
+
+
+export const getListMaintenanceRequestsQueryOptions = <TData = Awaited<ReturnType<typeof listMaintenanceRequests>>, TError = ErrorType<void>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listMaintenanceRequests>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListMaintenanceRequestsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listMaintenanceRequests>>> = ({ signal }) => listMaintenanceRequests({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listMaintenanceRequests>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListMaintenanceRequestsQueryResult = NonNullable<Awaited<ReturnType<typeof listMaintenanceRequests>>>
+export type ListMaintenanceRequestsQueryError = ErrorType<void>
+
+
+/**
+ * @summary List maintenance requests — residents see only their own, guard/admin see everyone's
+ */
+
+export function useListMaintenanceRequests<TData = Awaited<ReturnType<typeof listMaintenanceRequests>>, TError = ErrorType<void>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listMaintenanceRequests>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListMaintenanceRequestsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateMaintenanceRequestUrl = () => {
+
+
+
+
+  return `/api/maintenance`
+}
+
+/**
+ * @summary Report a maintenance issue, optionally with photos
+ */
+export const createMaintenanceRequest = async (maintenanceRequestInput: MaintenanceRequestInput, options?: RequestInit): Promise<MaintenanceRequest> => {
+    const formData = new FormData();
+formData.append(`category`, maintenanceRequestInput.category);
+formData.append(`description`, maintenanceRequestInput.description);
+if(maintenanceRequestInput.photos !== undefined) {
+ maintenanceRequestInput.photos.forEach(value => formData.append(`photos`, value));
+ }
+
+  return customFetch<MaintenanceRequest>(getCreateMaintenanceRequestUrl(),
+  {
+    ...options,
+    method: 'POST'
+    ,
+    body: formData
+  }
+);}
+
+
+
+
+
+export const getCreateMaintenanceRequestMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createMaintenanceRequest>>, TError,{data: BodyType<MaintenanceRequestInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createMaintenanceRequest>>, TError,{data: BodyType<MaintenanceRequestInput>}, TContext> => {
+
+const mutationKey = ['createMaintenanceRequest'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createMaintenanceRequest>>, {data: BodyType<MaintenanceRequestInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createMaintenanceRequest(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateMaintenanceRequestMutationResult = NonNullable<Awaited<ReturnType<typeof createMaintenanceRequest>>>
+    export type CreateMaintenanceRequestMutationBody = BodyType<MaintenanceRequestInput>
+    export type CreateMaintenanceRequestMutationError = ErrorType<void>
+
+    /**
+ * @summary Report a maintenance issue, optionally with photos
+ */
+export const useCreateMaintenanceRequest = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createMaintenanceRequest>>, TError,{data: BodyType<MaintenanceRequestInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createMaintenanceRequest>>,
+        TError,
+        {data: BodyType<MaintenanceRequestInput>},
+        TContext
+      > => {
+      return useMutation(getCreateMaintenanceRequestMutationOptions(options));
+    }
+
+export const getUpdateMaintenanceStatusUrl = (id: number,) => {
+
+
+
+
+  return `/api/maintenance/${id}/status`
+}
+
+/**
+ * @summary Update a maintenance request's status (guard/admin only)
+ */
+export const updateMaintenanceStatus = async (id: number,
+    maintenanceStatusInput: MaintenanceStatusInput, options?: RequestInit): Promise<MaintenanceRequest> => {
+
+  return customFetch<MaintenanceRequest>(getUpdateMaintenanceStatusUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(maintenanceStatusInput)
+  }
+);}
+
+
+
+
+
+export const getUpdateMaintenanceStatusMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateMaintenanceStatus>>, TError,{id: number;data: BodyType<MaintenanceStatusInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateMaintenanceStatus>>, TError,{id: number;data: BodyType<MaintenanceStatusInput>}, TContext> => {
+
+const mutationKey = ['updateMaintenanceStatus'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateMaintenanceStatus>>, {id: number;data: BodyType<MaintenanceStatusInput>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateMaintenanceStatus(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateMaintenanceStatusMutationResult = NonNullable<Awaited<ReturnType<typeof updateMaintenanceStatus>>>
+    export type UpdateMaintenanceStatusMutationBody = BodyType<MaintenanceStatusInput>
+    export type UpdateMaintenanceStatusMutationError = ErrorType<void>
+
+    /**
+ * @summary Update a maintenance request's status (guard/admin only)
+ */
+export const useUpdateMaintenanceStatus = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateMaintenanceStatus>>, TError,{id: number;data: BodyType<MaintenanceStatusInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateMaintenanceStatus>>,
+        TError,
+        {id: number;data: BodyType<MaintenanceStatusInput>},
+        TContext
+      > => {
+      return useMutation(getUpdateMaintenanceStatusMutationOptions(options));
     }
 

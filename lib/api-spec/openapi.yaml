@@ -28,6 +28,8 @@ tags:
     description: Account signup, login, and session
   - name: visits
     description: Visitor entry — residents log visitors and get an OTP, guards approve/deny at the gate
+  - name: maintenance
+    description: Maintenance requests — residents report issues with photos, staff track them to resolution
 paths:
   /healthz:
     get:
@@ -499,6 +501,73 @@ paths:
         "404":
           description: Visit not found
 
+  /maintenance:
+    get:
+      operationId: listMaintenanceRequests
+      tags: [maintenance]
+      summary: List maintenance requests — residents see only their own, guard/admin see everyone's
+      responses:
+        "200":
+          description: Maintenance requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MaintenanceRequest"
+        "401":
+          description: Not signed in
+    post:
+      operationId: createMaintenanceRequest
+      tags: [maintenance]
+      summary: Report a maintenance issue, optionally with photos
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/MaintenanceRequestInput"
+      responses:
+        "201":
+          description: Request created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MaintenanceRequest"
+        "401":
+          description: Not signed in
+
+  /maintenance/{id}/status:
+    post:
+      operationId: updateMaintenanceStatus
+      tags: [maintenance]
+      summary: Update a maintenance request's status (guard/admin only)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MaintenanceStatusInput"
+      responses:
+        "200":
+          description: Status updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MaintenanceRequest"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not a guard or admin
+        "404":
+          description: Request not found
+
 components:
   schemas:
     HealthStatus:
@@ -851,3 +920,63 @@ components:
       properties:
         approve:
           type: boolean
+
+    MaintenanceRequest:
+      type: object
+      required:
+        [
+          id,
+          category,
+          description,
+          photoUrls,
+          status,
+          residentName,
+          residentFlatNumber,
+          createdAt,
+        ]
+      properties:
+        id:
+          type: integer
+        category:
+          type: string
+          enum: [plumbing, electrical, appliance, structural, other]
+        description:
+          type: string
+        photoUrls:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+          enum: [open, in_progress, resolved]
+        residentName:
+          type: string
+        residentFlatNumber:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    MaintenanceRequestInput:
+      type: object
+      required: [category, description]
+      properties:
+        category:
+          type: string
+          enum: [plumbing, electrical, appliance, structural, other]
+        description:
+          type: string
+          minLength: 1
+        photos:
+          type: array
+          items:
+            type: string
+            format: binary
+
+    MaintenanceStatusInput:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [open, in_progress, resolved]

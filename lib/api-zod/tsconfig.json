@@ -5,7 +5,13 @@
     "declarationMap": true,
     "emitDeclarationOnly": true,
     "outDir": "dist",
-    "rootDir": "src"
+    "rootDir": "src",
+    // The generated multipart file-upload schema (maintenance photos)
+    // references Node's global File/Blob (declared by @types/node,
+    // matching Node 20+'s native support) — the base config's `types: []`
+    // suppresses ambient @types packages repo-wide, so restore just
+    // @types/node here.
+    "types": ["node"]
   },
   "include": ["src"]
 }
