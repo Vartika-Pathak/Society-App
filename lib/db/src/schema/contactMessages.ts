@@ -1,14 +1,15 @@
-import { pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
+import { sqliteTable, integer, text } from "drizzle-orm/sqlite-core";
+import { sql } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
-export const contactMessagesTable = pgTable("contact_messages", {
-  id: serial("id").primaryKey(),
+export const contactMessagesTable = sqliteTable("contact_messages", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
   name: text("name").notNull(),
   email: text("email").notNull(),
   subject: text("subject").notNull(),
   message: text("message").notNull(),
-  submittedAt: timestamp("submitted_at", { withTimezone: true }).notNull().defaultNow(),
+  submittedAt: integer("submitted_at", { mode: "timestamp" }).notNull().default(sql`(unixepoch())`),
 });
 
 export const insertContactMessageSchema = createInsertSchema(contactMessagesTable).omit({ id: true, submittedAt: true });

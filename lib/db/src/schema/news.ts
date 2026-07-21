@@ -1,15 +1,16 @@
-import { pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
+import { sqliteTable, integer, text } from "drizzle-orm/sqlite-core";
+import { sql } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
-export const newsPostsTable = pgTable("news_posts", {
-  id: serial("id").primaryKey(),
+export const newsPostsTable = sqliteTable("news_posts", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
   title: text("title").notNull(),
   content: text("content").notNull(),
   excerpt: text("excerpt"),
   author: text("author").notNull(),
   imageUrl: text("image_url"),
-  publishedAt: timestamp("published_at", { withTimezone: true }).notNull().defaultNow(),
+  publishedAt: integer("published_at", { mode: "timestamp" }).notNull().default(sql`(unixepoch())`),
 });
 
 export const insertNewsPostSchema = createInsertSchema(newsPostsTable).omit({ id: true, publishedAt: true });

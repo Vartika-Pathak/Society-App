@@ -1,16 +1,14 @@
-import { drizzle } from "drizzle-orm/node-postgres";
-import pg from "pg";
+import { drizzle } from "drizzle-orm/better-sqlite3";
+import Database from "better-sqlite3";
+import path from "path";
+import fs from "fs";
 import * as schema from "./schema";
 
-const { Pool } = pg;
+const dbPath = process.env.DATABASE_PATH ?? path.join(__dirname, "../../../data/pavilion.db");
+fs.mkdirSync(path.dirname(dbPath), { recursive: true });
 
-if (!process.env.DATABASE_URL) {
-  throw new Error(
-    "DATABASE_URL must be set. Did you forget to provision a database?",
-  );
-}
-
-export const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-export const db = drizzle(pool, { schema });
+const sqlite = new Database(dbPath);
+sqlite.pragma("journal_mode = WAL");
+export const db = drizzle(sqlite, { schema });
 
 export * from "./schema";

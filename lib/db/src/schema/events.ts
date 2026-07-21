@@ -1,15 +1,16 @@
-import { pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
+import { sqliteTable, integer, text } from "drizzle-orm/sqlite-core";
+import { sql } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
-export const eventsTable = pgTable("events", {
-  id: serial("id").primaryKey(),
+export const eventsTable = sqliteTable("events", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
   title: text("title").notNull(),
   description: text("description"),
-  date: timestamp("date", { withTimezone: true }).notNull(),
+  date: integer("date", { mode: "timestamp" }).notNull(),
   location: text("location").notNull(),
   organizer: text("organizer"),
-  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull().default(sql`(unixepoch())`),
 });
 
 export const insertEventSchema = createInsertSchema(eventsTable).omit({ id: true, createdAt: true });
