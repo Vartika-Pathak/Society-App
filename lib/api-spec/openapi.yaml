@@ -24,6 +24,8 @@ tags:
     description: Contact messages
   - name: stats
     description: Community statistics
+  - name: auth
+    description: Account signup, login, and session
 paths:
   /healthz:
     get:
@@ -335,6 +337,72 @@ paths:
               schema:
                 $ref: "#/components/schemas/CommunityStats"
 
+  /auth/signup:
+    post:
+      operationId: signup
+      tags: [auth]
+      summary: Create an account and start a session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SignupInput"
+      responses:
+        "201":
+          description: Account created, session cookie set
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthUser"
+        "409":
+          description: Email already registered
+
+  /auth/login:
+    post:
+      operationId: login
+      tags: [auth]
+      summary: Log in and start a session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginInput"
+      responses:
+        "200":
+          description: Session cookie set
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthUser"
+        "401":
+          description: Invalid email or password
+
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: End the current session
+      responses:
+        "204":
+          description: Session cookie cleared
+
+  /auth/me:
+    get:
+      operationId: getCurrentUser
+      tags: [auth]
+      summary: Get the currently signed-in user
+      responses:
+        "200":
+          description: Signed-in user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthUser"
+        "401":
+          description: Not signed in
+
 components:
   schemas:
     HealthStatus:
@@ -553,3 +621,44 @@ components:
           type: integer
         totalGalleryPhotos:
           type: integer
+
+    SignupInput:
+      type: object
+      required: [name, email, flatNumber, password]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        email:
+          type: string
+        flatNumber:
+          type: string
+          minLength: 1
+        password:
+          type: string
+          minLength: 8
+
+    LoginInput:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+
+    AuthUser:
+      type: object
+      required: [id, name, email, flatNumber, createdAt]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        flatNumber:
+          type: string
+        createdAt:
+          type: string
+          format: date-time

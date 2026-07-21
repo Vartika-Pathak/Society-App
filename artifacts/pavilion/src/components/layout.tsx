@@ -3,6 +3,7 @@ import { Link, useLocation } from "wouter";
 import { Menu, X, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LogIn } from "lucide-react";
+import { useAuth } from "@/context/auth-context";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -11,6 +12,7 @@ interface LayoutProps {
 export function Layout({ children }: LayoutProps) {
   const [location] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user, logout, isLoggingOut } = useAuth();
 
   const navLinks = [
     { href: "/", label: "Home" },
@@ -51,16 +53,34 @@ export function Layout({ children }: LayoutProps) {
                   {link.label}
                 </Link>
               ))}
-              <Link href="/login">
-                <Button variant="outline" className="rounded-full px-5 font-medium">
-                  Log in
-                </Button>
-              </Link>
-              <Link href="/signup">
-                <Button className="rounded-full px-5 font-medium shadow-sm">
-                  Sign up
-                </Button>
-              </Link>
+              {user ? (
+                <>
+                  <span className="text-sm font-medium text-muted-foreground">
+                    Hi, {user.name.split(" ")[0]}
+                  </span>
+                  <Button
+                    variant="outline"
+                    className="rounded-full px-5 font-medium"
+                    onClick={() => logout()}
+                    disabled={isLoggingOut}
+                  >
+                    {isLoggingOut ? "Logging out…" : "Log out"}
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Link href="/login">
+                    <Button variant="outline" className="rounded-full px-5 font-medium">
+                      Log in
+                    </Button>
+                  </Link>
+                  <Link href="/signup">
+                    <Button className="rounded-full px-5 font-medium shadow-sm">
+                      Sign up
+                    </Button>
+                  </Link>
+                </>
+              )}
             </nav>
 
             {/* Mobile Menu Toggle */}
@@ -91,16 +111,33 @@ export function Layout({ children }: LayoutProps) {
                 </Link>
               ))}
               <div className="pt-6 pb-2 flex flex-col gap-3">
-                <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
-                  <Button variant="outline" className="w-full rounded-full" size="lg">
-                    Log in
+                {user ? (
+                  <Button
+                    variant="outline"
+                    className="w-full rounded-full"
+                    size="lg"
+                    disabled={isLoggingOut}
+                    onClick={() => {
+                      logout();
+                      setIsMobileMenuOpen(false);
+                    }}
+                  >
+                    {isLoggingOut ? "Logging out…" : `Log out (${user.name.split(" ")[0]})`}
                   </Button>
-                </Link>
-                <Link href="/signup" onClick={() => setIsMobileMenuOpen(false)}>
-                  <Button className="w-full rounded-full" size="lg">
-                    Sign up
-                  </Button>
-                </Link>
+                ) : (
+                  <>
+                    <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                      <Button variant="outline" className="w-full rounded-full" size="lg">
+                        Log in
+                      </Button>
+                    </Link>
+                    <Link href="/signup" onClick={() => setIsMobileMenuOpen(false)}>
+                      <Button className="w-full rounded-full" size="lg">
+                        Sign up
+                      </Button>
+                    </Link>
+                  </>
+                )}
               </div>
             </nav>
           </div>

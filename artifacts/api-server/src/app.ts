@@ -1,5 +1,6 @@
 import express, { type Express } from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import pinoHttp from "pino-http";
 import router from "./routes";
 import { logger } from "./lib/logger";
@@ -25,7 +26,11 @@ app.use(
     },
   }),
 );
-app.use(cors());
+// origin: true reflects the request's Origin header, which — combined with
+// credentials: true — lets the browser send/receive the session cookie when
+// the web app and API run on different local dev ports.
+app.use(cors({ origin: true, credentials: true }));
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

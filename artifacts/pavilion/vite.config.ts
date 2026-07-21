@@ -72,6 +72,15 @@ export default defineConfig({
     fs: {
       strict: true,
     },
+    // In production, Replit's router combines this app and the API server
+    // under one origin by path. In local dev (`vite dev`) they're on
+    // separate ports, so proxy /api to the API server ourselves.
+    proxy: {
+      '/api': {
+        target: `http://localhost:${process.env.API_PORT ?? 8080}`,
+        changeOrigin: true,
+      },
+    },
   },
   preview: {
     port,

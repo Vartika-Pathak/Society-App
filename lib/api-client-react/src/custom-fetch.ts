@@ -360,7 +360,12 @@ export async function customFetch<T = unknown>(
 
   const requestInfo = { method, url: resolveUrl(input) };
 
-  const response = await fetch(input, { ...init, method, headers });
+  // Default to sending cookies (e.g. the session cookie) even when the web
+  // app and API are on different localhost ports in dev. Callers can still
+  // override via an explicit `credentials` option.
+  const credentials = init.credentials ?? "include";
+
+  const response = await fetch(input, { ...init, method, headers, credentials });
 
   if (!response.ok) {
     const errorData = await parseErrorBody(response, method);

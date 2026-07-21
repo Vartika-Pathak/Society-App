@@ -7,6 +7,7 @@ import galleryRouter from "./gallery";
 import joinRequestsRouter from "./joinRequests";
 import contactRouter from "./contact";
 import statsRouter from "./stats";
+import authRouter from "./auth";
 
 const router: IRouter = Router();
 
@@ -18,5 +19,6 @@ router.use(galleryRouter);
 router.use(joinRequestsRouter);
 router.use(contactRouter);
 router.use(statsRouter);
+router.use(authRouter);
 
 export default router;

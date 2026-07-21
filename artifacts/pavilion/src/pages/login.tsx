@@ -1,6 +1,8 @@
 import React, { useState } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
+import { useQueryClient } from "@tanstack/react-query";
 import { Building2, Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { useLogin, getGetCurrentUserQueryKey, type LoginMutationError } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,19 +12,36 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const [, navigate] = useLocation();
+  const queryClient = useQueryClient();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const login = useLogin({
+    mutation: {
+      onSuccess: (user) => {
+        queryClient.setQueryData(getGetCurrentUserQueryKey(), user);
+        toast({
+          title: "Welcome back!",
+          description: "You've been signed in to Pavilion.",
+        });
+        navigate("/");
+      },
+      onError: (error: LoginMutationError) => {
+        toast({
+          title: "Sign in failed",
+          description:
+            error instanceof Error
+              ? error.message
+              : "Check your email and password and try again.",
+          variant: "destructive",
+        });
+      },
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    // Simulate auth — wire up real auth when ready
-    await new Promise((r) => setTimeout(r, 900));
-    setIsLoading(false);
-    toast({
-      title: "Welcome back!",
-      description: "You've been signed in to Pavilion.",
-    });
+    login.mutate({ data: { email, password } });
   };
 
   return (
@@ -103,8 +122,8 @@ export default function Login() {
               </div>
             </div>
 
-            <Button type="submit" size="lg" className="w-full rounded-full" disabled={isLoading}>
-              {isLoading ? "Signing in…" : "Sign in"}
+            <Button type="submit" size="lg" className="w-full rounded-full" disabled={login.isPending}>
+              {login.isPending ? "Signing in…" : "Sign in"}
             </Button>
           </form>
 

@@ -131,3 +131,26 @@ export interface CommunityStats {
   totalGalleryPhotos: number;
 }
 
+export interface SignupInput {
+  /** @minLength 1 */
+  name: string;
+  email: string;
+  /** @minLength 1 */
+  flatNumber: string;
+  /** @minLength 8 */
+  password: string;
+}
+
+export interface LoginInput {
+  email: string;
+  password: string;
+}
+
+export interface AuthUser {
+  id: number;
+  name: string;
+  email: string;
+  flatNumber: string;
+  createdAt: string;
+}
+

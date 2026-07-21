@@ -6,6 +6,7 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from './authUser';
 export * from './communityStats';
 export * from './contactMessage';
 export * from './contactMessageInput';
@@ -16,6 +17,8 @@ export * from './galleryPhotoInput';
 export * from './healthStatus';
 export * from './joinRequest';
 export * from './joinRequestInput';
+export * from './loginInput';
 export * from './member';
 export * from './newsPost';
 export * from './newsPostInput';
+export * from './signupInput';

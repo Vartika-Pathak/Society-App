@@ -325,3 +325,63 @@ export const GetCommunityStatsResponse = zod.object({
 })
 
 
+/**
+ * @summary Create an account and start a session
+ */
+
+
+export const signupBodyPasswordMin = 8;
+
+
+
+export const SignupBody = zod.object({
+  "name": zod.string().min(1),
+  "email": zod.string(),
+  "flatNumber": zod.string().min(1),
+  "password": zod.string().min(signupBodyPasswordMin)
+})
+
+export const SignupResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "email": zod.string(),
+  "flatNumber": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Log in and start a session
+ */
+export const LoginBody = zod.object({
+  "email": zod.string(),
+  "password": zod.string()
+})
+
+export const LoginResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "email": zod.string(),
+  "flatNumber": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary End the current session
+ */
+export const LogoutResponse = zod.void()
+
+
+/**
+ * @summary Get the currently signed-in user
+ */
+export const GetCurrentUserResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "email": zod.string(),
+  "flatNumber": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+
+

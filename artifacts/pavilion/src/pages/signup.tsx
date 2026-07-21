@@ -1,6 +1,8 @@
 import React, { useState } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
+import { useQueryClient } from "@tanstack/react-query";
 import { Building2, Mail, Lock, Eye, EyeOff, User, Hash } from "lucide-react";
+import { useSignup, getGetCurrentUserQueryKey, type SignupMutationError } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,21 +11,39 @@ import { useToast } from "@/hooks/use-toast";
 export default function Signup() {
   const [form, setForm] = useState({ name: "", flatNumber: "", email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const [, navigate] = useLocation();
+  const queryClient = useQueryClient();
+
+  const signup = useSignup({
+    mutation: {
+      onSuccess: (user) => {
+        queryClient.setQueryData(getGetCurrentUserQueryKey(), user);
+        toast({
+          title: "Account created!",
+          description: "Welcome to the Pavilion community.",
+        });
+        navigate("/");
+      },
+      onError: (error: SignupMutationError) => {
+        toast({
+          title: "Signup failed",
+          description:
+            error instanceof Error
+              ? error.message
+              : "There was a problem creating your account. Please try again.",
+          variant: "destructive",
+        });
+      },
+    },
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
-    await new Promise((r) => setTimeout(r, 1000));
-    setIsLoading(false);
-    toast({
-      title: "Account created!",
-      description: "Welcome to the Pavilion community.",
-    });
+    signup.mutate({ data: form });
   };
 
   return (
@@ -155,8 +175,8 @@ export default function Signup() {
               <a href="#" className="underline hover:text-foreground">Privacy Policy</a>.
             </p>
 
-            <Button type="submit" size="lg" className="w-full rounded-full" disabled={isLoading}>
-              {isLoading ? "Creating account…" : "Create account"}
+            <Button type="submit" size="lg" className="w-full rounded-full" disabled={signup.isPending}>
+              {signup.isPending ? "Creating account…" : "Create account"}
             </Button>
           </form>
 
