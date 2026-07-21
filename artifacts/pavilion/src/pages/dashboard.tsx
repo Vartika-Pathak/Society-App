@@ -31,6 +31,7 @@ const featureTiles: FeatureTile[] = [
     title: "Complain",
     description: "Raise a complaint about amenities, the lift, or anything else and track its status.",
     icon: MessageSquareWarning,
+    href: "/complain",
   },
   {
     title: "Amenities",

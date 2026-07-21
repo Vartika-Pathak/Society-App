@@ -312,3 +312,64 @@ export interface MaintenanceStatusInput {
   status: MaintenanceStatusInputStatus;
 }
 
+export type ComplaintCategory = typeof ComplaintCategory[keyof typeof ComplaintCategory];
+
+
+export const ComplaintCategory = {
+  maintenance: 'maintenance',
+  security: 'security',
+  noise: 'noise',
+  other: 'other',
+} as const;
+
+export type ComplaintStatus = typeof ComplaintStatus[keyof typeof ComplaintStatus];
+
+
+export const ComplaintStatus = {
+  open: 'open',
+  in_progress: 'in_progress',
+  resolved: 'resolved',
+} as const;
+
+export interface Complaint {
+  id: number;
+  category: ComplaintCategory;
+  description: string;
+  status: ComplaintStatus;
+  /** @nullable */
+  resolutionNote: string | null;
+  residentName: string;
+  residentFlatNumber: string;
+  createdAt: string;
+}
+
+export type ComplaintInputCategory = typeof ComplaintInputCategory[keyof typeof ComplaintInputCategory];
+
+
+export const ComplaintInputCategory = {
+  maintenance: 'maintenance',
+  security: 'security',
+  noise: 'noise',
+  other: 'other',
+} as const;
+
+export interface ComplaintInput {
+  category: ComplaintInputCategory;
+  /** @minLength 1 */
+  description: string;
+}
+
+export type ComplaintStatusInputStatus = typeof ComplaintStatusInputStatus[keyof typeof ComplaintStatusInputStatus];
+
+
+export const ComplaintStatusInputStatus = {
+  open: 'open',
+  in_progress: 'in_progress',
+  resolved: 'resolved',
+} as const;
+
+export interface ComplaintStatusInput {
+  status: ComplaintStatusInputStatus;
+  resolutionNote?: string;
+}
+

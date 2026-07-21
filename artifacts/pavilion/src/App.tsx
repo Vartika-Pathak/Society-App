@@ -20,6 +20,7 @@ import Dashboard from './pages/dashboard';
 import Entry from './pages/entry';
 import Gate from './pages/gate';
 import Maintenance from './pages/maintenance';
+import Complain from './pages/complain';
 import NotFound from '@/pages/not-found';
 
 const queryClient = new QueryClient();
@@ -55,6 +56,11 @@ function Router() {
       <Route path="/maintenance">
         <RequireAuth>
           <Maintenance />
+        </RequireAuth>
+      </Route>
+      <Route path="/complain">
+        <RequireAuth>
+          <Complain />
         </RequireAuth>
       </Route>
       <Route component={NotFound} />

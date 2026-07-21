@@ -30,6 +30,8 @@ tags:
     description: Visitor entry — residents log visitors and get an OTP, guards approve/deny at the gate
   - name: maintenance
     description: Maintenance requests — residents report issues with photos, staff track them to resolution
+  - name: complaints
+    description: Complaints — residents raise an issue by category, guard/admin track it to resolution
 paths:
   /healthz:
     get:
@@ -568,6 +570,73 @@ paths:
         "404":
           description: Request not found
 
+  /complaints:
+    get:
+      operationId: listComplaints
+      tags: [complaints]
+      summary: List complaints — residents see only their own, guard/admin see everyone's
+      responses:
+        "200":
+          description: Complaints
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Complaint"
+        "401":
+          description: Not signed in
+    post:
+      operationId: createComplaint
+      tags: [complaints]
+      summary: Raise a complaint by category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ComplaintInput"
+      responses:
+        "201":
+          description: Complaint created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Complaint"
+        "401":
+          description: Not signed in
+
+  /complaints/{id}/status:
+    post:
+      operationId: updateComplaintStatus
+      tags: [complaints]
+      summary: Update a complaint's status, optionally with a note the resident can see (guard/admin only)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ComplaintStatusInput"
+      responses:
+        "200":
+          description: Status updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Complaint"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not a guard or admin
+        "404":
+          description: Complaint not found
+
 components:
   schemas:
     HealthStatus:
@@ -980,3 +1049,58 @@ components:
         status:
           type: string
           enum: [open, in_progress, resolved]
+
+    Complaint:
+      type: object
+      required:
+        [
+          id,
+          category,
+          description,
+          status,
+          resolutionNote,
+          residentName,
+          residentFlatNumber,
+          createdAt,
+        ]
+      properties:
+        id:
+          type: integer
+        category:
+          type: string
+          enum: [maintenance, security, noise, other]
+        description:
+          type: string
+        status:
+          type: string
+          enum: [open, in_progress, resolved]
+        resolutionNote:
+          type: ["string", "null"]
+        residentName:
+          type: string
+        residentFlatNumber:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    ComplaintInput:
+      type: object
+      required: [category, description]
+      properties:
+        category:
+          type: string
+          enum: [maintenance, security, noise, other]
+        description:
+          type: string
+          minLength: 1
+
+    ComplaintStatusInput:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [open, in_progress, resolved]
+        resolutionNote:
+          type: string

@@ -537,3 +537,66 @@ export const UpdateMaintenanceStatusResponse = zod.object({
 })
 
 
+/**
+ * @summary List complaints — residents see only their own, guard/admin see everyone's
+ */
+export const ListComplaintsResponseItem = zod.object({
+  "id": zod.number(),
+  "category": zod.enum(['maintenance', 'security', 'noise', 'other']),
+  "description": zod.string(),
+  "status": zod.enum(['open', 'in_progress', 'resolved']),
+  "resolutionNote": zod.string().nullable(),
+  "residentName": zod.string(),
+  "residentFlatNumber": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+export const ListComplaintsResponse = zod.array(ListComplaintsResponseItem)
+
+
+/**
+ * @summary Raise a complaint by category
+ */
+
+
+
+export const CreateComplaintBody = zod.object({
+  "category": zod.enum(['maintenance', 'security', 'noise', 'other']),
+  "description": zod.string().min(1)
+})
+
+export const CreateComplaintResponse = zod.object({
+  "id": zod.number(),
+  "category": zod.enum(['maintenance', 'security', 'noise', 'other']),
+  "description": zod.string(),
+  "status": zod.enum(['open', 'in_progress', 'resolved']),
+  "resolutionNote": zod.string().nullable(),
+  "residentName": zod.string(),
+  "residentFlatNumber": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Update a complaint's status, optionally with a note the resident can see (guard/admin only)
+ */
+export const UpdateComplaintStatusParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const UpdateComplaintStatusBody = zod.object({
+  "status": zod.enum(['open', 'in_progress', 'resolved']),
+  "resolutionNote": zod.string().optional()
+})
+
+export const UpdateComplaintStatusResponse = zod.object({
+  "id": zod.number(),
+  "category": zod.enum(['maintenance', 'security', 'noise', 'other']),
+  "description": zod.string(),
+  "status": zod.enum(['open', 'in_progress', 'resolved']),
+  "resolutionNote": zod.string().nullable(),
+  "residentName": zod.string(),
+  "residentFlatNumber": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+
+

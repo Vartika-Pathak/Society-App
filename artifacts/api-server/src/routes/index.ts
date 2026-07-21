@@ -10,6 +10,7 @@ import statsRouter from "./stats";
 import authRouter from "./auth";
 import visitsRouter from "./visits";
 import maintenanceRouter from "./maintenance";
+import complaintsRouter from "./complaints";
 
 const router: IRouter = Router();
 
@@ -24,5 +25,6 @@ router.use(statsRouter);
 router.use(authRouter);
 router.use(visitsRouter);
 router.use(maintenanceRouter);
+router.use(complaintsRouter);
 
 export default router;
