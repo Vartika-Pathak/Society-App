@@ -34,6 +34,8 @@ tags:
     description: Complaints — residents raise an issue by category, guard/admin track it to resolution
   - name: emergency
     description: Emergency alerts — one-tap alert visible to neighbors, guard, and admin until resolved
+  - name: amenities
+    description: Amenity booking, with Stripe Checkout for amenities that require payment
 paths:
   /healthz:
     get:
@@ -713,6 +715,118 @@ paths:
         "404":
           description: Alert not found
 
+  /amenities:
+    get:
+      operationId: listAmenities
+      tags: [amenities]
+      summary: List bookable amenities
+      responses:
+        "200":
+          description: Amenities
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Amenity"
+        "401":
+          description: Not signed in
+
+  /amenities/availability:
+    get:
+      operationId: getAmenityAvailability
+      tags: [amenities]
+      summary: Which slots are already booked for an amenity on a given date
+      parameters:
+        - in: query
+          name: amenityId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: date
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Booked slots
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AmenityAvailability"
+        "401":
+          description: Not signed in
+        "404":
+          description: Unknown amenity
+
+  /amenities/bookings/mine:
+    get:
+      operationId: listMyAmenityBookings
+      tags: [amenities]
+      summary: The current resident's own amenity bookings
+      responses:
+        "200":
+          description: This resident's bookings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AmenityBooking"
+        "401":
+          description: Not signed in
+
+  /amenities/bookings:
+    post:
+      operationId: bookAmenity
+      tags: [amenities]
+      summary: Book an amenity slot — confirms immediately if free, otherwise starts a Stripe Checkout session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookAmenityInput"
+      responses:
+        "200":
+          description: Booking confirmed, or a Stripe Checkout session to complete payment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BookAmenityResult"
+        "401":
+          description: Not signed in
+        "404":
+          description: Unknown amenity
+        "409":
+          description: That slot is already booked
+
+  /amenities/bookings/confirm:
+    post:
+      operationId: confirmAmenityBooking
+      tags: [amenities]
+      summary: Confirm a booking after a successful Stripe Checkout redirect
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfirmAmenityBookingInput"
+      responses:
+        "200":
+          description: Booking confirmed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AmenityBooking"
+        "401":
+          description: Not signed in
+        "402":
+          description: Payment was not completed
+        "409":
+          description: Payment succeeded but the slot was taken meanwhile — refunded automatically
+
 components:
   schemas:
     HealthStatus:
@@ -1208,3 +1322,97 @@ components:
         resolvedAt:
           type: ["string", "null"]
           format: date-time
+
+    Amenity:
+      type: object
+      required: [id, name, description, requiresPayment, priceCents]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        requiresPayment:
+          type: boolean
+        priceCents:
+          type: integer
+
+    AmenityAvailability:
+      type: object
+      required: [date, bookedSlots]
+      properties:
+        date:
+          type: string
+        bookedSlots:
+          type: array
+          items:
+            type: string
+            enum: [morning, afternoon, evening]
+
+    AmenityBooking:
+      type: object
+      required:
+        [
+          id,
+          amenityId,
+          amenityName,
+          bookingDate,
+          slot,
+          amountPaidCents,
+          residentName,
+          residentFlatNumber,
+          createdAt,
+        ]
+      properties:
+        id:
+          type: integer
+        amenityId:
+          type: string
+        amenityName:
+          type: string
+        bookingDate:
+          type: string
+        slot:
+          type: string
+          enum: [morning, afternoon, evening]
+        amountPaidCents:
+          type: integer
+        residentName:
+          type: string
+        residentFlatNumber:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    BookAmenityInput:
+      type: object
+      required: [amenityId, bookingDate, slot]
+      properties:
+        amenityId:
+          type: string
+        bookingDate:
+          type: string
+        slot:
+          type: string
+          enum: [morning, afternoon, evening]
+
+    BookAmenityResult:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [confirmed, requires_payment]
+        booking:
+          $ref: "#/components/schemas/AmenityBooking"
+        checkoutUrl:
+          type: string
+
+    ConfirmAmenityBookingInput:
+      type: object
+      required: [sessionId]
+      properties:
+        sessionId:
+          type: string

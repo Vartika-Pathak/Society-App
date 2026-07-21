@@ -6,8 +6,17 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from './amenity';
+export * from './amenityAvailability';
+export * from './amenityAvailabilityBookedSlotsItem';
+export * from './amenityBooking';
+export * from './amenityBookingSlot';
 export * from './authUser';
 export * from './authUserRole';
+export * from './bookAmenityInput';
+export * from './bookAmenityInputSlot';
+export * from './bookAmenityResult';
+export * from './bookAmenityResultStatus';
 export * from './communityStats';
 export * from './complaint';
 export * from './complaintCategory';
@@ -16,6 +25,7 @@ export * from './complaintInputCategory';
 export * from './complaintStatus';
 export * from './complaintStatusInput';
 export * from './complaintStatusInputStatus';
+export * from './confirmAmenityBookingInput';
 export * from './contactMessage';
 export * from './contactMessageInput';
 export * from './emergencyAlert';
@@ -24,6 +34,7 @@ export * from './event';
 export * from './eventInput';
 export * from './galleryPhoto';
 export * from './galleryPhotoInput';
+export * from './getAmenityAvailabilityParams';
 export * from './healthStatus';
 export * from './joinRequest';
 export * from './joinRequestInput';

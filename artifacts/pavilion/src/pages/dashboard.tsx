@@ -42,6 +42,7 @@ const featureTiles: FeatureTile[] = [
     title: "Amenities",
     description: "Book a slot for shared amenities, with payment if the amenity requires it.",
     icon: CalendarCheck,
+    href: "/amenities",
   },
   {
     title: "Emergency / Alerts",

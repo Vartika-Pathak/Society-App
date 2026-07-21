@@ -657,3 +657,93 @@ export const ResolveEmergencyAlertResponse = zod.object({
 })
 
 
+/**
+ * @summary List bookable amenities
+ */
+export const ListAmenitiesResponseItem = zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "description": zod.string(),
+  "requiresPayment": zod.boolean(),
+  "priceCents": zod.number()
+})
+export const ListAmenitiesResponse = zod.array(ListAmenitiesResponseItem)
+
+
+/**
+ * @summary Which slots are already booked for an amenity on a given date
+ */
+export const GetAmenityAvailabilityQueryParams = zod.object({
+  "amenityId": zod.coerce.string(),
+  "date": zod.coerce.string()
+})
+
+export const GetAmenityAvailabilityResponse = zod.object({
+  "date": zod.string(),
+  "bookedSlots": zod.array(zod.enum(['morning', 'afternoon', 'evening']))
+})
+
+
+/**
+ * @summary The current resident's own amenity bookings
+ */
+export const ListMyAmenityBookingsResponseItem = zod.object({
+  "id": zod.number(),
+  "amenityId": zod.string(),
+  "amenityName": zod.string(),
+  "bookingDate": zod.string(),
+  "slot": zod.enum(['morning', 'afternoon', 'evening']),
+  "amountPaidCents": zod.number(),
+  "residentName": zod.string(),
+  "residentFlatNumber": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+export const ListMyAmenityBookingsResponse = zod.array(ListMyAmenityBookingsResponseItem)
+
+
+/**
+ * @summary Book an amenity slot — confirms immediately if free, otherwise starts a Stripe Checkout session
+ */
+export const BookAmenityBody = zod.object({
+  "amenityId": zod.string(),
+  "bookingDate": zod.string(),
+  "slot": zod.enum(['morning', 'afternoon', 'evening'])
+})
+
+export const BookAmenityResponse = zod.object({
+  "status": zod.enum(['confirmed', 'requires_payment']),
+  "booking": zod.object({
+  "id": zod.number(),
+  "amenityId": zod.string(),
+  "amenityName": zod.string(),
+  "bookingDate": zod.string(),
+  "slot": zod.enum(['morning', 'afternoon', 'evening']),
+  "amountPaidCents": zod.number(),
+  "residentName": zod.string(),
+  "residentFlatNumber": zod.string(),
+  "createdAt": zod.coerce.date()
+}).optional(),
+  "checkoutUrl": zod.string().optional()
+})
+
+
+/**
+ * @summary Confirm a booking after a successful Stripe Checkout redirect
+ */
+export const ConfirmAmenityBookingBody = zod.object({
+  "sessionId": zod.string()
+})
+
+export const ConfirmAmenityBookingResponse = zod.object({
+  "id": zod.number(),
+  "amenityId": zod.string(),
+  "amenityName": zod.string(),
+  "bookingDate": zod.string(),
+  "slot": zod.enum(['morning', 'afternoon', 'evening']),
+  "amountPaidCents": zod.number(),
+  "residentName": zod.string(),
+  "residentFlatNumber": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+
+

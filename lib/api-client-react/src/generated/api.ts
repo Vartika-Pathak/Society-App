@@ -20,11 +20,17 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  Amenity,
+  AmenityAvailability,
+  AmenityBooking,
   AuthUser,
+  BookAmenityInput,
+  BookAmenityResult,
   CommunityStats,
   Complaint,
   ComplaintInput,
   ComplaintStatusInput,
+  ConfirmAmenityBookingInput,
   ContactMessage,
   ContactMessageInput,
   EmergencyAlert,
@@ -32,6 +38,7 @@ import type {
   EventInput,
   GalleryPhoto,
   GalleryPhotoInput,
+  GetAmenityAvailabilityParams,
   HealthStatus,
   JoinRequest,
   JoinRequestInput,
@@ -2814,5 +2821,385 @@ export const useResolveEmergencyAlert = <TError = ErrorType<void>,
         TContext
       > => {
       return useMutation(getResolveEmergencyAlertMutationOptions(options));
+    }
+
+export const getListAmenitiesUrl = () => {
+
+
+
+
+  return `/api/amenities`
+}
+
+/**
+ * @summary List bookable amenities
+ */
+export const listAmenities = async ( options?: RequestInit): Promise<Amenity[]> => {
+
+  return customFetch<Amenity[]>(getListAmenitiesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListAmenitiesQueryKey = () => {
+    return [
+    `/api/amenities`
+    ] as const;
+    }
+
+
+export const getListAmenitiesQueryOptions = <TData = Awaited<ReturnType<typeof listAmenities>>, TError = ErrorType<void>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listAmenities>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListAmenitiesQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listAmenities>>> = ({ signal }) => listAmenities({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listAmenities>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListAmenitiesQueryResult = NonNullable<Awaited<ReturnType<typeof listAmenities>>>
+export type ListAmenitiesQueryError = ErrorType<void>
+
+
+/**
+ * @summary List bookable amenities
+ */
+
+export function useListAmenities<TData = Awaited<ReturnType<typeof listAmenities>>, TError = ErrorType<void>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listAmenities>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListAmenitiesQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetAmenityAvailabilityUrl = (params: GetAmenityAvailabilityParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/amenities/availability?${stringifiedParams}` : `/api/amenities/availability`
+}
+
+/**
+ * @summary Which slots are already booked for an amenity on a given date
+ */
+export const getAmenityAvailability = async (params: GetAmenityAvailabilityParams, options?: RequestInit): Promise<AmenityAvailability> => {
+
+  return customFetch<AmenityAvailability>(getGetAmenityAvailabilityUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetAmenityAvailabilityQueryKey = (params?: GetAmenityAvailabilityParams,) => {
+    return [
+    `/api/amenities/availability`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getGetAmenityAvailabilityQueryOptions = <TData = Awaited<ReturnType<typeof getAmenityAvailability>>, TError = ErrorType<void>>(params: GetAmenityAvailabilityParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAmenityAvailability>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetAmenityAvailabilityQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAmenityAvailability>>> = ({ signal }) => getAmenityAvailability(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAmenityAvailability>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetAmenityAvailabilityQueryResult = NonNullable<Awaited<ReturnType<typeof getAmenityAvailability>>>
+export type GetAmenityAvailabilityQueryError = ErrorType<void>
+
+
+/**
+ * @summary Which slots are already booked for an amenity on a given date
+ */
+
+export function useGetAmenityAvailability<TData = Awaited<ReturnType<typeof getAmenityAvailability>>, TError = ErrorType<void>>(
+ params: GetAmenityAvailabilityParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAmenityAvailability>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetAmenityAvailabilityQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getListMyAmenityBookingsUrl = () => {
+
+
+
+
+  return `/api/amenities/bookings/mine`
+}
+
+/**
+ * @summary The current resident's own amenity bookings
+ */
+export const listMyAmenityBookings = async ( options?: RequestInit): Promise<AmenityBooking[]> => {
+
+  return customFetch<AmenityBooking[]>(getListMyAmenityBookingsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListMyAmenityBookingsQueryKey = () => {
+    return [
+    `/api/amenities/bookings/mine`
+    ] as const;
+    }
+
+
+export const getListMyAmenityBookingsQueryOptions = <TData = Awaited<ReturnType<typeof listMyAmenityBookings>>, TError = ErrorType<void>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listMyAmenityBookings>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListMyAmenityBookingsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listMyAmenityBookings>>> = ({ signal }) => listMyAmenityBookings({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listMyAmenityBookings>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListMyAmenityBookingsQueryResult = NonNullable<Awaited<ReturnType<typeof listMyAmenityBookings>>>
+export type ListMyAmenityBookingsQueryError = ErrorType<void>
+
+
+/**
+ * @summary The current resident's own amenity bookings
+ */
+
+export function useListMyAmenityBookings<TData = Awaited<ReturnType<typeof listMyAmenityBookings>>, TError = ErrorType<void>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listMyAmenityBookings>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListMyAmenityBookingsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getBookAmenityUrl = () => {
+
+
+
+
+  return `/api/amenities/bookings`
+}
+
+/**
+ * @summary Book an amenity slot — confirms immediately if free, otherwise starts a Stripe Checkout session
+ */
+export const bookAmenity = async (bookAmenityInput: BookAmenityInput, options?: RequestInit): Promise<BookAmenityResult> => {
+
+  return customFetch<BookAmenityResult>(getBookAmenityUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(bookAmenityInput)
+  }
+);}
+
+
+
+
+
+export const getBookAmenityMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof bookAmenity>>, TError,{data: BodyType<BookAmenityInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof bookAmenity>>, TError,{data: BodyType<BookAmenityInput>}, TContext> => {
+
+const mutationKey = ['bookAmenity'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof bookAmenity>>, {data: BodyType<BookAmenityInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  bookAmenity(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type BookAmenityMutationResult = NonNullable<Awaited<ReturnType<typeof bookAmenity>>>
+    export type BookAmenityMutationBody = BodyType<BookAmenityInput>
+    export type BookAmenityMutationError = ErrorType<void>
+
+    /**
+ * @summary Book an amenity slot — confirms immediately if free, otherwise starts a Stripe Checkout session
+ */
+export const useBookAmenity = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof bookAmenity>>, TError,{data: BodyType<BookAmenityInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof bookAmenity>>,
+        TError,
+        {data: BodyType<BookAmenityInput>},
+        TContext
+      > => {
+      return useMutation(getBookAmenityMutationOptions(options));
+    }
+
+export const getConfirmAmenityBookingUrl = () => {
+
+
+
+
+  return `/api/amenities/bookings/confirm`
+}
+
+/**
+ * @summary Confirm a booking after a successful Stripe Checkout redirect
+ */
+export const confirmAmenityBooking = async (confirmAmenityBookingInput: ConfirmAmenityBookingInput, options?: RequestInit): Promise<AmenityBooking> => {
+
+  return customFetch<AmenityBooking>(getConfirmAmenityBookingUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(confirmAmenityBookingInput)
+  }
+);}
+
+
+
+
+
+export const getConfirmAmenityBookingMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof confirmAmenityBooking>>, TError,{data: BodyType<ConfirmAmenityBookingInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof confirmAmenityBooking>>, TError,{data: BodyType<ConfirmAmenityBookingInput>}, TContext> => {
+
+const mutationKey = ['confirmAmenityBooking'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof confirmAmenityBooking>>, {data: BodyType<ConfirmAmenityBookingInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  confirmAmenityBooking(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ConfirmAmenityBookingMutationResult = NonNullable<Awaited<ReturnType<typeof confirmAmenityBooking>>>
+    export type ConfirmAmenityBookingMutationBody = BodyType<ConfirmAmenityBookingInput>
+    export type ConfirmAmenityBookingMutationError = ErrorType<void>
+
+    /**
+ * @summary Confirm a booking after a successful Stripe Checkout redirect
+ */
+export const useConfirmAmenityBooking = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof confirmAmenityBooking>>, TError,{data: BodyType<ConfirmAmenityBookingInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof confirmAmenityBooking>>,
+        TError,
+        {data: BodyType<ConfirmAmenityBookingInput>},
+        TContext
+      > => {
+      return useMutation(getConfirmAmenityBookingMutationOptions(options));
     }
 

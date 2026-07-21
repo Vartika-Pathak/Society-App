@@ -9,3 +9,4 @@ export * from "./visits";
 export * from "./maintenanceRequests";
 export * from "./complaints";
 export * from "./emergencyAlerts";
+export * from "./amenityBookings";

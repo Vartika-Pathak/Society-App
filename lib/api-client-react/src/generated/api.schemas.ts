@@ -391,3 +391,84 @@ export interface EmergencyAlert {
   resolvedAt: string | null;
 }
 
+export interface Amenity {
+  id: string;
+  name: string;
+  description: string;
+  requiresPayment: boolean;
+  priceCents: number;
+}
+
+export type AmenityAvailabilityBookedSlotsItem = typeof AmenityAvailabilityBookedSlotsItem[keyof typeof AmenityAvailabilityBookedSlotsItem];
+
+
+export const AmenityAvailabilityBookedSlotsItem = {
+  morning: 'morning',
+  afternoon: 'afternoon',
+  evening: 'evening',
+} as const;
+
+export interface AmenityAvailability {
+  date: string;
+  bookedSlots: AmenityAvailabilityBookedSlotsItem[];
+}
+
+export type AmenityBookingSlot = typeof AmenityBookingSlot[keyof typeof AmenityBookingSlot];
+
+
+export const AmenityBookingSlot = {
+  morning: 'morning',
+  afternoon: 'afternoon',
+  evening: 'evening',
+} as const;
+
+export interface AmenityBooking {
+  id: number;
+  amenityId: string;
+  amenityName: string;
+  bookingDate: string;
+  slot: AmenityBookingSlot;
+  amountPaidCents: number;
+  residentName: string;
+  residentFlatNumber: string;
+  createdAt: string;
+}
+
+export type BookAmenityInputSlot = typeof BookAmenityInputSlot[keyof typeof BookAmenityInputSlot];
+
+
+export const BookAmenityInputSlot = {
+  morning: 'morning',
+  afternoon: 'afternoon',
+  evening: 'evening',
+} as const;
+
+export interface BookAmenityInput {
+  amenityId: string;
+  bookingDate: string;
+  slot: BookAmenityInputSlot;
+}
+
+export type BookAmenityResultStatus = typeof BookAmenityResultStatus[keyof typeof BookAmenityResultStatus];
+
+
+export const BookAmenityResultStatus = {
+  confirmed: 'confirmed',
+  requires_payment: 'requires_payment',
+} as const;
+
+export interface BookAmenityResult {
+  status: BookAmenityResultStatus;
+  booking?: AmenityBooking;
+  checkoutUrl?: string;
+}
+
+export interface ConfirmAmenityBookingInput {
+  sessionId: string;
+}
+
+export type GetAmenityAvailabilityParams = {
+amenityId: string;
+date: string;
+};
+
