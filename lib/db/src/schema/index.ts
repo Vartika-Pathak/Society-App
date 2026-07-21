@@ -5,3 +5,4 @@ export * from "./gallery";
 export * from "./joinRequests";
 export * from "./contactMessages";
 export * from "./users";
+export * from "./visits";

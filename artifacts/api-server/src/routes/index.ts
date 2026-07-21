@@ -8,6 +8,7 @@ import joinRequestsRouter from "./joinRequests";
 import contactRouter from "./contact";
 import statsRouter from "./stats";
 import authRouter from "./auth";
+import visitsRouter from "./visits";
 
 const router: IRouter = Router();
 
@@ -20,5 +21,6 @@ router.use(joinRequestsRouter);
 router.use(contactRouter);
 router.use(statsRouter);
 router.use(authRouter);
+router.use(visitsRouter);
 
 export default router;

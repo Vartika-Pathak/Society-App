@@ -388,3 +388,89 @@ export const GetCurrentUserResponse = zod.object({
 })
 
 
+/**
+ * @summary Log a visitor and generate an entry OTP
+ */
+
+
+
+export const CreateVisitBody = zod.object({
+  "visitType": zod.enum(['cab_delivery', 'guest', 'household_help']),
+  "visitorName": zod.string().min(1),
+  "visitorPhone": zod.string().optional()
+})
+
+export const CreateVisitResponse = zod.object({
+  "id": zod.number(),
+  "visitType": zod.enum(['cab_delivery', 'guest', 'household_help']),
+  "visitorName": zod.string(),
+  "visitorPhone": zod.string().nullish(),
+  "otpCode": zod.string(),
+  "status": zod.enum(['pending', 'approved', 'denied']),
+  "expiresAt": zod.coerce.date(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary List the current resident's own visit entries, newest first
+ */
+export const ListMyVisitsResponseItem = zod.object({
+  "id": zod.number(),
+  "visitType": zod.enum(['cab_delivery', 'guest', 'household_help']),
+  "visitorName": zod.string(),
+  "visitorPhone": zod.string().nullish(),
+  "otpCode": zod.string(),
+  "status": zod.enum(['pending', 'approved', 'denied']),
+  "expiresAt": zod.coerce.date(),
+  "createdAt": zod.coerce.date()
+})
+export const ListMyVisitsResponse = zod.array(ListMyVisitsResponseItem)
+
+
+/**
+ * @summary Look up a pending visit by its OTP (guard/admin only)
+ */
+
+
+
+export const LookupVisitBody = zod.object({
+  "otpCode": zod.string().min(1)
+})
+
+export const LookupVisitResponse = zod.object({
+  "id": zod.number(),
+  "visitType": zod.enum(['cab_delivery', 'guest', 'household_help']),
+  "visitorName": zod.string(),
+  "visitorPhone": zod.string().nullish(),
+  "status": zod.enum(['pending', 'approved', 'denied']),
+  "expiresAt": zod.coerce.date(),
+  "createdAt": zod.coerce.date(),
+  "residentName": zod.string(),
+  "residentFlatNumber": zod.string()
+})
+
+
+/**
+ * @summary Approve or deny a visit (guard/admin only)
+ */
+export const DecideVisitParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const DecideVisitBody = zod.object({
+  "approve": zod.boolean()
+})
+
+export const DecideVisitResponse = zod.object({
+  "id": zod.number(),
+  "visitType": zod.enum(['cab_delivery', 'guest', 'household_help']),
+  "visitorName": zod.string(),
+  "visitorPhone": zod.string().nullish(),
+  "otpCode": zod.string(),
+  "status": zod.enum(['pending', 'approved', 'denied']),
+  "expiresAt": zod.coerce.date(),
+  "createdAt": zod.coerce.date()
+})
+
+

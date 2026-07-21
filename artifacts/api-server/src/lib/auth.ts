@@ -1,5 +1,7 @@
 import jwt from "jsonwebtoken";
 import type { Request } from "express";
+import { eq } from "drizzle-orm";
+import { db, usersTable, type User } from "@workspace/db";
 import { logger } from "./logger";
 
 const isProduction = process.env.NODE_ENV === "production";
@@ -35,6 +37,13 @@ export function getSessionUserId(req: Request): number | null {
   const token = req.cookies?.[SESSION_COOKIE];
   if (typeof token !== "string") return null;
   return verifySessionToken(token);
+}
+
+export async function getAuthedUser(req: Request): Promise<User | null> {
+  const userId = getSessionUserId(req);
+  if (userId === null) return null;
+  const [user] = await db.select().from(usersTable).where(eq(usersTable.id, userId));
+  return user ?? null;
 }
 
 export const sessionCookieOptions = {

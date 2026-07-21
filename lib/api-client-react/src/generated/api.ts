@@ -35,7 +35,12 @@ import type {
   Member,
   NewsPost,
   NewsPostInput,
-  SignupInput
+  SignupInput,
+  Visit,
+  VisitDecisionInput,
+  VisitInput,
+  VisitLookupInput,
+  VisitLookupResult
 } from './api.schemas';
 
 import { customFetch } from '../custom-fetch';
@@ -1770,4 +1775,295 @@ export function useGetCurrentUser<TData = Awaited<ReturnType<typeof getCurrentUs
 
 
 
+
+export const getCreateVisitUrl = () => {
+
+
+
+
+  return `/api/visits`
+}
+
+/**
+ * @summary Log a visitor and generate an entry OTP
+ */
+export const createVisit = async (visitInput: VisitInput, options?: RequestInit): Promise<Visit> => {
+
+  return customFetch<Visit>(getCreateVisitUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(visitInput)
+  }
+);}
+
+
+
+
+
+export const getCreateVisitMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createVisit>>, TError,{data: BodyType<VisitInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createVisit>>, TError,{data: BodyType<VisitInput>}, TContext> => {
+
+const mutationKey = ['createVisit'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createVisit>>, {data: BodyType<VisitInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createVisit(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateVisitMutationResult = NonNullable<Awaited<ReturnType<typeof createVisit>>>
+    export type CreateVisitMutationBody = BodyType<VisitInput>
+    export type CreateVisitMutationError = ErrorType<void>
+
+    /**
+ * @summary Log a visitor and generate an entry OTP
+ */
+export const useCreateVisit = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createVisit>>, TError,{data: BodyType<VisitInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createVisit>>,
+        TError,
+        {data: BodyType<VisitInput>},
+        TContext
+      > => {
+      return useMutation(getCreateVisitMutationOptions(options));
+    }
+
+export const getListMyVisitsUrl = () => {
+
+
+
+
+  return `/api/visits/mine`
+}
+
+/**
+ * @summary List the current resident's own visit entries, newest first
+ */
+export const listMyVisits = async ( options?: RequestInit): Promise<Visit[]> => {
+
+  return customFetch<Visit[]>(getListMyVisitsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListMyVisitsQueryKey = () => {
+    return [
+    `/api/visits/mine`
+    ] as const;
+    }
+
+
+export const getListMyVisitsQueryOptions = <TData = Awaited<ReturnType<typeof listMyVisits>>, TError = ErrorType<void>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listMyVisits>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListMyVisitsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listMyVisits>>> = ({ signal }) => listMyVisits({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listMyVisits>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListMyVisitsQueryResult = NonNullable<Awaited<ReturnType<typeof listMyVisits>>>
+export type ListMyVisitsQueryError = ErrorType<void>
+
+
+/**
+ * @summary List the current resident's own visit entries, newest first
+ */
+
+export function useListMyVisits<TData = Awaited<ReturnType<typeof listMyVisits>>, TError = ErrorType<void>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listMyVisits>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListMyVisitsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getLookupVisitUrl = () => {
+
+
+
+
+  return `/api/visits/lookup`
+}
+
+/**
+ * @summary Look up a pending visit by its OTP (guard/admin only)
+ */
+export const lookupVisit = async (visitLookupInput: VisitLookupInput, options?: RequestInit): Promise<VisitLookupResult> => {
+
+  return customFetch<VisitLookupResult>(getLookupVisitUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(visitLookupInput)
+  }
+);}
+
+
+
+
+
+export const getLookupVisitMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof lookupVisit>>, TError,{data: BodyType<VisitLookupInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof lookupVisit>>, TError,{data: BodyType<VisitLookupInput>}, TContext> => {
+
+const mutationKey = ['lookupVisit'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof lookupVisit>>, {data: BodyType<VisitLookupInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  lookupVisit(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type LookupVisitMutationResult = NonNullable<Awaited<ReturnType<typeof lookupVisit>>>
+    export type LookupVisitMutationBody = BodyType<VisitLookupInput>
+    export type LookupVisitMutationError = ErrorType<void>
+
+    /**
+ * @summary Look up a pending visit by its OTP (guard/admin only)
+ */
+export const useLookupVisit = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof lookupVisit>>, TError,{data: BodyType<VisitLookupInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof lookupVisit>>,
+        TError,
+        {data: BodyType<VisitLookupInput>},
+        TContext
+      > => {
+      return useMutation(getLookupVisitMutationOptions(options));
+    }
+
+export const getDecideVisitUrl = (id: number,) => {
+
+
+
+
+  return `/api/visits/${id}/decide`
+}
+
+/**
+ * @summary Approve or deny a visit (guard/admin only)
+ */
+export const decideVisit = async (id: number,
+    visitDecisionInput: VisitDecisionInput, options?: RequestInit): Promise<Visit> => {
+
+  return customFetch<Visit>(getDecideVisitUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(visitDecisionInput)
+  }
+);}
+
+
+
+
+
+export const getDecideVisitMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof decideVisit>>, TError,{id: number;data: BodyType<VisitDecisionInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof decideVisit>>, TError,{id: number;data: BodyType<VisitDecisionInput>}, TContext> => {
+
+const mutationKey = ['decideVisit'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof decideVisit>>, {id: number;data: BodyType<VisitDecisionInput>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  decideVisit(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DecideVisitMutationResult = NonNullable<Awaited<ReturnType<typeof decideVisit>>>
+    export type DecideVisitMutationBody = BodyType<VisitDecisionInput>
+    export type DecideVisitMutationError = ErrorType<void>
+
+    /**
+ * @summary Approve or deny a visit (guard/admin only)
+ */
+export const useDecideVisit = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof decideVisit>>, TError,{id: number;data: BodyType<VisitDecisionInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof decideVisit>>,
+        TError,
+        {id: number;data: BodyType<VisitDecisionInput>},
+        TContext
+      > => {
+      return useMutation(getDecideVisitMutationOptions(options));
+    }
 

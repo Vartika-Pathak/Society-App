@@ -1,8 +1,15 @@
 import React from "react";
 import { Redirect } from "wouter";
 import { useAuth } from "@/context/auth-context";
+import type { AuthUser } from "@workspace/api-client-react";
 
-export function RequireAuth({ children }: { children: React.ReactNode }) {
+interface RequireAuthProps {
+  children: React.ReactNode;
+  /** If set, only these roles may view the page; anyone else is bounced to /dashboard. */
+  roles?: AuthUser["role"][];
+}
+
+export function RequireAuth({ children, roles }: RequireAuthProps) {
   const { user, isLoading } = useAuth();
 
   if (isLoading) {
@@ -15,6 +22,10 @@ export function RequireAuth({ children }: { children: React.ReactNode }) {
 
   if (!user) {
     return <Redirect to="/login" />;
+  }
+
+  if (roles && !roles.includes(user.role)) {
+    return <Redirect to="/dashboard" />;
   }
 
   return <>{children}</>;

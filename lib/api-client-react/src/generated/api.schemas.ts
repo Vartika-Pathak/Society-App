@@ -164,3 +164,89 @@ export interface AuthUser {
   createdAt: string;
 }
 
+export type VisitVisitType = typeof VisitVisitType[keyof typeof VisitVisitType];
+
+
+export const VisitVisitType = {
+  cab_delivery: 'cab_delivery',
+  guest: 'guest',
+  household_help: 'household_help',
+} as const;
+
+export type VisitStatus = typeof VisitStatus[keyof typeof VisitStatus];
+
+
+export const VisitStatus = {
+  pending: 'pending',
+  approved: 'approved',
+  denied: 'denied',
+} as const;
+
+export interface Visit {
+  id: number;
+  visitType: VisitVisitType;
+  visitorName: string;
+  /** @nullable */
+  visitorPhone?: string | null;
+  otpCode: string;
+  status: VisitStatus;
+  expiresAt: string;
+  createdAt: string;
+}
+
+export type VisitInputVisitType = typeof VisitInputVisitType[keyof typeof VisitInputVisitType];
+
+
+export const VisitInputVisitType = {
+  cab_delivery: 'cab_delivery',
+  guest: 'guest',
+  household_help: 'household_help',
+} as const;
+
+export interface VisitInput {
+  visitType: VisitInputVisitType;
+  /** @minLength 1 */
+  visitorName: string;
+  visitorPhone?: string;
+}
+
+export interface VisitLookupInput {
+  /** @minLength 1 */
+  otpCode: string;
+}
+
+export type VisitLookupResultVisitType = typeof VisitLookupResultVisitType[keyof typeof VisitLookupResultVisitType];
+
+
+export const VisitLookupResultVisitType = {
+  cab_delivery: 'cab_delivery',
+  guest: 'guest',
+  household_help: 'household_help',
+} as const;
+
+export type VisitLookupResultStatus = typeof VisitLookupResultStatus[keyof typeof VisitLookupResultStatus];
+
+
+export const VisitLookupResultStatus = {
+  pending: 'pending',
+  approved: 'approved',
+  denied: 'denied',
+} as const;
+
+export interface VisitLookupResult {
+  id: number;
+  visitType: VisitLookupResultVisitType;
+  visitorName: string;
+  /** @nullable */
+  visitorPhone?: string | null;
+  status: VisitLookupResultStatus;
+  expiresAt: string;
+  createdAt: string;
+  residentName: string;
+  residentFlatNumber: string;
+}
+
+export interface VisitDecisionInput {
+  approve: boolean;
+}
+

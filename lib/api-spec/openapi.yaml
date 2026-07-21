@@ -26,6 +26,8 @@ tags:
     description: Community statistics
   - name: auth
     description: Account signup, login, and session
+  - name: visits
+    description: Visitor entry — residents log visitors and get an OTP, guards approve/deny at the gate
 paths:
   /healthz:
     get:
@@ -403,6 +405,100 @@ paths:
         "401":
           description: Not signed in
 
+  /visits:
+    post:
+      operationId: createVisit
+      tags: [visits]
+      summary: Log a visitor and generate an entry OTP
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VisitInput"
+      responses:
+        "201":
+          description: Visit logged, OTP generated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Visit"
+        "401":
+          description: Not signed in
+
+  /visits/mine:
+    get:
+      operationId: listMyVisits
+      tags: [visits]
+      summary: List the current resident's own visit entries, newest first
+      responses:
+        "200":
+          description: This resident's visits
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Visit"
+        "401":
+          description: Not signed in
+
+  /visits/lookup:
+    post:
+      operationId: lookupVisit
+      tags: [visits]
+      summary: Look up a pending visit by its OTP (guard/admin only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VisitLookupInput"
+      responses:
+        "200":
+          description: Visit found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VisitLookupResult"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not a guard or admin
+        "404":
+          description: No matching pending OTP (wrong code, already decided, or expired)
+
+  /visits/{id}/decide:
+    post:
+      operationId: decideVisit
+      tags: [visits]
+      summary: Approve or deny a visit (guard/admin only)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VisitDecisionInput"
+      responses:
+        "200":
+          description: Visit updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Visit"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not a guard or admin
+        "404":
+          description: Visit not found
+
 components:
   schemas:
     HealthStatus:
@@ -665,3 +761,93 @@ components:
         createdAt:
           type: string
           format: date-time
+
+    Visit:
+      type: object
+      required: [id, visitType, visitorName, otpCode, status, expiresAt, createdAt]
+      properties:
+        id:
+          type: integer
+        visitType:
+          type: string
+          enum: [cab_delivery, guest, household_help]
+        visitorName:
+          type: string
+        visitorPhone:
+          type: ["string", "null"]
+        otpCode:
+          type: string
+        status:
+          type: string
+          enum: [pending, approved, denied]
+        expiresAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+
+    VisitInput:
+      type: object
+      required: [visitType, visitorName]
+      properties:
+        visitType:
+          type: string
+          enum: [cab_delivery, guest, household_help]
+        visitorName:
+          type: string
+          minLength: 1
+        visitorPhone:
+          type: string
+
+    VisitLookupInput:
+      type: object
+      required: [otpCode]
+      properties:
+        otpCode:
+          type: string
+          minLength: 1
+
+    VisitLookupResult:
+      type: object
+      required:
+        [
+          id,
+          visitType,
+          visitorName,
+          status,
+          expiresAt,
+          createdAt,
+          residentName,
+          residentFlatNumber,
+        ]
+      properties:
+        id:
+          type: integer
+        visitType:
+          type: string
+          enum: [cab_delivery, guest, household_help]
+        visitorName:
+          type: string
+        visitorPhone:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [pending, approved, denied]
+        expiresAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        residentName:
+          type: string
+        residentFlatNumber:
+          type: string
+
+    VisitDecisionInput:
+      type: object
+      required: [approve]
+      properties:
+        approve:
+          type: boolean
