@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
+import type ReCAPTCHA from "react-google-recaptcha";
 import { Building2, Mail, Lock, Eye, EyeOff, User, Hash } from "lucide-react";
 import { useSignup, getGetCurrentUserQueryKey, type SignupMutationError } from "@workspace/api-client-react";
 import { useAuth } from "@/context/auth-context";
+import { Captcha } from "@/components/captcha";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,6 +14,8 @@ import { useToast } from "@/hooks/use-toast";
 export default function Signup() {
   const [form, setForm] = useState({ name: "", flatNumber: "", email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const captchaRef = useRef<ReCAPTCHA>(null);
   const { toast } = useToast();
   const [, navigate] = useLocation();
   const queryClient = useQueryClient();
@@ -44,6 +48,10 @@ export default function Signup() {
               : "There was a problem creating your account. Please try again.",
           variant: "destructive",
         });
+        // A CAPTCHA token is single-use — reset the widget so the resident
+        // can try again (e.g. after a duplicate-email error) without a stale token.
+        captchaRef.current?.reset();
+        setCaptchaToken(null);
       },
     },
   });
@@ -53,7 +61,7 @@ export default function Signup() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    signup.mutate({ data: form });
+    signup.mutate({ data: { ...form, captchaToken: captchaToken ?? "" } });
   };
 
   return (
@@ -185,7 +193,14 @@ export default function Signup() {
               <a href="#" className="underline hover:text-foreground">Privacy Policy</a>.
             </p>
 
-            <Button type="submit" size="lg" className="w-full rounded-full" disabled={signup.isPending}>
+            <Captcha ref={captchaRef} onChange={setCaptchaToken} />
+
+            <Button
+              type="submit"
+              size="lg"
+              className="w-full rounded-full"
+              disabled={signup.isPending || !captchaToken}
+            >
               {signup.isPending ? "Creating account…" : "Create account"}
             </Button>
           </form>

@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
+import type ReCAPTCHA from "react-google-recaptcha";
 import { Building2, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { useLogin, getGetCurrentUserQueryKey, type LoginMutationError } from "@workspace/api-client-react";
 import { useAuth } from "@/context/auth-context";
+import { Captcha } from "@/components/captcha";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,6 +15,8 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const captchaRef = useRef<ReCAPTCHA>(null);
   const { toast } = useToast();
   const [, navigate] = useLocation();
   const queryClient = useQueryClient();
@@ -42,13 +46,17 @@ export default function Login() {
               : "Check your email and password and try again.",
           variant: "destructive",
         });
+        // A CAPTCHA token is single-use — reset the widget so the resident
+        // can try again (e.g. after a wrong-password error) without a stale token.
+        captchaRef.current?.reset();
+        setCaptchaToken(null);
       },
     },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    login.mutate({ data: { email, password } });
+    login.mutate({ data: { email, password, captchaToken: captchaToken ?? "" } });
   };
 
   return (
@@ -129,7 +137,14 @@ export default function Login() {
               </div>
             </div>
 
-            <Button type="submit" size="lg" className="w-full rounded-full" disabled={login.isPending}>
+            <Captcha ref={captchaRef} onChange={setCaptchaToken} />
+
+            <Button
+              type="submit"
+              size="lg"
+              className="w-full rounded-full"
+              disabled={login.isPending || !captchaToken}
+            >
               {login.isPending ? "Signing in…" : "Sign in"}
             </Button>
           </form>

@@ -1061,6 +1061,9 @@ components:
         password:
           type: string
           minLength: 8
+        captchaToken:
+          type: string
+          description: Not used by this (Node) backend — present so the shared frontend can send it when talking to the Java backend, which does verify it.
 
     LoginInput:
       type: object
@@ -1070,6 +1073,9 @@ components:
           type: string
         password:
           type: string
+        captchaToken:
+          type: string
+          description: Not used by this (Node) backend — present so the shared frontend can send it when talking to the Java backend, which does verify it.
 
     AuthUser:
       type: object

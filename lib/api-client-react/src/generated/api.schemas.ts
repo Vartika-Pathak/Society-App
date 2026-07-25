@@ -139,11 +139,15 @@ export interface SignupInput {
   flatNumber: string;
   /** @minLength 8 */
   password: string;
+  /** Not used by this (Node) backend — present so the shared frontend can send it when talking to the Java backend, which does verify it. */
+  captchaToken?: string;
 }
 
 export interface LoginInput {
   email: string;
   password: string;
+  /** Not used by this (Node) backend — present so the shared frontend can send it when talking to the Java backend, which does verify it. */
+  captchaToken?: string;
 }
 
 export type AuthUserRole = typeof AuthUserRole[keyof typeof AuthUserRole];

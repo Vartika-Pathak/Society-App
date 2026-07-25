@@ -338,7 +338,8 @@ export const SignupBody = zod.object({
   "name": zod.string().min(1),
   "email": zod.string(),
   "flatNumber": zod.string().min(1),
-  "password": zod.string().min(signupBodyPasswordMin)
+  "password": zod.string().min(signupBodyPasswordMin),
+  "captchaToken": zod.string().optional().describe('Not used by this (Node) backend — present so the shared frontend can send it when talking to the Java backend, which does verify it.')
 })
 
 export const SignupResponse = zod.object({
@@ -356,7 +357,8 @@ export const SignupResponse = zod.object({
  */
 export const LoginBody = zod.object({
   "email": zod.string(),
-  "password": zod.string()
+  "password": zod.string(),
+  "captchaToken": zod.string().optional().describe('Not used by this (Node) backend — present so the shared frontend can send it when talking to the Java backend, which does verify it.')
 })
 
 export const LoginResponse = zod.object({
