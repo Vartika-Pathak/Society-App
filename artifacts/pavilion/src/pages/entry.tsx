@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Copy, Check } from "lucide-react";
+import { Copy, Check, ShieldCheck } from "lucide-react";
 import {
-  useCreateVisit,
   useListMyVisits,
   getListMyVisitsQueryKey,
   type Visit,
@@ -15,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Badge } from "@/components/ui/badge";
+import { apiPost, ApiFetchError } from "@/lib/api-fetch";
 
 const visitTypeLabels: Record<VisitVisitType, string> = {
   cab_delivery: "Cab / Delivery",
@@ -22,16 +22,35 @@ const visitTypeLabels: Record<VisitVisitType, string> = {
   household_help: "Household help",
 };
 
-const statusVariants: Record<Visit["status"], "secondary" | "default" | "destructive"> = {
+// "awaiting_verification" only exists on backends (Java) that email the
+// visitor an OTP the resident has to confirm before the entry is usable at
+// the gate — it isn't part of the generated Visit status union, so this is
+// typed loosely rather than narrowed to Visit["status"].
+const statusVariants: Record<string, "secondary" | "default" | "destructive" | "outline"> = {
+  awaiting_verification: "outline",
   pending: "secondary",
   approved: "default",
   denied: "destructive",
 };
 
-function OtpDisplay({ visit, onDismiss }: { visit: Visit; onDismiss: () => void }) {
+const statusLabels: Record<string, string> = {
+  awaiting_verification: "Awaiting verification",
+};
+
+// A subset of Visit fields, hand-typed because the create/confirm endpoints
+// go through apiPost rather than the generated client (see api-fetch.ts).
+// `status` is widened to `string` since the Java backend's "awaiting_verification"
+// value isn't part of the generated Visit["status"] union.
+type VisitLike = Pick<
+  Visit,
+  "id" | "visitType" | "visitorName" | "visitorPhone" | "otpCode" | "expiresAt" | "createdAt"
+> & { status: string };
+
+function OtpDisplay({ visit, onDismiss }: { visit: VisitLike; onDismiss: () => void }) {
   const [copied, setCopied] = useState(false);
 
   const copy = async () => {
+    if (!visit.otpCode) return;
     await navigator.clipboard.writeText(visit.otpCode);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -61,43 +80,110 @@ function OtpDisplay({ visit, onDismiss }: { visit: Visit; onDismiss: () => void 
   );
 }
 
+function ConfirmOtp({
+  visit,
+  onConfirmed,
+  onCancel,
+}: {
+  visit: VisitLike;
+  onConfirmed: (visit: VisitLike) => void;
+  onCancel: () => void;
+}) {
+  const [otpCode, setOtpCode] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setError(null);
+    try {
+      const confirmed = await apiPost<VisitLike>(`/api/visits/${visit.id}/confirm`, { otpCode });
+      onConfirmed(confirmed);
+    } catch (err) {
+      setError(err instanceof ApiFetchError ? err.message : "Couldn't verify that code. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <Card className="border-primary bg-primary/5">
+      <CardHeader>
+        <div className="flex items-center gap-2">
+          <ShieldCheck className="h-5 w-5 text-primary" />
+          <CardTitle className="text-lg">Confirm {visit.visitorName}'s email</CardTitle>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <p className="text-sm text-muted-foreground">
+          We emailed a code to the address you gave us. Ask {visit.visitorName} for it and enter it
+          here — this proves the email is real and gives them the same code the gate guard will ask for.
+        </p>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="confirmOtp">Verification code</Label>
+            <Input
+              id="confirmOtp"
+              value={otpCode}
+              onChange={(e) => setOtpCode(e.target.value)}
+              placeholder="123456"
+              inputMode="numeric"
+              autoFocus
+              required
+            />
+            {error && <p className="text-sm text-destructive">{error}</p>}
+          </div>
+          <div className="flex gap-2">
+            <Button type="submit" disabled={isSubmitting} className="flex-1">
+              {isSubmitting ? "Confirming…" : "Confirm"}
+            </Button>
+            <Button type="button" variant="ghost" onClick={onCancel}>
+              Cancel
+            </Button>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function Entry() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [visitType, setVisitType] = useState<VisitVisitType>("guest");
   const [visitorName, setVisitorName] = useState("");
   const [visitorPhone, setVisitorPhone] = useState("");
-  const [justCreated, setJustCreated] = useState<Visit | null>(null);
-
-  const createVisit = useCreateVisit({
-    mutation: {
-      onSuccess: (visit) => {
-        queryClient.invalidateQueries({ queryKey: getListMyVisitsQueryKey() });
-        setJustCreated(visit);
-        setVisitorName("");
-        setVisitorPhone("");
-      },
-      onError: () => {
-        toast({
-          title: "Couldn't log the visitor",
-          description: "Please try again.",
-          variant: "destructive",
-        });
-      },
-    },
-  });
+  const [visitorEmail, setVisitorEmail] = useState("");
+  const [justCreated, setJustCreated] = useState<VisitLike | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const myVisits = useListMyVisits();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    createVisit.mutate({
-      data: {
+    setIsSubmitting(true);
+    try {
+      const visit = await apiPost<VisitLike>("/api/visits", {
         visitType,
         visitorName,
         visitorPhone: visitorPhone || undefined,
-      },
-    });
+        visitorEmail: visitorEmail || undefined,
+      });
+      queryClient.invalidateQueries({ queryKey: getListMyVisitsQueryKey() });
+      setJustCreated(visit);
+      setVisitorName("");
+      setVisitorPhone("");
+      setVisitorEmail("");
+    } catch {
+      toast({
+        title: "Couldn't log the visitor",
+        description: "Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -112,7 +198,16 @@ export default function Entry() {
       </div>
 
       <div className="container mx-auto px-4 md:px-8 py-16 max-w-2xl space-y-8">
-        {justCreated ? (
+        {justCreated && justCreated.status === "awaiting_verification" ? (
+          <ConfirmOtp
+            visit={justCreated}
+            onConfirmed={(visit) => {
+              setJustCreated(visit);
+              queryClient.invalidateQueries({ queryKey: getListMyVisitsQueryKey() });
+            }}
+            onCancel={() => setJustCreated(null)}
+          />
+        ) : justCreated ? (
           <OtpDisplay visit={justCreated} onDismiss={() => setJustCreated(null)} />
         ) : (
           <Card>
@@ -164,8 +259,19 @@ export default function Entry() {
                   />
                 </div>
 
-                <Button type="submit" disabled={createVisit.isPending} className="w-full">
-                  {createVisit.isPending ? "Generating OTP…" : "Generate OTP"}
+                <div className="space-y-2">
+                  <Label htmlFor="visitorEmail">Email (optional)</Label>
+                  <Input
+                    id="visitorEmail"
+                    type="email"
+                    value={visitorEmail}
+                    onChange={(e) => setVisitorEmail(e.target.value)}
+                    placeholder="We'll email them the OTP — you'll need to confirm it"
+                  />
+                </div>
+
+                <Button type="submit" disabled={isSubmitting} className="w-full">
+                  {isSubmitting ? "Generating OTP…" : "Generate OTP"}
                 </Button>
               </form>
             </CardContent>
@@ -189,7 +295,7 @@ export default function Entry() {
                       {visitTypeLabels[visit.visitType]} · {new Date(visit.createdAt).toLocaleString()}
                     </p>
                   </div>
-                  <Badge variant={statusVariants[visit.status]}>{visit.status}</Badge>
+                  <Badge variant={statusVariants[visit.status]}>{statusLabels[visit.status] ?? visit.status}</Badge>
                 </div>
               ))}
             </div>

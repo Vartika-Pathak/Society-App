@@ -2,14 +2,24 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
 import type ReCAPTCHA from "react-google-recaptcha";
-import { Building2, Mail, Lock, Eye, EyeOff, User, Hash } from "lucide-react";
-import { useSignup, getGetCurrentUserQueryKey, type SignupMutationError } from "@workspace/api-client-react";
+import { Building2, Mail, Lock, Eye, EyeOff, User, Hash, ShieldCheck } from "lucide-react";
+import { getGetCurrentUserQueryKey, type AuthUser } from "@workspace/api-client-react";
 import { useAuth } from "@/context/auth-context";
 import { Captcha } from "@/components/captcha";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { apiPost, ApiFetchError } from "@/lib/api-fetch";
+
+// Some backends (Java) stage the account and require the emailed OTP to be
+// entered before it's actually created; others (Node) create it immediately.
+// Branching on the response shape lets the same page work against either.
+type SignupResult = AuthUser | { pendingSignupId: number; email: string };
+
+function isPending(result: SignupResult): result is { pendingSignupId: number; email: string } {
+  return "pendingSignupId" in result;
+}
 
 export default function Signup() {
   const [form, setForm] = useState({ name: "", flatNumber: "", email: "", password: "" });
@@ -21,8 +31,14 @@ export default function Signup() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
 
+  const [pending, setPending] = useState<{ pendingSignupId: number; email: string } | null>(null);
+  const [otpCode, setOtpCode] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [otpError, setOtpError] = useState<string | null>(null);
+
   // Navigate only once useAuth's own query has actually picked up the new
-  // session — navigating straight from the mutation's onSuccess races
+  // session — navigating straight from a successful mutation races
   // React Query's (microtask-batched) cache notification against wouter's
   // (synchronous) route change, so the dashboard's auth guard can mount
   // and redirect away before the cache update ever reaches it.
@@ -30,39 +46,106 @@ export default function Signup() {
     if (user) navigate("/dashboard");
   }, [user, navigate]);
 
-  const signup = useSignup({
-    mutation: {
-      onSuccess: (user) => {
-        queryClient.setQueryData(getGetCurrentUserQueryKey(), user);
-        toast({
-          title: "Account created!",
-          description: "Welcome to the Pavilion community.",
-        });
-      },
-      onError: (error: SignupMutationError) => {
-        toast({
-          title: "Signup failed",
-          description:
-            error instanceof Error
-              ? error.message
-              : "There was a problem creating your account. Please try again.",
-          variant: "destructive",
-        });
-        // A CAPTCHA token is single-use — reset the widget so the resident
-        // can try again (e.g. after a duplicate-email error) without a stale token.
-        captchaRef.current?.reset();
-        setCaptchaToken(null);
-      },
-    },
-  });
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    signup.mutate({ data: { ...form, captchaToken: captchaToken ?? "" } });
+    setIsSubmitting(true);
+    try {
+      const result = await apiPost<SignupResult>("/api/auth/signup", {
+        ...form,
+        captchaToken: captchaToken ?? "",
+      });
+      if (isPending(result)) {
+        setPending(result);
+      } else {
+        queryClient.setQueryData(getGetCurrentUserQueryKey(), result);
+        toast({ title: "Account created!", description: "Welcome to the Pavilion community." });
+      }
+    } catch (error) {
+      toast({
+        title: "Signup failed",
+        description: error instanceof ApiFetchError ? error.message : "There was a problem creating your account. Please try again.",
+        variant: "destructive",
+      });
+      // A CAPTCHA token is single-use — reset the widget so the resident
+      // can try again (e.g. after a duplicate-email error) without a stale token.
+      captchaRef.current?.reset();
+      setCaptchaToken(null);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
+  const handleVerify = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!pending) return;
+    setIsVerifying(true);
+    setOtpError(null);
+    try {
+      const user = await apiPost<AuthUser>("/api/auth/signup/verify", {
+        pendingSignupId: pending.pendingSignupId,
+        otpCode,
+      });
+      queryClient.setQueryData(getGetCurrentUserQueryKey(), user);
+      toast({ title: "Account created!", description: "Welcome to the Pavilion community." });
+    } catch (error) {
+      setOtpError(error instanceof ApiFetchError ? error.message : "Couldn't verify that code. Please try again.");
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
+  if (pending) {
+    return (
+      <div className="flex min-h-[calc(100dvh-80px)] items-center justify-center p-8">
+        <div className="w-full max-w-sm space-y-6">
+          <div className="flex flex-col items-center text-center gap-2">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+              <ShieldCheck className="h-6 w-6 text-primary" />
+            </div>
+            <h1 className="text-2xl font-serif font-medium">Verify your email</h1>
+            <p className="text-muted-foreground text-sm">
+              We sent a 6-digit code to <span className="font-medium text-foreground">{pending.email}</span>. Enter it
+              below to finish creating your account.
+            </p>
+          </div>
+
+          <form onSubmit={handleVerify} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="otpCode">Verification code</Label>
+              <Input
+                id="otpCode"
+                value={otpCode}
+                onChange={(e) => setOtpCode(e.target.value)}
+                placeholder="123456"
+                inputMode="numeric"
+                autoFocus
+                required
+              />
+              {otpError && <p className="text-sm text-destructive">{otpError}</p>}
+            </div>
+            <Button type="submit" size="lg" className="w-full rounded-full" disabled={isVerifying}>
+              {isVerifying ? "Verifying…" : "Verify & create account"}
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              className="w-full"
+              onClick={() => {
+                setPending(null);
+                setOtpCode("");
+                setOtpError(null);
+              }}
+            >
+              Use a different email
+            </Button>
+          </form>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-[calc(100dvh-80px)]">
@@ -199,9 +282,9 @@ export default function Signup() {
               type="submit"
               size="lg"
               className="w-full rounded-full"
-              disabled={signup.isPending || !captchaToken}
+              disabled={isSubmitting || !captchaToken}
             >
-              {signup.isPending ? "Creating account…" : "Create account"}
+              {isSubmitting ? "Creating account…" : "Create account"}
             </Button>
           </form>
 
