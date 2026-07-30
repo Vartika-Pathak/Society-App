@@ -4,6 +4,7 @@ import { Menu, X, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LogIn } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
+import { ChatWidget } from "@/components/chat-widget";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -214,6 +215,8 @@ export function Layout({ children }: LayoutProps) {
           </div>
         </div>
       </footer>
+
+      <ChatWidget />
     </div>
   );
 }
