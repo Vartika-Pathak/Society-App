@@ -11,8 +11,11 @@ interface ChatMessage {
   text: string;
 }
 
-const QUICK_REPLIES = [
-  "How do I sign up and verify my account?",
+// Shown to visitors who haven't signed in yet — nothing that assumes an account exists.
+const LOGGED_OUT_QUICK_REPLIES = ["What is Pavilion?", "How do I sign up?", "How do I log in?"];
+
+// Shown once signed in — signup/login questions dropped since they're no longer relevant.
+const LOGGED_IN_QUICK_REPLIES = [
   "How do I log a visitor and get them an entry OTP?",
   "How do I raise an emergency alert?",
   "What can I do from the Dashboard?",
@@ -20,7 +23,8 @@ const QUICK_REPLIES = [
 
 // Java-backend-only feature (see api-fetch.ts) — on the Node backend this
 // endpoint doesn't exist, so a failed request just shows an inline error
-// in the chat rather than breaking anything else on the page.
+// in the chat rather than breaking anything else on the page. Available to
+// signed-out visitors too (e.g. on the home page), not just residents.
 export function ChatWidget() {
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
@@ -28,12 +32,11 @@ export function ChatWidget() {
   const [input, setInput] = useState("");
   const [isSending, setIsSending] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const quickReplies = user ? LOGGED_IN_QUICK_REPLIES : LOGGED_OUT_QUICK_REPLIES;
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isSending]);
-
-  if (!user) return null;
 
   const sendMessage = async (message: string) => {
     if (!message || isSending) return;
@@ -79,7 +82,7 @@ export function ChatWidget() {
                     Ask me anything about using Pavilion, or pick a topic below:
                   </p>
                   <div className="flex flex-col gap-2">
-                    {QUICK_REPLIES.map((q) => (
+                    {quickReplies.map((q) => (
                       <button
                         key={q}
                         type="button"
