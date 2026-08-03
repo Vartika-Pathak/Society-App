@@ -11,6 +11,13 @@ interface ChatMessage {
   text: string;
 }
 
+const QUICK_REPLIES = [
+  "How do I sign up and verify my account?",
+  "How do I log a visitor and get them an entry OTP?",
+  "How do I raise an emergency alert?",
+  "What can I do from the Dashboard?",
+];
+
 // Java-backend-only feature (see api-fetch.ts) — on the Node backend this
 // endpoint doesn't exist, so a failed request just shows an inline error
 // in the chat rather than breaking anything else on the page.
@@ -28,9 +35,7 @@ export function ChatWidget() {
 
   if (!user) return null;
 
-  const handleSend = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const message = input.trim();
+  const sendMessage = async (message: string) => {
     if (!message || isSending) return;
 
     setMessages((prev) => [...prev, { role: "user", text: message }]);
@@ -50,6 +55,11 @@ export function ChatWidget() {
     }
   };
 
+  const handleSend = (e: React.FormEvent) => {
+    e.preventDefault();
+    sendMessage(input.trim());
+  };
+
   return (
     <div className="fixed bottom-6 right-6 z-50">
       {isOpen && (
@@ -64,9 +74,23 @@ export function ChatWidget() {
           <ScrollArea className="flex-1 px-4 py-3">
             <div className="space-y-3">
               {messages.length === 0 && (
-                <p className="text-sm text-muted-foreground">
-                  Ask me how to log a visitor, raise an emergency alert, or anything else about using Pavilion.
-                </p>
+                <div className="space-y-3">
+                  <p className="text-sm text-muted-foreground">
+                    Ask me anything about using Pavilion, or pick a topic below:
+                  </p>
+                  <div className="flex flex-col gap-2">
+                    {QUICK_REPLIES.map((q) => (
+                      <button
+                        key={q}
+                        type="button"
+                        onClick={() => sendMessage(q)}
+                        className="text-left text-sm rounded-lg border px-3 py-2 hover:bg-muted transition-colors"
+                      >
+                        {q}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               )}
               {messages.map((m, i) => (
                 <div
