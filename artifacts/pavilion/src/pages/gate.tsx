@@ -88,9 +88,11 @@ export default function Gate() {
                   <Input
                     id="otpCode"
                     value={otpCode}
-                    onChange={(e) => setOtpCode(e.target.value)}
+                    onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
                     placeholder="6-digit code from the visitor"
                     inputMode="numeric"
+                    pattern="[0-9]{6}"
+                    title="Enter the 6-digit code"
                     autoFocus
                     required
                   />

@@ -118,9 +118,11 @@ export default function Signup() {
               <Input
                 id="otpCode"
                 value={otpCode}
-                onChange={(e) => setOtpCode(e.target.value)}
+                onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
                 placeholder="123456"
                 inputMode="numeric"
+                pattern="[0-9]{6}"
+                title="Enter the 6-digit code"
                 autoFocus
                 required
               />
@@ -205,6 +207,9 @@ export default function Signup() {
                     value={form.name}
                     onChange={handleChange}
                     className="pl-9"
+                    pattern="[A-Za-z ]{2,100}"
+                    title="Letters and spaces only"
+                    maxLength={100}
                     required
                   />
                 </div>
@@ -221,6 +226,9 @@ export default function Signup() {
                     value={form.flatNumber}
                     onChange={handleChange}
                     className="pl-9"
+                    pattern="[A-Za-z0-9 ,\-\/]{1,20}"
+                    title="Letters, numbers, spaces, and , - / only"
+                    maxLength={20}
                     required
                   />
                 </div>
@@ -257,6 +265,7 @@ export default function Signup() {
                   onChange={handleChange}
                   className="pl-9 pr-9"
                   minLength={8}
+                  maxLength={72}
                   required
                 />
                 <button

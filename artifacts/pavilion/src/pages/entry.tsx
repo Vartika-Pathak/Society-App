@@ -126,9 +126,11 @@ function ConfirmOtp({
             <Input
               id="confirmOtp"
               value={otpCode}
-              onChange={(e) => setOtpCode(e.target.value)}
+              onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
               placeholder="123456"
               inputMode="numeric"
+              pattern="[0-9]{6}"
+              title="Enter the 6-digit code"
               autoFocus
               required
             />
@@ -175,10 +177,10 @@ export default function Entry() {
       setVisitorName("");
       setVisitorPhone("");
       setVisitorEmail("");
-    } catch {
+    } catch (error) {
       toast({
         title: "Couldn't log the visitor",
-        description: "Please try again.",
+        description: error instanceof ApiFetchError ? error.message : "Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -245,6 +247,9 @@ export default function Entry() {
                     value={visitorName}
                     onChange={(e) => setVisitorName(e.target.value)}
                     placeholder="Name the guard should expect"
+                    pattern="[A-Za-z ]{2,100}"
+                    title="Letters and spaces only"
+                    maxLength={100}
                     required
                   />
                 </div>
@@ -253,9 +258,14 @@ export default function Entry() {
                   <Label htmlFor="visitorPhone">Phone (optional)</Label>
                   <Input
                     id="visitorPhone"
+                    type="tel"
                     value={visitorPhone}
-                    onChange={(e) => setVisitorPhone(e.target.value)}
+                    onChange={(e) => setVisitorPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
                     placeholder="For the gate to reach them if needed"
+                    inputMode="numeric"
+                    pattern="[0-9]{10}"
+                    title="10-digit mobile number"
+                    maxLength={10}
                   />
                 </div>
 
