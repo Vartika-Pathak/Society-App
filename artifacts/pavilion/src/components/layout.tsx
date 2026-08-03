@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Menu, X, Building2 } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LogIn } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 import { ChatWidget } from "@/components/chat-widget";
+import { PavilionMark } from "@/components/pavilion-mark";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -32,12 +33,17 @@ export function Layout({ children }: LayoutProps) {
         <div className="container mx-auto px-4 md:px-8">
           <div className="flex h-20 items-center justify-between">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
+            <Link href="/" className="flex items-center gap-2.5 transition-opacity hover:opacity-80">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                <Building2 className="h-6 w-6" />
+                <PavilionMark className="h-6 w-6" />
               </div>
-              <span className="font-serif text-2xl font-semibold tracking-tight text-foreground">
-                Pavilion
+              <span className="flex flex-col leading-none">
+                <span className="font-serif text-2xl font-semibold tracking-tight text-foreground">
+                  Pavilion
+                </span>
+                <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                  Community, elevated
+                </span>
               </span>
             </Link>
 
@@ -172,7 +178,7 @@ export function Layout({ children }: LayoutProps) {
             <div className="md:col-span-2">
               <Link href="/" className="flex items-center gap-2 mb-4">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                  <Building2 className="h-5 w-5" />
+                  <PavilionMark className="h-5 w-5" />
                 </div>
                 <span className="font-serif text-xl font-semibold tracking-tight">
                   Pavilion

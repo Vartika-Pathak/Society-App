@@ -2,10 +2,11 @@ import React, { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
 import type ReCAPTCHA from "react-google-recaptcha";
-import { Building2, Mail, Lock, Eye, EyeOff, User, Hash, ShieldCheck } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, User, Hash, ShieldCheck } from "lucide-react";
 import { getGetCurrentUserQueryKey, type AuthUser } from "@workspace/api-client-react";
 import { useAuth } from "@/context/auth-context";
 import { Captcha } from "@/components/captcha";
+import { PavilionMark } from "@/components/pavilion-mark";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -161,7 +162,7 @@ export default function Signup() {
         <div className="relative z-10 flex flex-col justify-between p-12 text-primary-foreground">
           <div className="flex items-center gap-2">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/20 backdrop-blur">
-              <Building2 className="h-6 w-6" />
+              <PavilionMark className="h-6 w-6" />
             </div>
             <span className="font-serif text-2xl font-semibold">Pavilion</span>
           </div>

@@ -8,8 +8,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Building2, CheckCircle2 } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import { Link } from "wouter";
+import { PavilionMark } from "@/components/pavilion-mark";
 
 const joinSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -79,7 +80,7 @@ export default function Join() {
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80')] bg-cover bg-center mix-blend-overlay opacity-20"></div>
         <div className="relative z-10">
           <Link href="/" className="inline-flex items-center gap-2">
-            <Building2 className="h-6 w-6" />
+            <PavilionMark className="h-6 w-6" />
             <span className="font-serif text-2xl font-semibold tracking-tight">Pavilion</span>
           </Link>
         </div>
@@ -99,7 +100,7 @@ export default function Join() {
         <div className="max-w-md w-full">
           <div className="lg:hidden mb-10 text-center">
             <Link href="/" className="inline-flex items-center gap-2 text-primary mb-6">
-              <Building2 className="h-8 w-8" />
+              <PavilionMark className="h-8 w-8" />
             </Link>
             <h1 className="text-3xl font-serif font-medium mb-3">Join Community</h1>
             <p className="text-muted-foreground">Apply for access to the resident portal.</p>
