@@ -17,3 +17,4 @@ sqlite.pragma("journal_mode = WAL");
 export const db = drizzle(sqlite, { schema });
 
 export * from "./schema";
+export { seedEvents } from "./seed";
