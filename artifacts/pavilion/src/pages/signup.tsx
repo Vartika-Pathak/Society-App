@@ -222,13 +222,13 @@ export default function Signup() {
                   <Input
                     id="flatNumber"
                     name="flatNumber"
-                    placeholder="e.g. 4B"
+                    placeholder="e.g. A101"
                     value={form.flatNumber}
                     onChange={handleChange}
                     className="pl-9"
-                    pattern="[A-Za-z0-9 ,\-\/]{1,20}"
-                    title="Letters, numbers, spaces, and , - / only"
-                    maxLength={20}
+                    pattern="[A-Za-z][0-9]{1,3}"
+                    title="A letter followed by 1-3 digits, e.g. A101"
+                    maxLength={4}
                     required
                   />
                 </div>
