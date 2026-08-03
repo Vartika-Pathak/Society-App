@@ -20,6 +20,15 @@ export async function apiPost<T>(path: string, body: unknown): Promise<T> {
     body: JSON.stringify(body),
   });
 
+  return parseResponse<T>(response);
+}
+
+export async function apiGet<T>(path: string): Promise<T> {
+  const response = await fetch(path, { credentials: "include" });
+  return parseResponse<T>(response);
+}
+
+async function parseResponse<T>(response: Response): Promise<T> {
   const text = await response.text();
   const data = text ? JSON.parse(text) : null;
 

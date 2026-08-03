@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { MessageCircle, X, Send, Loader2 } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
-import { apiPost } from "@/lib/api-fetch";
+import { apiGet, apiPost, ApiFetchError } from "@/lib/api-fetch";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -11,28 +11,27 @@ interface ChatMessage {
   text: string;
 }
 
-// Shown to visitors who haven't signed in yet — nothing that assumes an account exists.
-const LOGGED_OUT_QUICK_REPLIES = ["What is Pavilion?", "How do I sign up?", "How do I log in?"];
+// Fallback shown only if the backend's /suggestions call fails — the real
+// list is decided server-side (by auth state) so it stays in sync with
+// whatever the assistant is actually configured to help with.
+const FALLBACK_QUICK_REPLIES = ["What can you help me with?"];
 
-// Shown once signed in — signup/login questions dropped since they're no longer relevant.
-const LOGGED_IN_QUICK_REPLIES = [
-  "How do I log a visitor and get them an entry OTP?",
-  "How do I raise an emergency alert?",
-  "What can I do from the Dashboard?",
-];
-
-// Java-backend-only feature (see api-fetch.ts) — on the Node backend this
-// endpoint doesn't exist, so a failed request just shows an inline error
-// in the chat rather than breaking anything else on the page. Available to
-// signed-out visitors too (e.g. on the home page), not just residents.
+// Java-backend-only feature (see api-fetch.ts) — on the Node backend these
+// endpoints don't exist, so a failed request just shows an inline error (or
+// falls back to a generic prompt) rather than breaking anything else on the
+// page. Available to signed-out visitors too (e.g. on the home page).
 export function ChatWidget() {
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [isSending, setIsSending] = useState(false);
+  const [quickReplies, setQuickReplies] = useState<string[]>(FALLBACK_QUICK_REPLIES);
   const scrollRef = useRef<HTMLDivElement>(null);
-  const quickReplies = user ? LOGGED_IN_QUICK_REPLIES : LOGGED_OUT_QUICK_REPLIES;
+  // One id per browser tab visit — group this conversation server-side so
+  // the assistant can reference earlier turns, without following the
+  // visitor across separate visits.
+  const sessionIdRef = useRef(crypto.randomUUID());
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -40,14 +39,22 @@ export function ChatWidget() {
 
   // Clear the conversation whenever the signed-in identity changes (login,
   // logout, or switching accounts) — an anonymous chat shouldn't carry over
-  // into a resident's session, or vice versa.
+  // into a resident's session, or vice versa. Starting a new session id also
+  // means the backend won't blend pre- and post-login history together.
   const userId = user?.id;
   const previousUserId = useRef(userId);
   useEffect(() => {
     if (previousUserId.current !== userId) {
       setMessages([]);
+      sessionIdRef.current = crypto.randomUUID();
     }
     previousUserId.current = userId;
+  }, [userId]);
+
+  useEffect(() => {
+    apiGet<{ suggestions: string[] }>("/api/chat/suggestions")
+      .then(({ suggestions }) => setQuickReplies(suggestions))
+      .catch(() => setQuickReplies(FALLBACK_QUICK_REPLIES));
   }, [userId]);
 
   const sendMessage = async (message: string) => {
@@ -58,13 +65,17 @@ export function ChatWidget() {
     setIsSending(true);
 
     try {
-      const { reply } = await apiPost<{ reply: string }>("/api/chat/message", { message });
+      const { reply } = await apiPost<{ reply: string }>("/api/chat/message", {
+        sessionId: sessionIdRef.current,
+        message,
+      });
       setMessages((prev) => [...prev, { role: "assistant", text: reply }]);
-    } catch {
-      setMessages((prev) => [
-        ...prev,
-        { role: "error", text: "The assistant isn't available right now. Please try again later." },
-      ]);
+    } catch (err) {
+      const text =
+        err instanceof ApiFetchError && err.status === 429
+          ? "You're sending messages too quickly — please wait a moment and try again."
+          : "The assistant isn't available right now. Please try again later.";
+      setMessages((prev) => [...prev, { role: "error", text }]);
     } finally {
       setIsSending(false);
     }
