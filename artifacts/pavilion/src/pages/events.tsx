@@ -27,10 +27,15 @@ export default function Events() {
   return (
     <div className="w-full pb-24">
       {/* Header */}
-      <div className="bg-primary/5 py-12 border-b">
-        <div className="container mx-auto px-4 md:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-serif font-medium mb-4">Social Calendar</h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+      <div className="relative overflow-hidden bg-primary py-12 border-b">
+        <img
+          src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1600&q=80"
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover opacity-20"
+        />
+        <div className="relative z-10 container mx-auto px-4 md:px-8 text-center">
+          <h1 className="text-4xl md:text-5xl font-serif font-medium mb-4 text-primary-foreground">Social Calendar</h1>
+          <p className="text-lg text-primary-foreground/80 max-w-2xl mx-auto">
             From committee meetings to summer barbecues, see what's happening around Pavilion.
           </p>
         </div>

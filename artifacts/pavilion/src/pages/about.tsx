@@ -7,10 +7,15 @@ export default function About() {
   return (
     <div className="w-full">
       {/* Header */}
-      <div className="bg-primary/5 py-16 md:py-24 border-b">
-        <div className="container mx-auto px-4 md:px-8 text-center max-w-3xl">
-          <h1 className="text-4xl md:text-5xl font-serif font-medium mb-6">About Pavilion</h1>
-          <p className="text-lg text-muted-foreground leading-relaxed">
+      <div className="relative overflow-hidden bg-primary py-16 md:py-24 border-b">
+        <img
+          src="https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=1600&q=80"
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover opacity-20"
+        />
+        <div className="relative z-10 container mx-auto px-4 md:px-8 text-center max-w-3xl">
+          <h1 className="text-4xl md:text-5xl font-serif font-medium mb-6 text-primary-foreground">About Pavilion</h1>
+          <p className="text-lg text-primary-foreground/80 leading-relaxed">
             More than just an address. Pavilion is a vibrant community of neighbors who care about making our building a wonderful place to live.
           </p>
         </div>
