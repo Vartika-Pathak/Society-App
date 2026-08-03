@@ -38,6 +38,18 @@ export function ChatWidget() {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isSending]);
 
+  // Clear the conversation whenever the signed-in identity changes (login,
+  // logout, or switching accounts) — an anonymous chat shouldn't carry over
+  // into a resident's session, or vice versa.
+  const userId = user?.id;
+  const previousUserId = useRef(userId);
+  useEffect(() => {
+    if (previousUserId.current !== userId) {
+      setMessages([]);
+    }
+    previousUserId.current = userId;
+  }, [userId]);
+
   const sendMessage = async (message: string) => {
     if (!message || isSending) return;
 
