@@ -12,6 +12,7 @@ export default defineConfig({
   // path.join produces backslash-separated paths, which glob libraries
   // treat as escape characters and silently corrupt the path.
   schema: "./src/schema/index.ts",
+  out: "./drizzle",
   dialect: "sqlite",
   dbCredentials: {
     url: dbPath,
