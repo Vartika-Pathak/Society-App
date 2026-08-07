@@ -18,14 +18,6 @@ export const festivalAndCommunityEvents: InsertEvent[] = [
     organizer: "Residents' Welfare Committee",
   },
   {
-    title: "Society Annual General Body Meeting",
-    description:
-      "Annual review of society finances and maintenance updates, plus elections for two open committee seats. All residents are requested to attend.",
-    date: new Date("2026-08-22T18:00:00"),
-    location: "Clubhouse Hall",
-    organizer: "Managing Committee",
-  },
-  {
     title: "Raksha Bandhan Celebration",
     description:
       "An evening of rakhi tying, sweets, and games celebrating the bond between siblings. All families welcome.",
@@ -40,14 +32,6 @@ export const festivalAndCommunityEvents: InsertEvent[] = [
     date: new Date("2026-09-14T09:00:00"),
     location: "Society Temple Courtyard",
     organizer: "Cultural Committee",
-  },
-  {
-    title: "Blood Donation Camp",
-    description:
-      "Free health check-up and blood donation drive, run in partnership with the local blood bank. Open to all residents aged 18-65.",
-    date: new Date("2026-09-20T10:00:00"),
-    location: "Clubhouse Hall",
-    organizer: "Health & Wellness Committee",
   },
   {
     title: "Navratri Garba Night",
