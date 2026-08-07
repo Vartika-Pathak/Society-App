@@ -830,9 +830,84 @@ export interface MaintenanceCollectionInput {
   notes?: string;
 }
 
+export type DueListEntryFlatType = typeof DueListEntryFlatType[keyof typeof DueListEntryFlatType];
+
+
+export const DueListEntryFlatType = {
+  '1bhk': '1bhk',
+  '2bhk': '2bhk',
+  '3bhk': '3bhk',
+  '4bhk': '4bhk',
+} as const;
+
+export interface DueListEntry {
+  flatId: number;
+  buildingName: string;
+  flatNumber: string;
+  flatType: DueListEntryFlatType;
+  expectedAmountPaise: number;
+  collectedAmountPaise: number;
+  dueAmountPaise: number;
+}
+
+export interface MonthlyTrendPoint {
+  month: string;
+  incomePaise: number;
+  expensePaise: number;
+}
+
+export type MaintenanceSummaryByFlatTypeFlatType = typeof MaintenanceSummaryByFlatTypeFlatType[keyof typeof MaintenanceSummaryByFlatTypeFlatType];
+
+
+export const MaintenanceSummaryByFlatTypeFlatType = {
+  '1bhk': '1bhk',
+  '2bhk': '2bhk',
+  '3bhk': '3bhk',
+  '4bhk': '4bhk',
+} as const;
+
+export interface MaintenanceSummaryByFlatType {
+  flatType: MaintenanceSummaryByFlatTypeFlatType;
+  totalFlats: number;
+  monthlyAmountPaise: number;
+  expectedTotalPaise: number;
+  collectedTotalPaise: number;
+}
+
+export interface DashboardSummary {
+  cashBalancePaise: number;
+  totalCollectedThisMonthPaise: number;
+  totalExpensesThisMonthPaise: number;
+  totalDueThisMonthPaise: number;
+  maintenanceSummary: MaintenanceSummaryByFlatType[];
+  monthlyTrend: MonthlyTrendPoint[];
+}
+
+export interface BalanceSheet {
+  totalCollectedPaise: number;
+  totalPaidToVendorsPaise: number;
+  cashBalancePaise: number;
+  totalPayablesPaise: number;
+}
+
+export interface IncomeStatement {
+  from: string;
+  to: string;
+  incomePaise: number;
+  expensePaise: number;
+  netPaise: number;
+}
+
 export type GetAmenityAvailabilityParams = {
 amenityId: string;
 date: string;
+};
+
+export type ListVendorBillsParams = {
+/**
+ * Filter to bills whose billDate falls in this month (YYYY-MM)
+ */
+month?: string;
 };
 
 export type ListBillPaymentsParams = {
@@ -841,5 +916,34 @@ vendorBillId?: number;
 
 export type ListMaintenanceCollectionsParams = {
 flatId?: number;
+/**
+ * Filter to collections recorded for this month (YYYY-MM)
+ */
+forMonth?: string;
+};
+
+export type GetDueListParams = {
+/**
+ * YYYY-MM
+ */
+month: string;
+};
+
+export type GetIncomeStatementParams = {
+/**
+ * YYYY-MM-DD
+ */
+from: string;
+/**
+ * YYYY-MM-DD
+ */
+to: string;
+};
+
+export type GetIncomeVsExpenseTrendParams = {
+/**
+ * How many trailing months to include (default 6)
+ */
+months?: number;
 };
 

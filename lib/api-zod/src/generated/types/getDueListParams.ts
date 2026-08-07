@@ -6,10 +6,9 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export type ListMaintenanceCollectionsParams = {
-flatId?: number;
+export type GetDueListParams = {
 /**
- * Filter to collections recorded for this month (YYYY-MM)
+ * YYYY-MM
  */
-forMonth?: string;
+month: string;
 };

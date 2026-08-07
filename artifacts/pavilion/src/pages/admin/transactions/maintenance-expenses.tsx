@@ -46,7 +46,7 @@ export default function MaintenanceExpenses() {
   const queryClient = useQueryClient();
   const [form, setForm] = useState(emptyForm);
 
-  const bills = useListVendorBills({ query: { queryKey: getListVendorBillsQueryKey() } });
+  const bills = useListVendorBills(undefined, { query: { queryKey: getListVendorBillsQueryKey() } });
   const vendors = useListVendors({ query: { queryKey: getListVendorsQueryKey() } });
   const expenseCategories = useListExpenseCategories({ query: { queryKey: getListExpenseCategoriesQueryKey() } });
 

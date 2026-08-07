@@ -41,7 +41,7 @@ export default function BillPayments() {
   const [form, setForm] = useState(emptyForm);
 
   const payments = useListBillPayments(undefined, { query: { queryKey: getListBillPaymentsQueryKey() } });
-  const bills = useListVendorBills({ query: { queryKey: getListVendorBillsQueryKey() } });
+  const bills = useListVendorBills(undefined, { query: { queryKey: getListVendorBillsQueryKey() } });
 
   const billsById = new Map((bills.data ?? []).map((b) => [b.id, b]));
 

@@ -60,6 +60,8 @@ tags:
     description: Payments recorded against vendor bills — admin-only
   - name: maintenance-collections
     description: Maintenance payments recorded against a flat — admin-only
+  - name: reports
+    description: Derived financial reports and dashboard summaries, computed from Masters and Transactions data — admin-only
 paths:
   /healthz:
     get:
@@ -1492,6 +1494,13 @@ paths:
       operationId: listVendorBills
       tags: [vendor-bills]
       summary: List vendor bills (maintenance expenses), with paid-so-far and status (admin only)
+      parameters:
+        - in: query
+          name: month
+          required: false
+          description: Filter to bills whose billDate falls in this month (YYYY-MM)
+          schema:
+            type: string
       responses:
         "200":
           description: Vendor bills
@@ -1625,13 +1634,19 @@ paths:
     get:
       operationId: listMaintenanceCollections
       tags: [maintenance-collections]
-      summary: List maintenance collections, optionally filtered to one flat (admin only)
+      summary: List maintenance collections, optionally filtered to one flat and/or month (admin only)
       parameters:
         - in: query
           name: flatId
           required: false
           schema:
             type: integer
+        - in: query
+          name: forMonth
+          required: false
+          description: Filter to collections recorded for this month (YYYY-MM)
+          schema:
+            type: string
       responses:
         "200":
           description: Maintenance collections
@@ -1689,6 +1704,122 @@ paths:
           description: Not an admin
         "404":
           description: Maintenance collection not found
+
+  /reports/due-list:
+    get:
+      operationId: getDueList
+      tags: [reports]
+      summary: Per-flat expected vs collected maintenance for a month (admin only)
+      parameters:
+        - in: query
+          name: month
+          required: true
+          description: YYYY-MM
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Due list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DueListEntry"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+
+  /reports/dashboard-summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [reports]
+      summary: Stat cards, maintenance-by-flat-type summary, and a 6-month income/expense trend (admin only)
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+
+  /reports/balance-sheet:
+    get:
+      operationId: getBalanceSheet
+      tags: [reports]
+      summary: All-time cash balance and outstanding vendor payables (admin only)
+      responses:
+        "200":
+          description: Balance sheet
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BalanceSheet"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+
+  /reports/income-statement:
+    get:
+      operationId: getIncomeStatement
+      tags: [reports]
+      summary: Income vs expenses for a date range (admin only)
+      parameters:
+        - in: query
+          name: from
+          required: true
+          description: YYYY-MM-DD
+          schema:
+            type: string
+        - in: query
+          name: to
+          required: true
+          description: YYYY-MM-DD
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Income statement
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IncomeStatement"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+
+  /reports/income-vs-expense-trend:
+    get:
+      operationId: getIncomeVsExpenseTrend
+      tags: [reports]
+      summary: Monthly income vs expense totals for the trailing N months (admin only)
+      parameters:
+        - in: query
+          name: months
+          required: false
+          description: How many trailing months to include (default 6)
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Monthly trend points, oldest first
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MonthlyTrendPoint"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
 
 components:
   schemas:
@@ -2748,3 +2879,116 @@ components:
           type: string
         notes:
           type: string
+
+    DueListEntry:
+      type: object
+      required:
+        [
+          flatId,
+          buildingName,
+          flatNumber,
+          flatType,
+          expectedAmountPaise,
+          collectedAmountPaise,
+          dueAmountPaise,
+        ]
+      properties:
+        flatId:
+          type: integer
+        buildingName:
+          type: string
+        flatNumber:
+          type: string
+        flatType:
+          type: string
+          enum: [1bhk, 2bhk, 3bhk, 4bhk]
+        expectedAmountPaise:
+          type: integer
+        collectedAmountPaise:
+          type: integer
+        dueAmountPaise:
+          type: integer
+
+    MonthlyTrendPoint:
+      type: object
+      required: [month, incomePaise, expensePaise]
+      properties:
+        month:
+          type: string
+        incomePaise:
+          type: integer
+        expensePaise:
+          type: integer
+
+    MaintenanceSummaryByFlatType:
+      type: object
+      required: [flatType, totalFlats, monthlyAmountPaise, expectedTotalPaise, collectedTotalPaise]
+      properties:
+        flatType:
+          type: string
+          enum: [1bhk, 2bhk, 3bhk, 4bhk]
+        totalFlats:
+          type: integer
+        monthlyAmountPaise:
+          type: integer
+        expectedTotalPaise:
+          type: integer
+        collectedTotalPaise:
+          type: integer
+
+    DashboardSummary:
+      type: object
+      required:
+        [
+          cashBalancePaise,
+          totalCollectedThisMonthPaise,
+          totalExpensesThisMonthPaise,
+          totalDueThisMonthPaise,
+          maintenanceSummary,
+          monthlyTrend,
+        ]
+      properties:
+        cashBalancePaise:
+          type: integer
+        totalCollectedThisMonthPaise:
+          type: integer
+        totalExpensesThisMonthPaise:
+          type: integer
+        totalDueThisMonthPaise:
+          type: integer
+        maintenanceSummary:
+          type: array
+          items:
+            $ref: "#/components/schemas/MaintenanceSummaryByFlatType"
+        monthlyTrend:
+          type: array
+          items:
+            $ref: "#/components/schemas/MonthlyTrendPoint"
+
+    BalanceSheet:
+      type: object
+      required: [totalCollectedPaise, totalPaidToVendorsPaise, cashBalancePaise, totalPayablesPaise]
+      properties:
+        totalCollectedPaise:
+          type: integer
+        totalPaidToVendorsPaise:
+          type: integer
+        cashBalancePaise:
+          type: integer
+        totalPayablesPaise:
+          type: integer
+
+    IncomeStatement:
+      type: object
+      required: [from, to, incomePaise, expensePaise, netPaise]
+      properties:
+        from:
+          type: string
+        to:
+          type: string
+        incomePaise:
+          type: integer
+        expensePaise:
+          type: integer
+        netPaise:
+          type: integer

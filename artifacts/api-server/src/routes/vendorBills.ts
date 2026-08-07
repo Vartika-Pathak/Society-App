@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { eq, sql } from "drizzle-orm";
+import { eq, like, sql } from "drizzle-orm";
 import { db, vendorBillsTable, vendorsTable, expenseCategoriesTable, billPaymentsTable, type VendorBill } from "@workspace/db";
 import { ListVendorBillsResponse, CreateVendorBillBody, CreateVendorBillResponse } from "@workspace/api-zod";
 import { getAuthedUser } from "../lib/auth";
@@ -45,6 +45,8 @@ router.get("/vendor-bills", async (req, res): Promise<void> => {
     return;
   }
 
+  const month = typeof req.query.month === "string" ? req.query.month : undefined;
+
   const rows = await db
     .select({
       bill: vendorBillsTable,
@@ -56,6 +58,7 @@ router.get("/vendor-bills", async (req, res): Promise<void> => {
     .innerJoin(vendorsTable, eq(vendorBillsTable.vendorId, vendorsTable.id))
     .innerJoin(expenseCategoriesTable, eq(vendorBillsTable.expenseCategoryId, expenseCategoriesTable.id))
     .leftJoin(billPaymentsTable, eq(billPaymentsTable.vendorBillId, vendorBillsTable.id))
+    .where(month !== undefined ? like(vendorBillsTable.billDate, `${month}%`) : undefined)
     .groupBy(vendorBillsTable.id);
 
   res.status(200).json(

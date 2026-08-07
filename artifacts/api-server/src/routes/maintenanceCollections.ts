@@ -1,5 +1,5 @@
 import { Router, type IRouter } from "express";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { db, maintenanceCollectionsTable, flatsTable, buildingsTable, type MaintenanceCollection } from "@workspace/db";
 import {
   ListMaintenanceCollectionsResponse,
@@ -39,6 +39,12 @@ router.get("/maintenance-collections", async (req, res): Promise<void> => {
   }
 
   const flatId = req.query.flatId ? Number(req.query.flatId) : undefined;
+  const forMonth = typeof req.query.forMonth === "string" ? req.query.forMonth : undefined;
+  const conditions = [
+    flatId !== undefined ? eq(maintenanceCollectionsTable.flatId, flatId) : undefined,
+    forMonth !== undefined ? eq(maintenanceCollectionsTable.forMonth, forMonth) : undefined,
+  ].filter((c) => c !== undefined);
+
   const rows = await db
     .select({
       collection: maintenanceCollectionsTable,
@@ -48,7 +54,7 @@ router.get("/maintenance-collections", async (req, res): Promise<void> => {
     .from(maintenanceCollectionsTable)
     .innerJoin(flatsTable, eq(maintenanceCollectionsTable.flatId, flatsTable.id))
     .innerJoin(buildingsTable, eq(flatsTable.buildingId, buildingsTable.id))
-    .where(flatId !== undefined ? eq(maintenanceCollectionsTable.flatId, flatId) : undefined);
+    .where(conditions.length > 0 ? and(...conditions) : undefined);
 
   res.status(200).json(
     ListMaintenanceCollectionsResponse.parse(

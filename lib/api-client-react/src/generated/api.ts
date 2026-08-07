@@ -24,6 +24,7 @@ import type {
   AmenityAvailability,
   AmenityBooking,
   AuthUser,
+  BalanceSheet,
   BillPayment,
   BillPaymentInput,
   BookAmenityInput,
@@ -37,6 +38,8 @@ import type {
   ConfirmAmenityBookingInput,
   ContactMessage,
   ContactMessageInput,
+  DashboardSummary,
+  DueListEntry,
   EmergencyAlert,
   Event,
   EventInput,
@@ -47,11 +50,16 @@ import type {
   GalleryPhoto,
   GalleryPhotoInput,
   GetAmenityAvailabilityParams,
+  GetDueListParams,
+  GetIncomeStatementParams,
+  GetIncomeVsExpenseTrendParams,
   HealthStatus,
+  IncomeStatement,
   JoinRequest,
   JoinRequestInput,
   ListBillPaymentsParams,
   ListMaintenanceCollectionsParams,
+  ListVendorBillsParams,
   LoginInput,
   MaintenanceCollection,
   MaintenanceCollectionInput,
@@ -65,6 +73,7 @@ import type {
   MaintenanceSettingsInput,
   MaintenanceStatusInput,
   Member,
+  MonthlyTrendPoint,
   NewsPost,
   NewsPostInput,
   SignupInput,
@@ -5348,20 +5357,27 @@ export const useDeleteSpecialContribution = <TError = ErrorType<void>,
       return useMutation(getDeleteSpecialContributionMutationOptions(options));
     }
 
-export const getListVendorBillsUrl = () => {
+export const getListVendorBillsUrl = (params?: ListVendorBillsParams,) => {
+  const normalizedParams = new URLSearchParams();
 
+  Object.entries(params || {}).forEach(([key, value]) => {
 
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
 
+  const stringifiedParams = normalizedParams.toString();
 
-  return `/api/vendor-bills`
+  return stringifiedParams.length > 0 ? `/api/vendor-bills?${stringifiedParams}` : `/api/vendor-bills`
 }
 
 /**
  * @summary List vendor bills (maintenance expenses), with paid-so-far and status (admin only)
  */
-export const listVendorBills = async ( options?: RequestInit): Promise<VendorBill[]> => {
+export const listVendorBills = async (params?: ListVendorBillsParams, options?: RequestInit): Promise<VendorBill[]> => {
 
-  return customFetch<VendorBill[]>(getListVendorBillsUrl(),
+  return customFetch<VendorBill[]>(getListVendorBillsUrl(params),
   {
     ...options,
     method: 'GET'
@@ -5374,23 +5390,23 @@ export const listVendorBills = async ( options?: RequestInit): Promise<VendorBil
 
 
 
-export const getListVendorBillsQueryKey = () => {
+export const getListVendorBillsQueryKey = (params?: ListVendorBillsParams,) => {
     return [
-    `/api/vendor-bills`
+    `/api/vendor-bills`, ...(params ? [params] : [])
     ] as const;
     }
 
 
-export const getListVendorBillsQueryOptions = <TData = Awaited<ReturnType<typeof listVendorBills>>, TError = ErrorType<void>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listVendorBills>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+export const getListVendorBillsQueryOptions = <TData = Awaited<ReturnType<typeof listVendorBills>>, TError = ErrorType<void>>(params?: ListVendorBillsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listVendorBills>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getListVendorBillsQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getListVendorBillsQueryKey(params);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof listVendorBills>>> = ({ signal }) => listVendorBills({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listVendorBills>>> = ({ signal }) => listVendorBills(params, { signal, ...requestOptions });
 
 
 
@@ -5408,11 +5424,11 @@ export type ListVendorBillsQueryError = ErrorType<void>
  */
 
 export function useListVendorBills<TData = Awaited<ReturnType<typeof listVendorBills>>, TError = ErrorType<void>>(
-  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listVendorBills>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+ params?: ListVendorBillsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listVendorBills>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
 
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
-  const queryOptions = getListVendorBillsQueryOptions(options)
+  const queryOptions = getListVendorBillsQueryOptions(params,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 
@@ -5809,7 +5825,7 @@ export const getListMaintenanceCollectionsUrl = (params?: ListMaintenanceCollect
 }
 
 /**
- * @summary List maintenance collections, optionally filtered to one flat (admin only)
+ * @summary List maintenance collections, optionally filtered to one flat and/or month (admin only)
  */
 export const listMaintenanceCollections = async (params?: ListMaintenanceCollectionsParams, options?: RequestInit): Promise<MaintenanceCollection[]> => {
 
@@ -5856,7 +5872,7 @@ export type ListMaintenanceCollectionsQueryError = ErrorType<void>
 
 
 /**
- * @summary List maintenance collections, optionally filtered to one flat (admin only)
+ * @summary List maintenance collections, optionally filtered to one flat and/or month (admin only)
  */
 
 export function useListMaintenanceCollections<TData = Awaited<ReturnType<typeof listMaintenanceCollections>>, TError = ErrorType<void>>(
@@ -6018,4 +6034,410 @@ export const useDeleteMaintenanceCollection = <TError = ErrorType<void>,
       > => {
       return useMutation(getDeleteMaintenanceCollectionMutationOptions(options));
     }
+
+export const getGetDueListUrl = (params: GetDueListParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/reports/due-list?${stringifiedParams}` : `/api/reports/due-list`
+}
+
+/**
+ * @summary Per-flat expected vs collected maintenance for a month (admin only)
+ */
+export const getDueList = async (params: GetDueListParams, options?: RequestInit): Promise<DueListEntry[]> => {
+
+  return customFetch<DueListEntry[]>(getGetDueListUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetDueListQueryKey = (params?: GetDueListParams,) => {
+    return [
+    `/api/reports/due-list`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getGetDueListQueryOptions = <TData = Awaited<ReturnType<typeof getDueList>>, TError = ErrorType<void>>(params: GetDueListParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getDueList>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetDueListQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getDueList>>> = ({ signal }) => getDueList(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getDueList>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetDueListQueryResult = NonNullable<Awaited<ReturnType<typeof getDueList>>>
+export type GetDueListQueryError = ErrorType<void>
+
+
+/**
+ * @summary Per-flat expected vs collected maintenance for a month (admin only)
+ */
+
+export function useGetDueList<TData = Awaited<ReturnType<typeof getDueList>>, TError = ErrorType<void>>(
+ params: GetDueListParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getDueList>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetDueListQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetDashboardSummaryUrl = () => {
+
+
+
+
+  return `/api/reports/dashboard-summary`
+}
+
+/**
+ * @summary Stat cards, maintenance-by-flat-type summary, and a 6-month income/expense trend (admin only)
+ */
+export const getDashboardSummary = async ( options?: RequestInit): Promise<DashboardSummary> => {
+
+  return customFetch<DashboardSummary>(getGetDashboardSummaryUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetDashboardSummaryQueryKey = () => {
+    return [
+    `/api/reports/dashboard-summary`
+    ] as const;
+    }
+
+
+export const getGetDashboardSummaryQueryOptions = <TData = Awaited<ReturnType<typeof getDashboardSummary>>, TError = ErrorType<void>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getDashboardSummary>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetDashboardSummaryQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getDashboardSummary>>> = ({ signal }) => getDashboardSummary({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getDashboardSummary>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetDashboardSummaryQueryResult = NonNullable<Awaited<ReturnType<typeof getDashboardSummary>>>
+export type GetDashboardSummaryQueryError = ErrorType<void>
+
+
+/**
+ * @summary Stat cards, maintenance-by-flat-type summary, and a 6-month income/expense trend (admin only)
+ */
+
+export function useGetDashboardSummary<TData = Awaited<ReturnType<typeof getDashboardSummary>>, TError = ErrorType<void>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getDashboardSummary>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetDashboardSummaryQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetBalanceSheetUrl = () => {
+
+
+
+
+  return `/api/reports/balance-sheet`
+}
+
+/**
+ * @summary All-time cash balance and outstanding vendor payables (admin only)
+ */
+export const getBalanceSheet = async ( options?: RequestInit): Promise<BalanceSheet> => {
+
+  return customFetch<BalanceSheet>(getGetBalanceSheetUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetBalanceSheetQueryKey = () => {
+    return [
+    `/api/reports/balance-sheet`
+    ] as const;
+    }
+
+
+export const getGetBalanceSheetQueryOptions = <TData = Awaited<ReturnType<typeof getBalanceSheet>>, TError = ErrorType<void>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getBalanceSheet>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetBalanceSheetQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getBalanceSheet>>> = ({ signal }) => getBalanceSheet({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getBalanceSheet>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetBalanceSheetQueryResult = NonNullable<Awaited<ReturnType<typeof getBalanceSheet>>>
+export type GetBalanceSheetQueryError = ErrorType<void>
+
+
+/**
+ * @summary All-time cash balance and outstanding vendor payables (admin only)
+ */
+
+export function useGetBalanceSheet<TData = Awaited<ReturnType<typeof getBalanceSheet>>, TError = ErrorType<void>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getBalanceSheet>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetBalanceSheetQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetIncomeStatementUrl = (params: GetIncomeStatementParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/reports/income-statement?${stringifiedParams}` : `/api/reports/income-statement`
+}
+
+/**
+ * @summary Income vs expenses for a date range (admin only)
+ */
+export const getIncomeStatement = async (params: GetIncomeStatementParams, options?: RequestInit): Promise<IncomeStatement> => {
+
+  return customFetch<IncomeStatement>(getGetIncomeStatementUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetIncomeStatementQueryKey = (params?: GetIncomeStatementParams,) => {
+    return [
+    `/api/reports/income-statement`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getGetIncomeStatementQueryOptions = <TData = Awaited<ReturnType<typeof getIncomeStatement>>, TError = ErrorType<void>>(params: GetIncomeStatementParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getIncomeStatement>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetIncomeStatementQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getIncomeStatement>>> = ({ signal }) => getIncomeStatement(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getIncomeStatement>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetIncomeStatementQueryResult = NonNullable<Awaited<ReturnType<typeof getIncomeStatement>>>
+export type GetIncomeStatementQueryError = ErrorType<void>
+
+
+/**
+ * @summary Income vs expenses for a date range (admin only)
+ */
+
+export function useGetIncomeStatement<TData = Awaited<ReturnType<typeof getIncomeStatement>>, TError = ErrorType<void>>(
+ params: GetIncomeStatementParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getIncomeStatement>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetIncomeStatementQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetIncomeVsExpenseTrendUrl = (params?: GetIncomeVsExpenseTrendParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/reports/income-vs-expense-trend?${stringifiedParams}` : `/api/reports/income-vs-expense-trend`
+}
+
+/**
+ * @summary Monthly income vs expense totals for the trailing N months (admin only)
+ */
+export const getIncomeVsExpenseTrend = async (params?: GetIncomeVsExpenseTrendParams, options?: RequestInit): Promise<MonthlyTrendPoint[]> => {
+
+  return customFetch<MonthlyTrendPoint[]>(getGetIncomeVsExpenseTrendUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetIncomeVsExpenseTrendQueryKey = (params?: GetIncomeVsExpenseTrendParams,) => {
+    return [
+    `/api/reports/income-vs-expense-trend`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getGetIncomeVsExpenseTrendQueryOptions = <TData = Awaited<ReturnType<typeof getIncomeVsExpenseTrend>>, TError = ErrorType<void>>(params?: GetIncomeVsExpenseTrendParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getIncomeVsExpenseTrend>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetIncomeVsExpenseTrendQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getIncomeVsExpenseTrend>>> = ({ signal }) => getIncomeVsExpenseTrend(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getIncomeVsExpenseTrend>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetIncomeVsExpenseTrendQueryResult = NonNullable<Awaited<ReturnType<typeof getIncomeVsExpenseTrend>>>
+export type GetIncomeVsExpenseTrendQueryError = ErrorType<void>
+
+
+/**
+ * @summary Monthly income vs expense totals for the trailing N months (admin only)
+ */
+
+export function useGetIncomeVsExpenseTrend<TData = Awaited<ReturnType<typeof getIncomeVsExpenseTrend>>, TError = ErrorType<void>>(
+ params?: GetIncomeVsExpenseTrendParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getIncomeVsExpenseTrend>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetIncomeVsExpenseTrendQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
 

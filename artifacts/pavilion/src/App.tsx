@@ -34,6 +34,14 @@ import SpecialContributions from './pages/admin/transactions/special-contributio
 import MaintenanceExpenses from './pages/admin/transactions/maintenance-expenses';
 import BillPayments from './pages/admin/transactions/bill-payments';
 import MaintenanceCollections from './pages/admin/transactions/maintenance-collections';
+import AdminDashboard from './pages/admin/dashboard';
+import DueList from './pages/admin/due-list';
+import MaintenanceDueReport from './pages/admin/reports/maintenance-due';
+import MonthlyCollectionDetail from './pages/admin/reports/monthly-collections';
+import MonthlyExpenditureReport from './pages/admin/reports/monthly-expenditure';
+import IncomeVsExpenseTrend from './pages/admin/reports/income-vs-expense-trend';
+import BalanceSheet from './pages/admin/reports/balance-sheet';
+import IncomeStatement from './pages/admin/reports/income-statement';
 import NotFound from '@/pages/not-found';
 
 const queryClient = new QueryClient();
@@ -161,6 +169,46 @@ function Router() {
       <Route path="/admin/transactions/maintenance-collections">
         <RequireAuth roles={["admin"]}>
           <MaintenanceCollections />
+        </RequireAuth>
+      </Route>
+      <Route path="/admin/dashboard">
+        <RequireAuth roles={["admin"]}>
+          <AdminDashboard />
+        </RequireAuth>
+      </Route>
+      <Route path="/admin/due-list">
+        <RequireAuth roles={["admin"]}>
+          <DueList />
+        </RequireAuth>
+      </Route>
+      <Route path="/admin/reports/maintenance-due">
+        <RequireAuth roles={["admin"]}>
+          <MaintenanceDueReport />
+        </RequireAuth>
+      </Route>
+      <Route path="/admin/reports/monthly-collections">
+        <RequireAuth roles={["admin"]}>
+          <MonthlyCollectionDetail />
+        </RequireAuth>
+      </Route>
+      <Route path="/admin/reports/monthly-expenditure">
+        <RequireAuth roles={["admin"]}>
+          <MonthlyExpenditureReport />
+        </RequireAuth>
+      </Route>
+      <Route path="/admin/reports/income-vs-expense-trend">
+        <RequireAuth roles={["admin"]}>
+          <IncomeVsExpenseTrend />
+        </RequireAuth>
+      </Route>
+      <Route path="/admin/reports/balance-sheet">
+        <RequireAuth roles={["admin"]}>
+          <BalanceSheet />
+        </RequireAuth>
+      </Route>
+      <Route path="/admin/reports/income-statement">
+        <RequireAuth roles={["admin"]}>
+          <IncomeStatement />
         </RequireAuth>
       </Route>
       <Route component={NotFound} />

@@ -26,6 +26,7 @@ import specialContributionsRouter from "./specialContributions";
 import vendorBillsRouter from "./vendorBills";
 import billPaymentsRouter from "./billPayments";
 import maintenanceCollectionsRouter from "./maintenanceCollections";
+import reportsRouter from "./reports";
 
 const router: IRouter = Router();
 
@@ -56,5 +57,6 @@ router.use(specialContributionsRouter);
 router.use(vendorBillsRouter);
 router.use(billPaymentsRouter);
 router.use(maintenanceCollectionsRouter);
+router.use(reportsRouter);
 
 export default router;

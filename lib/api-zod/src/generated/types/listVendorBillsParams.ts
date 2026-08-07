@@ -6,10 +6,9 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export type ListMaintenanceCollectionsParams = {
-flatId?: number;
+export type ListVendorBillsParams = {
 /**
- * Filter to collections recorded for this month (YYYY-MM)
+ * Filter to bills whose billDate falls in this month (YYYY-MM)
  */
-forMonth?: string;
+month?: string;
 };

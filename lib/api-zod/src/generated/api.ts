@@ -1285,6 +1285,10 @@ export const DeleteSpecialContributionResponse = zod.void()
 /**
  * @summary List vendor bills (maintenance expenses), with paid-so-far and status (admin only)
  */
+export const ListVendorBillsQueryParams = zod.object({
+  "month": zod.coerce.string().optional().describe('Filter to bills whose billDate falls in this month (YYYY-MM)')
+})
+
 export const ListVendorBillsResponseItem = zod.object({
   "id": zod.number(),
   "vendorId": zod.number(),
@@ -1404,10 +1408,11 @@ export const DeleteBillPaymentResponse = zod.void()
 
 
 /**
- * @summary List maintenance collections, optionally filtered to one flat (admin only)
+ * @summary List maintenance collections, optionally filtered to one flat and/or month (admin only)
  */
 export const ListMaintenanceCollectionsQueryParams = zod.object({
-  "flatId": zod.coerce.number().optional()
+  "flatId": zod.coerce.number().optional(),
+  "forMonth": zod.coerce.string().optional().describe('Filter to collections recorded for this month (YYYY-MM)')
 })
 
 export const ListMaintenanceCollectionsResponseItem = zod.object({
@@ -1471,5 +1476,90 @@ export const DeleteMaintenanceCollectionParams = zod.object({
 })
 
 export const DeleteMaintenanceCollectionResponse = zod.void()
+
+
+/**
+ * @summary Per-flat expected vs collected maintenance for a month (admin only)
+ */
+export const GetDueListQueryParams = zod.object({
+  "month": zod.coerce.string().describe('YYYY-MM')
+})
+
+export const GetDueListResponseItem = zod.object({
+  "flatId": zod.number(),
+  "buildingName": zod.string(),
+  "flatNumber": zod.string(),
+  "flatType": zod.enum(['1bhk', '2bhk', '3bhk', '4bhk']),
+  "expectedAmountPaise": zod.number(),
+  "collectedAmountPaise": zod.number(),
+  "dueAmountPaise": zod.number()
+})
+export const GetDueListResponse = zod.array(GetDueListResponseItem)
+
+
+/**
+ * @summary Stat cards, maintenance-by-flat-type summary, and a 6-month income/expense trend (admin only)
+ */
+export const GetDashboardSummaryResponse = zod.object({
+  "cashBalancePaise": zod.number(),
+  "totalCollectedThisMonthPaise": zod.number(),
+  "totalExpensesThisMonthPaise": zod.number(),
+  "totalDueThisMonthPaise": zod.number(),
+  "maintenanceSummary": zod.array(zod.object({
+  "flatType": zod.enum(['1bhk', '2bhk', '3bhk', '4bhk']),
+  "totalFlats": zod.number(),
+  "monthlyAmountPaise": zod.number(),
+  "expectedTotalPaise": zod.number(),
+  "collectedTotalPaise": zod.number()
+})),
+  "monthlyTrend": zod.array(zod.object({
+  "month": zod.string(),
+  "incomePaise": zod.number(),
+  "expensePaise": zod.number()
+}))
+})
+
+
+/**
+ * @summary All-time cash balance and outstanding vendor payables (admin only)
+ */
+export const GetBalanceSheetResponse = zod.object({
+  "totalCollectedPaise": zod.number(),
+  "totalPaidToVendorsPaise": zod.number(),
+  "cashBalancePaise": zod.number(),
+  "totalPayablesPaise": zod.number()
+})
+
+
+/**
+ * @summary Income vs expenses for a date range (admin only)
+ */
+export const GetIncomeStatementQueryParams = zod.object({
+  "from": zod.coerce.string().describe('YYYY-MM-DD'),
+  "to": zod.coerce.string().describe('YYYY-MM-DD')
+})
+
+export const GetIncomeStatementResponse = zod.object({
+  "from": zod.string(),
+  "to": zod.string(),
+  "incomePaise": zod.number(),
+  "expensePaise": zod.number(),
+  "netPaise": zod.number()
+})
+
+
+/**
+ * @summary Monthly income vs expense totals for the trailing N months (admin only)
+ */
+export const GetIncomeVsExpenseTrendQueryParams = zod.object({
+  "months": zod.coerce.number().optional().describe('How many trailing months to include (default 6)')
+})
+
+export const GetIncomeVsExpenseTrendResponseItem = zod.object({
+  "month": zod.string(),
+  "incomePaise": zod.number(),
+  "expensePaise": zod.number()
+})
+export const GetIncomeVsExpenseTrendResponse = zod.array(GetIncomeVsExpenseTrendResponseItem)
 
 
