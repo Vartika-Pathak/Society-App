@@ -1,12 +1,14 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { BadgeCheck, X } from "lucide-react";
+import { BadgeCheck, X, ShieldPlus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
-import { apiGet, apiPatch, ApiFetchError } from "@/lib/api-fetch";
+import { apiGet, apiPatch, apiPost, ApiFetchError } from "@/lib/api-fetch";
 
 interface VerificationRequest {
   id: number;
@@ -19,11 +21,125 @@ interface VerificationRequest {
   reviewedAt: string | null;
 }
 
+interface GuardAccount {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+}
+
 const statusVariants: Record<VerificationRequest["status"], "secondary" | "default" | "outline"> = {
   pending: "secondary",
   approved: "default",
   rejected: "outline",
 };
+
+function CreateGuardCard() {
+  const { toast } = useToast();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!/^[A-Za-z0-9._%+-]+@pavilion\.com$/.test(email)) {
+      toast({
+        title: "Invalid email",
+        description: "Guard accounts must use a @pavilion.com email address.",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (password.length < 8) {
+      toast({
+        title: "Password too short",
+        description: "Password must be at least 8 characters.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const guard = await apiPost<GuardAccount>("/api/admin/guards", { name, email, password });
+      toast({
+        title: "Guard account created",
+        description: `Share these credentials with ${guard.name} directly — they'll log in from the regular login page.`,
+      });
+      setName("");
+      setEmail("");
+      setPassword("");
+    } catch (error) {
+      toast({
+        title: "Couldn't create guard account",
+        description: error instanceof ApiFetchError ? error.message : "Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg flex items-center gap-2">
+          <ShieldPlus className="h-5 w-5" /> Create guard account
+        </CardTitle>
+        <CardDescription>
+          Guards don't sign up themselves — create their login here and hand the credentials to them directly. They'll
+          then sign in from the regular login page.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="grid gap-4 sm:grid-cols-3 sm:items-end">
+          <div className="space-y-2">
+            <Label htmlFor="guard-name">Name</Label>
+            <Input
+              id="guard-name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Sam Guard"
+              required
+              disabled={isSubmitting}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="guard-email">Email</Label>
+            <Input
+              id="guard-email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="sam@pavilion.com"
+              required
+              disabled={isSubmitting}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="guard-password">Password</Label>
+            <Input
+              id="guard-password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="At least 8 characters"
+              required
+              disabled={isSubmitting}
+            />
+          </div>
+          <div className="sm:col-span-3">
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Creating…" : "Create guard account"}
+            </Button>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
+  );
+}
 
 export default function Admin() {
   const { toast } = useToast();
@@ -85,6 +201,8 @@ export default function Admin() {
       </div>
 
       <div className="container mx-auto px-4 md:px-8 py-16 space-y-10">
+        <CreateGuardCard />
+
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">Pending requests</CardTitle>
