@@ -11,3 +11,8 @@ export * from "./maintenanceRequests";
 export * from "./complaints";
 export * from "./emergencyAlerts";
 export * from "./amenityBookings";
+export * from "./society";
+export * from "./buildings";
+export * from "./flats";
+export * from "./expenseCategories";
+export * from "./vendors";
