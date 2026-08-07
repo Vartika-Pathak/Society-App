@@ -97,6 +97,10 @@ export default function Signup() {
       if (result.status === "approved") {
         setForm((f) => ({ ...f, name: verifyForm.name, flatNumber: verifyForm.flatNumber }));
         setStep("form");
+      } else if (result.status === "flat_taken") {
+        // Stays on the verify step — a taken flat isn't something to send for admin
+        // review, it just means this flat already has a resident account.
+        setVerifyError(result.message);
       } else if (result.status === "rejected") {
         setReviewStatus("rejected");
         setStep("pending_review");
