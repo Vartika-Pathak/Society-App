@@ -1084,3 +1084,392 @@ export const DeleteVendorParams = zod.object({
 export const DeleteVendorResponse = zod.void()
 
 
+/**
+ * @summary List monthly maintenance amounts by flat type (admin only)
+ */
+export const ListMaintenanceRatesResponseItem = zod.object({
+  "id": zod.number(),
+  "flatType": zod.enum(['1bhk', '2bhk', '3bhk', '4bhk']),
+  "monthlyAmountPaise": zod.number()
+})
+export const ListMaintenanceRatesResponse = zod.array(ListMaintenanceRatesResponseItem)
+
+
+/**
+ * @summary Set the monthly maintenance amount for a flat type (admin only)
+ */
+export const UpdateMaintenanceRateParams = zod.object({
+  "flatType": zod.enum(['1bhk', '2bhk', '3bhk', '4bhk'])
+})
+
+export const updateMaintenanceRateBodyMonthlyAmountPaiseMin = 0;
+
+
+
+export const UpdateMaintenanceRateBody = zod.object({
+  "monthlyAmountPaise": zod.number().min(updateMaintenanceRateBodyMonthlyAmountPaiseMin)
+})
+
+export const UpdateMaintenanceRateResponse = zod.object({
+  "id": zod.number(),
+  "flatType": zod.enum(['1bhk', '2bhk', '3bhk', '4bhk']),
+  "monthlyAmountPaise": zod.number()
+})
+
+
+/**
+ * @summary Get maintenance billing settings (admin only)
+ */
+export const GetMaintenanceSettingsResponse = zod.object({
+  "id": zod.number(),
+  "dueDay": zod.number(),
+  "lateFeePercent": zod.number(),
+  "openingBalanceNote": zod.string()
+})
+
+
+/**
+ * @summary Update maintenance billing settings (admin only)
+ */
+export const updateMaintenanceSettingsBodyDueDayMax = 28;
+
+export const updateMaintenanceSettingsBodyLateFeePercentMin = 0;
+export const updateMaintenanceSettingsBodyLateFeePercentMax = 100;
+
+
+
+export const UpdateMaintenanceSettingsBody = zod.object({
+  "dueDay": zod.number().min(1).max(updateMaintenanceSettingsBodyDueDayMax),
+  "lateFeePercent": zod.number().min(updateMaintenanceSettingsBodyLateFeePercentMin).max(updateMaintenanceSettingsBodyLateFeePercentMax),
+  "openingBalanceNote": zod.string()
+})
+
+export const UpdateMaintenanceSettingsResponse = zod.object({
+  "id": zod.number(),
+  "dueDay": zod.number(),
+  "lateFeePercent": zod.number(),
+  "openingBalanceNote": zod.string()
+})
+
+
+/**
+ * @summary List maintenance discount rules (admin only)
+ */
+export const ListMaintenanceDiscountsResponseItem = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "discountType": zod.enum(['percent', 'fixed']),
+  "value": zod.number(),
+  "description": zod.string().nullable(),
+  "active": zod.boolean()
+})
+export const ListMaintenanceDiscountsResponse = zod.array(ListMaintenanceDiscountsResponseItem)
+
+
+/**
+ * @summary Add a maintenance discount rule (admin only)
+ */
+
+export const createMaintenanceDiscountBodyValueMin = 0;
+
+
+
+export const CreateMaintenanceDiscountBody = zod.object({
+  "name": zod.string().min(1),
+  "discountType": zod.enum(['percent', 'fixed']),
+  "value": zod.number().min(createMaintenanceDiscountBodyValueMin),
+  "description": zod.string().optional(),
+  "active": zod.boolean()
+})
+
+export const CreateMaintenanceDiscountResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "discountType": zod.enum(['percent', 'fixed']),
+  "value": zod.number(),
+  "description": zod.string().nullable(),
+  "active": zod.boolean()
+})
+
+
+/**
+ * @summary Update a maintenance discount rule (admin only)
+ */
+export const UpdateMaintenanceDiscountParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+export const updateMaintenanceDiscountBodyValueMin = 0;
+
+
+
+export const UpdateMaintenanceDiscountBody = zod.object({
+  "name": zod.string().min(1),
+  "discountType": zod.enum(['percent', 'fixed']),
+  "value": zod.number().min(updateMaintenanceDiscountBodyValueMin),
+  "description": zod.string().optional(),
+  "active": zod.boolean()
+})
+
+export const UpdateMaintenanceDiscountResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "discountType": zod.enum(['percent', 'fixed']),
+  "value": zod.number(),
+  "description": zod.string().nullable(),
+  "active": zod.boolean()
+})
+
+
+/**
+ * @summary Delete a maintenance discount rule (admin only)
+ */
+export const DeleteMaintenanceDiscountParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const DeleteMaintenanceDiscountResponse = zod.void()
+
+
+/**
+ * @summary List special contributions (admin only)
+ */
+export const ListSpecialContributionsResponseItem = zod.object({
+  "id": zod.number(),
+  "title": zod.string(),
+  "description": zod.string().nullable(),
+  "amountPaise": zod.number(),
+  "dueDate": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+export const ListSpecialContributionsResponse = zod.array(ListSpecialContributionsResponseItem)
+
+
+/**
+ * @summary Announce a special contribution (admin only)
+ */
+
+export const createSpecialContributionBodyAmountPaiseMin = 0;
+
+
+
+
+export const CreateSpecialContributionBody = zod.object({
+  "title": zod.string().min(1),
+  "description": zod.string().optional(),
+  "amountPaise": zod.number().min(createSpecialContributionBodyAmountPaiseMin),
+  "dueDate": zod.string().min(1)
+})
+
+export const CreateSpecialContributionResponse = zod.object({
+  "id": zod.number(),
+  "title": zod.string(),
+  "description": zod.string().nullable(),
+  "amountPaise": zod.number(),
+  "dueDate": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Delete a special contribution (admin only)
+ */
+export const DeleteSpecialContributionParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const DeleteSpecialContributionResponse = zod.void()
+
+
+/**
+ * @summary List vendor bills (maintenance expenses), with paid-so-far and status (admin only)
+ */
+export const ListVendorBillsResponseItem = zod.object({
+  "id": zod.number(),
+  "vendorId": zod.number(),
+  "vendorName": zod.string(),
+  "expenseCategoryId": zod.number(),
+  "expenseCategoryName": zod.string(),
+  "billNumber": zod.string(),
+  "billDate": zod.string(),
+  "amountPaise": zod.number(),
+  "description": zod.string().nullable(),
+  "paidAmountPaise": zod.number(),
+  "status": zod.enum(['unpaid', 'partially_paid', 'paid']),
+  "createdAt": zod.coerce.date()
+})
+export const ListVendorBillsResponse = zod.array(ListVendorBillsResponseItem)
+
+
+/**
+ * @summary Add a vendor bill (admin only)
+ */
+
+
+
+
+
+export const CreateVendorBillBody = zod.object({
+  "vendorId": zod.number(),
+  "expenseCategoryId": zod.number(),
+  "billNumber": zod.string().min(1),
+  "billDate": zod.string().min(1),
+  "amountPaise": zod.number().min(1),
+  "description": zod.string().optional()
+})
+
+export const CreateVendorBillResponse = zod.object({
+  "id": zod.number(),
+  "vendorId": zod.number(),
+  "vendorName": zod.string(),
+  "expenseCategoryId": zod.number(),
+  "expenseCategoryName": zod.string(),
+  "billNumber": zod.string(),
+  "billDate": zod.string(),
+  "amountPaise": zod.number(),
+  "description": zod.string().nullable(),
+  "paidAmountPaise": zod.number(),
+  "status": zod.enum(['unpaid', 'partially_paid', 'paid']),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Delete a vendor bill (admin only) — fails if payments have been recorded against it
+ */
+export const DeleteVendorBillParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const DeleteVendorBillResponse = zod.void()
+
+
+/**
+ * @summary List bill payments, optionally filtered to one vendor bill (admin only)
+ */
+export const ListBillPaymentsQueryParams = zod.object({
+  "vendorBillId": zod.coerce.number().optional()
+})
+
+export const ListBillPaymentsResponseItem = zod.object({
+  "id": zod.number(),
+  "vendorBillId": zod.number(),
+  "amountPaise": zod.number(),
+  "paymentDate": zod.string(),
+  "paymentMode": zod.enum(['cash', 'cheque', 'upi', 'bank_transfer']),
+  "referenceNumber": zod.string().nullable(),
+  "notes": zod.string().nullable(),
+  "createdAt": zod.coerce.date()
+})
+export const ListBillPaymentsResponse = zod.array(ListBillPaymentsResponseItem)
+
+
+/**
+ * @summary Record a payment against a vendor bill (admin only)
+ */
+
+
+
+
+export const CreateBillPaymentBody = zod.object({
+  "vendorBillId": zod.number(),
+  "amountPaise": zod.number().min(1),
+  "paymentDate": zod.string().min(1),
+  "paymentMode": zod.enum(['cash', 'cheque', 'upi', 'bank_transfer']),
+  "referenceNumber": zod.string().optional(),
+  "notes": zod.string().optional()
+})
+
+export const CreateBillPaymentResponse = zod.object({
+  "id": zod.number(),
+  "vendorBillId": zod.number(),
+  "amountPaise": zod.number(),
+  "paymentDate": zod.string(),
+  "paymentMode": zod.enum(['cash', 'cheque', 'upi', 'bank_transfer']),
+  "referenceNumber": zod.string().nullable(),
+  "notes": zod.string().nullable(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Delete a bill payment record (admin only)
+ */
+export const DeleteBillPaymentParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const DeleteBillPaymentResponse = zod.void()
+
+
+/**
+ * @summary List maintenance collections, optionally filtered to one flat (admin only)
+ */
+export const ListMaintenanceCollectionsQueryParams = zod.object({
+  "flatId": zod.coerce.number().optional()
+})
+
+export const ListMaintenanceCollectionsResponseItem = zod.object({
+  "id": zod.number(),
+  "flatId": zod.number(),
+  "buildingName": zod.string(),
+  "flatNumber": zod.string(),
+  "payerName": zod.string(),
+  "amountPaise": zod.number(),
+  "paymentDate": zod.string(),
+  "paymentMode": zod.enum(['cash', 'cheque', 'upi', 'bank_transfer']),
+  "forMonth": zod.string(),
+  "referenceNumber": zod.string().nullable(),
+  "notes": zod.string().nullable(),
+  "createdAt": zod.coerce.date()
+})
+export const ListMaintenanceCollectionsResponse = zod.array(ListMaintenanceCollectionsResponseItem)
+
+
+/**
+ * @summary Record a maintenance payment for a flat (admin only)
+ */
+
+
+
+
+
+
+export const CreateMaintenanceCollectionBody = zod.object({
+  "flatId": zod.number(),
+  "payerName": zod.string().min(1),
+  "amountPaise": zod.number().min(1),
+  "paymentDate": zod.string().min(1),
+  "paymentMode": zod.enum(['cash', 'cheque', 'upi', 'bank_transfer']),
+  "forMonth": zod.string().min(1),
+  "referenceNumber": zod.string().optional(),
+  "notes": zod.string().optional()
+})
+
+export const CreateMaintenanceCollectionResponse = zod.object({
+  "id": zod.number(),
+  "flatId": zod.number(),
+  "buildingName": zod.string(),
+  "flatNumber": zod.string(),
+  "payerName": zod.string(),
+  "amountPaise": zod.number(),
+  "paymentDate": zod.string(),
+  "paymentMode": zod.enum(['cash', 'cheque', 'upi', 'bank_transfer']),
+  "forMonth": zod.string(),
+  "referenceNumber": zod.string().nullable(),
+  "notes": zod.string().nullable(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Delete a maintenance collection record (admin only)
+ */
+export const DeleteMaintenanceCollectionParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const DeleteMaintenanceCollectionResponse = zod.void()
+
+

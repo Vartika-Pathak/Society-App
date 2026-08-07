@@ -24,6 +24,8 @@ import type {
   AmenityAvailability,
   AmenityBooking,
   AuthUser,
+  BillPayment,
+  BillPaymentInput,
   BookAmenityInput,
   BookAmenityResult,
   Building,
@@ -48,9 +50,19 @@ import type {
   HealthStatus,
   JoinRequest,
   JoinRequestInput,
+  ListBillPaymentsParams,
+  ListMaintenanceCollectionsParams,
   LoginInput,
+  MaintenanceCollection,
+  MaintenanceCollectionInput,
+  MaintenanceDiscount,
+  MaintenanceDiscountInput,
+  MaintenanceRate,
+  MaintenanceRateInput,
   MaintenanceRequest,
   MaintenanceRequestInput,
+  MaintenanceSettings,
+  MaintenanceSettingsInput,
   MaintenanceStatusInput,
   Member,
   NewsPost,
@@ -58,7 +70,11 @@ import type {
   SignupInput,
   SocietyInfo,
   SocietyInfoInput,
+  SpecialContribution,
+  SpecialContributionInput,
   Vendor,
+  VendorBill,
+  VendorBillInput,
   VendorInput,
   Visit,
   VisitDecisionInput,
@@ -4523,5 +4539,1483 @@ export const useDeleteVendor = <TError = ErrorType<void>,
         TContext
       > => {
       return useMutation(getDeleteVendorMutationOptions(options));
+    }
+
+export const getListMaintenanceRatesUrl = () => {
+
+
+
+
+  return `/api/maintenance-rates`
+}
+
+/**
+ * @summary List monthly maintenance amounts by flat type (admin only)
+ */
+export const listMaintenanceRates = async ( options?: RequestInit): Promise<MaintenanceRate[]> => {
+
+  return customFetch<MaintenanceRate[]>(getListMaintenanceRatesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListMaintenanceRatesQueryKey = () => {
+    return [
+    `/api/maintenance-rates`
+    ] as const;
+    }
+
+
+export const getListMaintenanceRatesQueryOptions = <TData = Awaited<ReturnType<typeof listMaintenanceRates>>, TError = ErrorType<void>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listMaintenanceRates>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListMaintenanceRatesQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listMaintenanceRates>>> = ({ signal }) => listMaintenanceRates({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listMaintenanceRates>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListMaintenanceRatesQueryResult = NonNullable<Awaited<ReturnType<typeof listMaintenanceRates>>>
+export type ListMaintenanceRatesQueryError = ErrorType<void>
+
+
+/**
+ * @summary List monthly maintenance amounts by flat type (admin only)
+ */
+
+export function useListMaintenanceRates<TData = Awaited<ReturnType<typeof listMaintenanceRates>>, TError = ErrorType<void>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listMaintenanceRates>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListMaintenanceRatesQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getUpdateMaintenanceRateUrl = (flatType: '1bhk' | '2bhk' | '3bhk' | '4bhk',) => {
+
+
+
+
+  return `/api/maintenance-rates/${flatType}`
+}
+
+/**
+ * @summary Set the monthly maintenance amount for a flat type (admin only)
+ */
+export const updateMaintenanceRate = async (flatType: '1bhk' | '2bhk' | '3bhk' | '4bhk',
+    maintenanceRateInput: MaintenanceRateInput, options?: RequestInit): Promise<MaintenanceRate> => {
+
+  return customFetch<MaintenanceRate>(getUpdateMaintenanceRateUrl(flatType),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(maintenanceRateInput)
+  }
+);}
+
+
+
+
+
+export const getUpdateMaintenanceRateMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateMaintenanceRate>>, TError,{flatType: '1bhk' | '2bhk' | '3bhk' | '4bhk';data: BodyType<MaintenanceRateInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateMaintenanceRate>>, TError,{flatType: '1bhk' | '2bhk' | '3bhk' | '4bhk';data: BodyType<MaintenanceRateInput>}, TContext> => {
+
+const mutationKey = ['updateMaintenanceRate'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateMaintenanceRate>>, {flatType: '1bhk' | '2bhk' | '3bhk' | '4bhk';data: BodyType<MaintenanceRateInput>}> = (props) => {
+          const {flatType,data} = props ?? {};
+
+          return  updateMaintenanceRate(flatType,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateMaintenanceRateMutationResult = NonNullable<Awaited<ReturnType<typeof updateMaintenanceRate>>>
+    export type UpdateMaintenanceRateMutationBody = BodyType<MaintenanceRateInput>
+    export type UpdateMaintenanceRateMutationError = ErrorType<void>
+
+    /**
+ * @summary Set the monthly maintenance amount for a flat type (admin only)
+ */
+export const useUpdateMaintenanceRate = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateMaintenanceRate>>, TError,{flatType: '1bhk' | '2bhk' | '3bhk' | '4bhk';data: BodyType<MaintenanceRateInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateMaintenanceRate>>,
+        TError,
+        {flatType: '1bhk' | '2bhk' | '3bhk' | '4bhk';data: BodyType<MaintenanceRateInput>},
+        TContext
+      > => {
+      return useMutation(getUpdateMaintenanceRateMutationOptions(options));
+    }
+
+export const getGetMaintenanceSettingsUrl = () => {
+
+
+
+
+  return `/api/maintenance-settings`
+}
+
+/**
+ * @summary Get maintenance billing settings (admin only)
+ */
+export const getMaintenanceSettings = async ( options?: RequestInit): Promise<MaintenanceSettings> => {
+
+  return customFetch<MaintenanceSettings>(getGetMaintenanceSettingsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetMaintenanceSettingsQueryKey = () => {
+    return [
+    `/api/maintenance-settings`
+    ] as const;
+    }
+
+
+export const getGetMaintenanceSettingsQueryOptions = <TData = Awaited<ReturnType<typeof getMaintenanceSettings>>, TError = ErrorType<void>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getMaintenanceSettings>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetMaintenanceSettingsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getMaintenanceSettings>>> = ({ signal }) => getMaintenanceSettings({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getMaintenanceSettings>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetMaintenanceSettingsQueryResult = NonNullable<Awaited<ReturnType<typeof getMaintenanceSettings>>>
+export type GetMaintenanceSettingsQueryError = ErrorType<void>
+
+
+/**
+ * @summary Get maintenance billing settings (admin only)
+ */
+
+export function useGetMaintenanceSettings<TData = Awaited<ReturnType<typeof getMaintenanceSettings>>, TError = ErrorType<void>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getMaintenanceSettings>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetMaintenanceSettingsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getUpdateMaintenanceSettingsUrl = () => {
+
+
+
+
+  return `/api/maintenance-settings`
+}
+
+/**
+ * @summary Update maintenance billing settings (admin only)
+ */
+export const updateMaintenanceSettings = async (maintenanceSettingsInput: MaintenanceSettingsInput, options?: RequestInit): Promise<MaintenanceSettings> => {
+
+  return customFetch<MaintenanceSettings>(getUpdateMaintenanceSettingsUrl(),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(maintenanceSettingsInput)
+  }
+);}
+
+
+
+
+
+export const getUpdateMaintenanceSettingsMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateMaintenanceSettings>>, TError,{data: BodyType<MaintenanceSettingsInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateMaintenanceSettings>>, TError,{data: BodyType<MaintenanceSettingsInput>}, TContext> => {
+
+const mutationKey = ['updateMaintenanceSettings'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateMaintenanceSettings>>, {data: BodyType<MaintenanceSettingsInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  updateMaintenanceSettings(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateMaintenanceSettingsMutationResult = NonNullable<Awaited<ReturnType<typeof updateMaintenanceSettings>>>
+    export type UpdateMaintenanceSettingsMutationBody = BodyType<MaintenanceSettingsInput>
+    export type UpdateMaintenanceSettingsMutationError = ErrorType<void>
+
+    /**
+ * @summary Update maintenance billing settings (admin only)
+ */
+export const useUpdateMaintenanceSettings = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateMaintenanceSettings>>, TError,{data: BodyType<MaintenanceSettingsInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateMaintenanceSettings>>,
+        TError,
+        {data: BodyType<MaintenanceSettingsInput>},
+        TContext
+      > => {
+      return useMutation(getUpdateMaintenanceSettingsMutationOptions(options));
+    }
+
+export const getListMaintenanceDiscountsUrl = () => {
+
+
+
+
+  return `/api/maintenance-discounts`
+}
+
+/**
+ * @summary List maintenance discount rules (admin only)
+ */
+export const listMaintenanceDiscounts = async ( options?: RequestInit): Promise<MaintenanceDiscount[]> => {
+
+  return customFetch<MaintenanceDiscount[]>(getListMaintenanceDiscountsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListMaintenanceDiscountsQueryKey = () => {
+    return [
+    `/api/maintenance-discounts`
+    ] as const;
+    }
+
+
+export const getListMaintenanceDiscountsQueryOptions = <TData = Awaited<ReturnType<typeof listMaintenanceDiscounts>>, TError = ErrorType<void>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listMaintenanceDiscounts>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListMaintenanceDiscountsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listMaintenanceDiscounts>>> = ({ signal }) => listMaintenanceDiscounts({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listMaintenanceDiscounts>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListMaintenanceDiscountsQueryResult = NonNullable<Awaited<ReturnType<typeof listMaintenanceDiscounts>>>
+export type ListMaintenanceDiscountsQueryError = ErrorType<void>
+
+
+/**
+ * @summary List maintenance discount rules (admin only)
+ */
+
+export function useListMaintenanceDiscounts<TData = Awaited<ReturnType<typeof listMaintenanceDiscounts>>, TError = ErrorType<void>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listMaintenanceDiscounts>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListMaintenanceDiscountsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateMaintenanceDiscountUrl = () => {
+
+
+
+
+  return `/api/maintenance-discounts`
+}
+
+/**
+ * @summary Add a maintenance discount rule (admin only)
+ */
+export const createMaintenanceDiscount = async (maintenanceDiscountInput: MaintenanceDiscountInput, options?: RequestInit): Promise<MaintenanceDiscount> => {
+
+  return customFetch<MaintenanceDiscount>(getCreateMaintenanceDiscountUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(maintenanceDiscountInput)
+  }
+);}
+
+
+
+
+
+export const getCreateMaintenanceDiscountMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createMaintenanceDiscount>>, TError,{data: BodyType<MaintenanceDiscountInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createMaintenanceDiscount>>, TError,{data: BodyType<MaintenanceDiscountInput>}, TContext> => {
+
+const mutationKey = ['createMaintenanceDiscount'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createMaintenanceDiscount>>, {data: BodyType<MaintenanceDiscountInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createMaintenanceDiscount(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateMaintenanceDiscountMutationResult = NonNullable<Awaited<ReturnType<typeof createMaintenanceDiscount>>>
+    export type CreateMaintenanceDiscountMutationBody = BodyType<MaintenanceDiscountInput>
+    export type CreateMaintenanceDiscountMutationError = ErrorType<void>
+
+    /**
+ * @summary Add a maintenance discount rule (admin only)
+ */
+export const useCreateMaintenanceDiscount = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createMaintenanceDiscount>>, TError,{data: BodyType<MaintenanceDiscountInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createMaintenanceDiscount>>,
+        TError,
+        {data: BodyType<MaintenanceDiscountInput>},
+        TContext
+      > => {
+      return useMutation(getCreateMaintenanceDiscountMutationOptions(options));
+    }
+
+export const getUpdateMaintenanceDiscountUrl = (id: number,) => {
+
+
+
+
+  return `/api/maintenance-discounts/${id}`
+}
+
+/**
+ * @summary Update a maintenance discount rule (admin only)
+ */
+export const updateMaintenanceDiscount = async (id: number,
+    maintenanceDiscountInput: MaintenanceDiscountInput, options?: RequestInit): Promise<MaintenanceDiscount> => {
+
+  return customFetch<MaintenanceDiscount>(getUpdateMaintenanceDiscountUrl(id),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(maintenanceDiscountInput)
+  }
+);}
+
+
+
+
+
+export const getUpdateMaintenanceDiscountMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateMaintenanceDiscount>>, TError,{id: number;data: BodyType<MaintenanceDiscountInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateMaintenanceDiscount>>, TError,{id: number;data: BodyType<MaintenanceDiscountInput>}, TContext> => {
+
+const mutationKey = ['updateMaintenanceDiscount'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateMaintenanceDiscount>>, {id: number;data: BodyType<MaintenanceDiscountInput>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateMaintenanceDiscount(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateMaintenanceDiscountMutationResult = NonNullable<Awaited<ReturnType<typeof updateMaintenanceDiscount>>>
+    export type UpdateMaintenanceDiscountMutationBody = BodyType<MaintenanceDiscountInput>
+    export type UpdateMaintenanceDiscountMutationError = ErrorType<void>
+
+    /**
+ * @summary Update a maintenance discount rule (admin only)
+ */
+export const useUpdateMaintenanceDiscount = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateMaintenanceDiscount>>, TError,{id: number;data: BodyType<MaintenanceDiscountInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateMaintenanceDiscount>>,
+        TError,
+        {id: number;data: BodyType<MaintenanceDiscountInput>},
+        TContext
+      > => {
+      return useMutation(getUpdateMaintenanceDiscountMutationOptions(options));
+    }
+
+export const getDeleteMaintenanceDiscountUrl = (id: number,) => {
+
+
+
+
+  return `/api/maintenance-discounts/${id}`
+}
+
+/**
+ * @summary Delete a maintenance discount rule (admin only)
+ */
+export const deleteMaintenanceDiscount = async (id: number, options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getDeleteMaintenanceDiscountUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getDeleteMaintenanceDiscountMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteMaintenanceDiscount>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteMaintenanceDiscount>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['deleteMaintenanceDiscount'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteMaintenanceDiscount>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteMaintenanceDiscount(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteMaintenanceDiscountMutationResult = NonNullable<Awaited<ReturnType<typeof deleteMaintenanceDiscount>>>
+
+    export type DeleteMaintenanceDiscountMutationError = ErrorType<void>
+
+    /**
+ * @summary Delete a maintenance discount rule (admin only)
+ */
+export const useDeleteMaintenanceDiscount = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteMaintenanceDiscount>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteMaintenanceDiscount>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+      return useMutation(getDeleteMaintenanceDiscountMutationOptions(options));
+    }
+
+export const getListSpecialContributionsUrl = () => {
+
+
+
+
+  return `/api/special-contributions`
+}
+
+/**
+ * @summary List special contributions (admin only)
+ */
+export const listSpecialContributions = async ( options?: RequestInit): Promise<SpecialContribution[]> => {
+
+  return customFetch<SpecialContribution[]>(getListSpecialContributionsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListSpecialContributionsQueryKey = () => {
+    return [
+    `/api/special-contributions`
+    ] as const;
+    }
+
+
+export const getListSpecialContributionsQueryOptions = <TData = Awaited<ReturnType<typeof listSpecialContributions>>, TError = ErrorType<void>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listSpecialContributions>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListSpecialContributionsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listSpecialContributions>>> = ({ signal }) => listSpecialContributions({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listSpecialContributions>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListSpecialContributionsQueryResult = NonNullable<Awaited<ReturnType<typeof listSpecialContributions>>>
+export type ListSpecialContributionsQueryError = ErrorType<void>
+
+
+/**
+ * @summary List special contributions (admin only)
+ */
+
+export function useListSpecialContributions<TData = Awaited<ReturnType<typeof listSpecialContributions>>, TError = ErrorType<void>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listSpecialContributions>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListSpecialContributionsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateSpecialContributionUrl = () => {
+
+
+
+
+  return `/api/special-contributions`
+}
+
+/**
+ * @summary Announce a special contribution (admin only)
+ */
+export const createSpecialContribution = async (specialContributionInput: SpecialContributionInput, options?: RequestInit): Promise<SpecialContribution> => {
+
+  return customFetch<SpecialContribution>(getCreateSpecialContributionUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(specialContributionInput)
+  }
+);}
+
+
+
+
+
+export const getCreateSpecialContributionMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createSpecialContribution>>, TError,{data: BodyType<SpecialContributionInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createSpecialContribution>>, TError,{data: BodyType<SpecialContributionInput>}, TContext> => {
+
+const mutationKey = ['createSpecialContribution'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createSpecialContribution>>, {data: BodyType<SpecialContributionInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createSpecialContribution(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateSpecialContributionMutationResult = NonNullable<Awaited<ReturnType<typeof createSpecialContribution>>>
+    export type CreateSpecialContributionMutationBody = BodyType<SpecialContributionInput>
+    export type CreateSpecialContributionMutationError = ErrorType<void>
+
+    /**
+ * @summary Announce a special contribution (admin only)
+ */
+export const useCreateSpecialContribution = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createSpecialContribution>>, TError,{data: BodyType<SpecialContributionInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createSpecialContribution>>,
+        TError,
+        {data: BodyType<SpecialContributionInput>},
+        TContext
+      > => {
+      return useMutation(getCreateSpecialContributionMutationOptions(options));
+    }
+
+export const getDeleteSpecialContributionUrl = (id: number,) => {
+
+
+
+
+  return `/api/special-contributions/${id}`
+}
+
+/**
+ * @summary Delete a special contribution (admin only)
+ */
+export const deleteSpecialContribution = async (id: number, options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getDeleteSpecialContributionUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getDeleteSpecialContributionMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteSpecialContribution>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteSpecialContribution>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['deleteSpecialContribution'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteSpecialContribution>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteSpecialContribution(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteSpecialContributionMutationResult = NonNullable<Awaited<ReturnType<typeof deleteSpecialContribution>>>
+
+    export type DeleteSpecialContributionMutationError = ErrorType<void>
+
+    /**
+ * @summary Delete a special contribution (admin only)
+ */
+export const useDeleteSpecialContribution = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteSpecialContribution>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteSpecialContribution>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+      return useMutation(getDeleteSpecialContributionMutationOptions(options));
+    }
+
+export const getListVendorBillsUrl = () => {
+
+
+
+
+  return `/api/vendor-bills`
+}
+
+/**
+ * @summary List vendor bills (maintenance expenses), with paid-so-far and status (admin only)
+ */
+export const listVendorBills = async ( options?: RequestInit): Promise<VendorBill[]> => {
+
+  return customFetch<VendorBill[]>(getListVendorBillsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListVendorBillsQueryKey = () => {
+    return [
+    `/api/vendor-bills`
+    ] as const;
+    }
+
+
+export const getListVendorBillsQueryOptions = <TData = Awaited<ReturnType<typeof listVendorBills>>, TError = ErrorType<void>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listVendorBills>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListVendorBillsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listVendorBills>>> = ({ signal }) => listVendorBills({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listVendorBills>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListVendorBillsQueryResult = NonNullable<Awaited<ReturnType<typeof listVendorBills>>>
+export type ListVendorBillsQueryError = ErrorType<void>
+
+
+/**
+ * @summary List vendor bills (maintenance expenses), with paid-so-far and status (admin only)
+ */
+
+export function useListVendorBills<TData = Awaited<ReturnType<typeof listVendorBills>>, TError = ErrorType<void>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listVendorBills>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListVendorBillsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateVendorBillUrl = () => {
+
+
+
+
+  return `/api/vendor-bills`
+}
+
+/**
+ * @summary Add a vendor bill (admin only)
+ */
+export const createVendorBill = async (vendorBillInput: VendorBillInput, options?: RequestInit): Promise<VendorBill> => {
+
+  return customFetch<VendorBill>(getCreateVendorBillUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(vendorBillInput)
+  }
+);}
+
+
+
+
+
+export const getCreateVendorBillMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createVendorBill>>, TError,{data: BodyType<VendorBillInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createVendorBill>>, TError,{data: BodyType<VendorBillInput>}, TContext> => {
+
+const mutationKey = ['createVendorBill'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createVendorBill>>, {data: BodyType<VendorBillInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createVendorBill(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateVendorBillMutationResult = NonNullable<Awaited<ReturnType<typeof createVendorBill>>>
+    export type CreateVendorBillMutationBody = BodyType<VendorBillInput>
+    export type CreateVendorBillMutationError = ErrorType<void>
+
+    /**
+ * @summary Add a vendor bill (admin only)
+ */
+export const useCreateVendorBill = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createVendorBill>>, TError,{data: BodyType<VendorBillInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createVendorBill>>,
+        TError,
+        {data: BodyType<VendorBillInput>},
+        TContext
+      > => {
+      return useMutation(getCreateVendorBillMutationOptions(options));
+    }
+
+export const getDeleteVendorBillUrl = (id: number,) => {
+
+
+
+
+  return `/api/vendor-bills/${id}`
+}
+
+/**
+ * @summary Delete a vendor bill (admin only) — fails if payments have been recorded against it
+ */
+export const deleteVendorBill = async (id: number, options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getDeleteVendorBillUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getDeleteVendorBillMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteVendorBill>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteVendorBill>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['deleteVendorBill'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteVendorBill>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteVendorBill(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteVendorBillMutationResult = NonNullable<Awaited<ReturnType<typeof deleteVendorBill>>>
+
+    export type DeleteVendorBillMutationError = ErrorType<void>
+
+    /**
+ * @summary Delete a vendor bill (admin only) — fails if payments have been recorded against it
+ */
+export const useDeleteVendorBill = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteVendorBill>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteVendorBill>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+      return useMutation(getDeleteVendorBillMutationOptions(options));
+    }
+
+export const getListBillPaymentsUrl = (params?: ListBillPaymentsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/bill-payments?${stringifiedParams}` : `/api/bill-payments`
+}
+
+/**
+ * @summary List bill payments, optionally filtered to one vendor bill (admin only)
+ */
+export const listBillPayments = async (params?: ListBillPaymentsParams, options?: RequestInit): Promise<BillPayment[]> => {
+
+  return customFetch<BillPayment[]>(getListBillPaymentsUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListBillPaymentsQueryKey = (params?: ListBillPaymentsParams,) => {
+    return [
+    `/api/bill-payments`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getListBillPaymentsQueryOptions = <TData = Awaited<ReturnType<typeof listBillPayments>>, TError = ErrorType<void>>(params?: ListBillPaymentsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listBillPayments>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListBillPaymentsQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listBillPayments>>> = ({ signal }) => listBillPayments(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listBillPayments>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListBillPaymentsQueryResult = NonNullable<Awaited<ReturnType<typeof listBillPayments>>>
+export type ListBillPaymentsQueryError = ErrorType<void>
+
+
+/**
+ * @summary List bill payments, optionally filtered to one vendor bill (admin only)
+ */
+
+export function useListBillPayments<TData = Awaited<ReturnType<typeof listBillPayments>>, TError = ErrorType<void>>(
+ params?: ListBillPaymentsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listBillPayments>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListBillPaymentsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateBillPaymentUrl = () => {
+
+
+
+
+  return `/api/bill-payments`
+}
+
+/**
+ * @summary Record a payment against a vendor bill (admin only)
+ */
+export const createBillPayment = async (billPaymentInput: BillPaymentInput, options?: RequestInit): Promise<BillPayment> => {
+
+  return customFetch<BillPayment>(getCreateBillPaymentUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(billPaymentInput)
+  }
+);}
+
+
+
+
+
+export const getCreateBillPaymentMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createBillPayment>>, TError,{data: BodyType<BillPaymentInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createBillPayment>>, TError,{data: BodyType<BillPaymentInput>}, TContext> => {
+
+const mutationKey = ['createBillPayment'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createBillPayment>>, {data: BodyType<BillPaymentInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createBillPayment(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateBillPaymentMutationResult = NonNullable<Awaited<ReturnType<typeof createBillPayment>>>
+    export type CreateBillPaymentMutationBody = BodyType<BillPaymentInput>
+    export type CreateBillPaymentMutationError = ErrorType<void>
+
+    /**
+ * @summary Record a payment against a vendor bill (admin only)
+ */
+export const useCreateBillPayment = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createBillPayment>>, TError,{data: BodyType<BillPaymentInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createBillPayment>>,
+        TError,
+        {data: BodyType<BillPaymentInput>},
+        TContext
+      > => {
+      return useMutation(getCreateBillPaymentMutationOptions(options));
+    }
+
+export const getDeleteBillPaymentUrl = (id: number,) => {
+
+
+
+
+  return `/api/bill-payments/${id}`
+}
+
+/**
+ * @summary Delete a bill payment record (admin only)
+ */
+export const deleteBillPayment = async (id: number, options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getDeleteBillPaymentUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getDeleteBillPaymentMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteBillPayment>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteBillPayment>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['deleteBillPayment'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteBillPayment>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteBillPayment(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteBillPaymentMutationResult = NonNullable<Awaited<ReturnType<typeof deleteBillPayment>>>
+
+    export type DeleteBillPaymentMutationError = ErrorType<void>
+
+    /**
+ * @summary Delete a bill payment record (admin only)
+ */
+export const useDeleteBillPayment = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteBillPayment>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteBillPayment>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+      return useMutation(getDeleteBillPaymentMutationOptions(options));
+    }
+
+export const getListMaintenanceCollectionsUrl = (params?: ListMaintenanceCollectionsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/maintenance-collections?${stringifiedParams}` : `/api/maintenance-collections`
+}
+
+/**
+ * @summary List maintenance collections, optionally filtered to one flat (admin only)
+ */
+export const listMaintenanceCollections = async (params?: ListMaintenanceCollectionsParams, options?: RequestInit): Promise<MaintenanceCollection[]> => {
+
+  return customFetch<MaintenanceCollection[]>(getListMaintenanceCollectionsUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListMaintenanceCollectionsQueryKey = (params?: ListMaintenanceCollectionsParams,) => {
+    return [
+    `/api/maintenance-collections`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getListMaintenanceCollectionsQueryOptions = <TData = Awaited<ReturnType<typeof listMaintenanceCollections>>, TError = ErrorType<void>>(params?: ListMaintenanceCollectionsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listMaintenanceCollections>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListMaintenanceCollectionsQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listMaintenanceCollections>>> = ({ signal }) => listMaintenanceCollections(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listMaintenanceCollections>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListMaintenanceCollectionsQueryResult = NonNullable<Awaited<ReturnType<typeof listMaintenanceCollections>>>
+export type ListMaintenanceCollectionsQueryError = ErrorType<void>
+
+
+/**
+ * @summary List maintenance collections, optionally filtered to one flat (admin only)
+ */
+
+export function useListMaintenanceCollections<TData = Awaited<ReturnType<typeof listMaintenanceCollections>>, TError = ErrorType<void>>(
+ params?: ListMaintenanceCollectionsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listMaintenanceCollections>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListMaintenanceCollectionsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateMaintenanceCollectionUrl = () => {
+
+
+
+
+  return `/api/maintenance-collections`
+}
+
+/**
+ * @summary Record a maintenance payment for a flat (admin only)
+ */
+export const createMaintenanceCollection = async (maintenanceCollectionInput: MaintenanceCollectionInput, options?: RequestInit): Promise<MaintenanceCollection> => {
+
+  return customFetch<MaintenanceCollection>(getCreateMaintenanceCollectionUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(maintenanceCollectionInput)
+  }
+);}
+
+
+
+
+
+export const getCreateMaintenanceCollectionMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createMaintenanceCollection>>, TError,{data: BodyType<MaintenanceCollectionInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createMaintenanceCollection>>, TError,{data: BodyType<MaintenanceCollectionInput>}, TContext> => {
+
+const mutationKey = ['createMaintenanceCollection'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createMaintenanceCollection>>, {data: BodyType<MaintenanceCollectionInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createMaintenanceCollection(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateMaintenanceCollectionMutationResult = NonNullable<Awaited<ReturnType<typeof createMaintenanceCollection>>>
+    export type CreateMaintenanceCollectionMutationBody = BodyType<MaintenanceCollectionInput>
+    export type CreateMaintenanceCollectionMutationError = ErrorType<void>
+
+    /**
+ * @summary Record a maintenance payment for a flat (admin only)
+ */
+export const useCreateMaintenanceCollection = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createMaintenanceCollection>>, TError,{data: BodyType<MaintenanceCollectionInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createMaintenanceCollection>>,
+        TError,
+        {data: BodyType<MaintenanceCollectionInput>},
+        TContext
+      > => {
+      return useMutation(getCreateMaintenanceCollectionMutationOptions(options));
+    }
+
+export const getDeleteMaintenanceCollectionUrl = (id: number,) => {
+
+
+
+
+  return `/api/maintenance-collections/${id}`
+}
+
+/**
+ * @summary Delete a maintenance collection record (admin only)
+ */
+export const deleteMaintenanceCollection = async (id: number, options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getDeleteMaintenanceCollectionUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getDeleteMaintenanceCollectionMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteMaintenanceCollection>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteMaintenanceCollection>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['deleteMaintenanceCollection'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteMaintenanceCollection>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteMaintenanceCollection(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteMaintenanceCollectionMutationResult = NonNullable<Awaited<ReturnType<typeof deleteMaintenanceCollection>>>
+
+    export type DeleteMaintenanceCollectionMutationError = ErrorType<void>
+
+    /**
+ * @summary Delete a maintenance collection record (admin only)
+ */
+export const useDeleteMaintenanceCollection = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteMaintenanceCollection>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteMaintenanceCollection>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+      return useMutation(getDeleteMaintenanceCollectionMutationOptions(options));
     }
 

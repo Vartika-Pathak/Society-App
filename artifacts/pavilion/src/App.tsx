@@ -28,6 +28,12 @@ import BuildingMaster from './pages/admin/masters/buildings';
 import FlatMaster from './pages/admin/masters/flats';
 import ExpenseMaster from './pages/admin/masters/expenses';
 import VendorMaster from './pages/admin/masters/vendors';
+import MaintenanceSettings from './pages/admin/transactions/maintenance-settings';
+import MaintenanceDiscounts from './pages/admin/transactions/maintenance-discounts';
+import SpecialContributions from './pages/admin/transactions/special-contributions';
+import MaintenanceExpenses from './pages/admin/transactions/maintenance-expenses';
+import BillPayments from './pages/admin/transactions/bill-payments';
+import MaintenanceCollections from './pages/admin/transactions/maintenance-collections';
 import NotFound from '@/pages/not-found';
 
 const queryClient = new QueryClient();
@@ -125,6 +131,36 @@ function Router() {
       <Route path="/admin/masters/vendors">
         <RequireAuth roles={["admin"]}>
           <VendorMaster />
+        </RequireAuth>
+      </Route>
+      <Route path="/admin/transactions/maintenance-settings">
+        <RequireAuth roles={["admin"]}>
+          <MaintenanceSettings />
+        </RequireAuth>
+      </Route>
+      <Route path="/admin/transactions/maintenance-discounts">
+        <RequireAuth roles={["admin"]}>
+          <MaintenanceDiscounts />
+        </RequireAuth>
+      </Route>
+      <Route path="/admin/transactions/special-contributions">
+        <RequireAuth roles={["admin"]}>
+          <SpecialContributions />
+        </RequireAuth>
+      </Route>
+      <Route path="/admin/transactions/maintenance-expenses">
+        <RequireAuth roles={["admin"]}>
+          <MaintenanceExpenses />
+        </RequireAuth>
+      </Route>
+      <Route path="/admin/transactions/bill-payments">
+        <RequireAuth roles={["admin"]}>
+          <BillPayments />
+        </RequireAuth>
+      </Route>
+      <Route path="/admin/transactions/maintenance-collections">
+        <RequireAuth roles={["admin"]}>
+          <MaintenanceCollections />
         </RequireAuth>
       </Route>
       <Route component={NotFound} />

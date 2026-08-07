@@ -599,8 +599,247 @@ export interface VendorInput {
   openingBalancePaise?: number;
 }
 
+export type MaintenanceRateFlatType = typeof MaintenanceRateFlatType[keyof typeof MaintenanceRateFlatType];
+
+
+export const MaintenanceRateFlatType = {
+  '1bhk': '1bhk',
+  '2bhk': '2bhk',
+  '3bhk': '3bhk',
+  '4bhk': '4bhk',
+} as const;
+
+export interface MaintenanceRate {
+  id: number;
+  flatType: MaintenanceRateFlatType;
+  monthlyAmountPaise: number;
+}
+
+export interface MaintenanceRateInput {
+  /** @minimum 0 */
+  monthlyAmountPaise: number;
+}
+
+export interface MaintenanceSettings {
+  id: number;
+  dueDay: number;
+  lateFeePercent: number;
+  openingBalanceNote: string;
+}
+
+export interface MaintenanceSettingsInput {
+  /**
+     * @minimum 1
+     * @maximum 28
+     */
+  dueDay: number;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  lateFeePercent: number;
+  openingBalanceNote: string;
+}
+
+export type MaintenanceDiscountDiscountType = typeof MaintenanceDiscountDiscountType[keyof typeof MaintenanceDiscountDiscountType];
+
+
+export const MaintenanceDiscountDiscountType = {
+  percent: 'percent',
+  fixed: 'fixed',
+} as const;
+
+export interface MaintenanceDiscount {
+  id: number;
+  name: string;
+  discountType: MaintenanceDiscountDiscountType;
+  value: number;
+  /** @nullable */
+  description: string | null;
+  active: boolean;
+}
+
+export type MaintenanceDiscountInputDiscountType = typeof MaintenanceDiscountInputDiscountType[keyof typeof MaintenanceDiscountInputDiscountType];
+
+
+export const MaintenanceDiscountInputDiscountType = {
+  percent: 'percent',
+  fixed: 'fixed',
+} as const;
+
+export interface MaintenanceDiscountInput {
+  /** @minLength 1 */
+  name: string;
+  discountType: MaintenanceDiscountInputDiscountType;
+  /** @minimum 0 */
+  value: number;
+  description?: string;
+  active: boolean;
+}
+
+export interface SpecialContribution {
+  id: number;
+  title: string;
+  /** @nullable */
+  description: string | null;
+  amountPaise: number;
+  dueDate: string;
+  createdAt: string;
+}
+
+export interface SpecialContributionInput {
+  /** @minLength 1 */
+  title: string;
+  description?: string;
+  /** @minimum 0 */
+  amountPaise: number;
+  /** @minLength 1 */
+  dueDate: string;
+}
+
+export type VendorBillStatus = typeof VendorBillStatus[keyof typeof VendorBillStatus];
+
+
+export const VendorBillStatus = {
+  unpaid: 'unpaid',
+  partially_paid: 'partially_paid',
+  paid: 'paid',
+} as const;
+
+export interface VendorBill {
+  id: number;
+  vendorId: number;
+  vendorName: string;
+  expenseCategoryId: number;
+  expenseCategoryName: string;
+  billNumber: string;
+  billDate: string;
+  amountPaise: number;
+  /** @nullable */
+  description: string | null;
+  paidAmountPaise: number;
+  status: VendorBillStatus;
+  createdAt: string;
+}
+
+export interface VendorBillInput {
+  vendorId: number;
+  expenseCategoryId: number;
+  /** @minLength 1 */
+  billNumber: string;
+  /** @minLength 1 */
+  billDate: string;
+  /** @minimum 1 */
+  amountPaise: number;
+  description?: string;
+}
+
+export type BillPaymentPaymentMode = typeof BillPaymentPaymentMode[keyof typeof BillPaymentPaymentMode];
+
+
+export const BillPaymentPaymentMode = {
+  cash: 'cash',
+  cheque: 'cheque',
+  upi: 'upi',
+  bank_transfer: 'bank_transfer',
+} as const;
+
+export interface BillPayment {
+  id: number;
+  vendorBillId: number;
+  amountPaise: number;
+  paymentDate: string;
+  paymentMode: BillPaymentPaymentMode;
+  /** @nullable */
+  referenceNumber: string | null;
+  /** @nullable */
+  notes: string | null;
+  createdAt: string;
+}
+
+export type BillPaymentInputPaymentMode = typeof BillPaymentInputPaymentMode[keyof typeof BillPaymentInputPaymentMode];
+
+
+export const BillPaymentInputPaymentMode = {
+  cash: 'cash',
+  cheque: 'cheque',
+  upi: 'upi',
+  bank_transfer: 'bank_transfer',
+} as const;
+
+export interface BillPaymentInput {
+  vendorBillId: number;
+  /** @minimum 1 */
+  amountPaise: number;
+  /** @minLength 1 */
+  paymentDate: string;
+  paymentMode: BillPaymentInputPaymentMode;
+  referenceNumber?: string;
+  notes?: string;
+}
+
+export type MaintenanceCollectionPaymentMode = typeof MaintenanceCollectionPaymentMode[keyof typeof MaintenanceCollectionPaymentMode];
+
+
+export const MaintenanceCollectionPaymentMode = {
+  cash: 'cash',
+  cheque: 'cheque',
+  upi: 'upi',
+  bank_transfer: 'bank_transfer',
+} as const;
+
+export interface MaintenanceCollection {
+  id: number;
+  flatId: number;
+  buildingName: string;
+  flatNumber: string;
+  payerName: string;
+  amountPaise: number;
+  paymentDate: string;
+  paymentMode: MaintenanceCollectionPaymentMode;
+  forMonth: string;
+  /** @nullable */
+  referenceNumber: string | null;
+  /** @nullable */
+  notes: string | null;
+  createdAt: string;
+}
+
+export type MaintenanceCollectionInputPaymentMode = typeof MaintenanceCollectionInputPaymentMode[keyof typeof MaintenanceCollectionInputPaymentMode];
+
+
+export const MaintenanceCollectionInputPaymentMode = {
+  cash: 'cash',
+  cheque: 'cheque',
+  upi: 'upi',
+  bank_transfer: 'bank_transfer',
+} as const;
+
+export interface MaintenanceCollectionInput {
+  flatId: number;
+  /** @minLength 1 */
+  payerName: string;
+  /** @minimum 1 */
+  amountPaise: number;
+  /** @minLength 1 */
+  paymentDate: string;
+  paymentMode: MaintenanceCollectionInputPaymentMode;
+  /** @minLength 1 */
+  forMonth: string;
+  referenceNumber?: string;
+  notes?: string;
+}
+
 export type GetAmenityAvailabilityParams = {
 amenityId: string;
 date: string;
+};
+
+export type ListBillPaymentsParams = {
+vendorBillId?: number;
+};
+
+export type ListMaintenanceCollectionsParams = {
+flatId?: number;
 };
 

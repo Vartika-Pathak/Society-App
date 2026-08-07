@@ -19,6 +19,13 @@ import buildingsRouter from "./buildings";
 import flatsRouter from "./flats";
 import expenseCategoriesRouter from "./expenseCategories";
 import vendorsRouter from "./vendors";
+import maintenanceRatesRouter from "./maintenanceRates";
+import maintenanceSettingsRouter from "./maintenanceSettings";
+import maintenanceDiscountsRouter from "./maintenanceDiscounts";
+import specialContributionsRouter from "./specialContributions";
+import vendorBillsRouter from "./vendorBills";
+import billPaymentsRouter from "./billPayments";
+import maintenanceCollectionsRouter from "./maintenanceCollections";
 
 const router: IRouter = Router();
 
@@ -42,5 +49,12 @@ router.use(buildingsRouter);
 router.use(flatsRouter);
 router.use(expenseCategoriesRouter);
 router.use(vendorsRouter);
+router.use(maintenanceRatesRouter);
+router.use(maintenanceSettingsRouter);
+router.use(maintenanceDiscountsRouter);
+router.use(specialContributionsRouter);
+router.use(vendorBillsRouter);
+router.use(billPaymentsRouter);
+router.use(maintenanceCollectionsRouter);
 
 export default router;

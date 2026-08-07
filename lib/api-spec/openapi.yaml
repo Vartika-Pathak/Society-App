@@ -46,6 +46,20 @@ tags:
     description: Expense categories with GST slabs — admin-only
   - name: vendors
     description: Vendors — admin-only
+  - name: maintenance-rates
+    description: Per-flat-type monthly maintenance amounts — admin-only
+  - name: maintenance-settings
+    description: Society-wide maintenance billing settings — admin-only, one record
+  - name: maintenance-discounts
+    description: Maintenance discount rules — admin-only
+  - name: special-contributions
+    description: One-off charges announced to every flat — admin-only
+  - name: vendor-bills
+    description: Vendor bills for maintenance expenses — admin-only
+  - name: bill-payments
+    description: Payments recorded against vendor bills — admin-only
+  - name: maintenance-collections
+    description: Maintenance payments recorded against a flat — admin-only
 paths:
   /healthz:
     get:
@@ -1235,6 +1249,447 @@ paths:
         "404":
           description: Vendor not found
 
+  /maintenance-rates:
+    get:
+      operationId: listMaintenanceRates
+      tags: [maintenance-rates]
+      summary: List monthly maintenance amounts by flat type (admin only)
+      responses:
+        "200":
+          description: Maintenance rates
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MaintenanceRate"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+
+  /maintenance-rates/{flatType}:
+    put:
+      operationId: updateMaintenanceRate
+      tags: [maintenance-rates]
+      summary: Set the monthly maintenance amount for a flat type (admin only)
+      parameters:
+        - in: path
+          name: flatType
+          required: true
+          schema:
+            type: string
+            enum: [1bhk, 2bhk, 3bhk, 4bhk]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MaintenanceRateInput"
+      responses:
+        "200":
+          description: Rate updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MaintenanceRate"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+
+  /maintenance-settings:
+    get:
+      operationId: getMaintenanceSettings
+      tags: [maintenance-settings]
+      summary: Get maintenance billing settings (admin only)
+      responses:
+        "200":
+          description: Maintenance settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MaintenanceSettings"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+    put:
+      operationId: updateMaintenanceSettings
+      tags: [maintenance-settings]
+      summary: Update maintenance billing settings (admin only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MaintenanceSettingsInput"
+      responses:
+        "200":
+          description: Maintenance settings updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MaintenanceSettings"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+
+  /maintenance-discounts:
+    get:
+      operationId: listMaintenanceDiscounts
+      tags: [maintenance-discounts]
+      summary: List maintenance discount rules (admin only)
+      responses:
+        "200":
+          description: Maintenance discounts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MaintenanceDiscount"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+    post:
+      operationId: createMaintenanceDiscount
+      tags: [maintenance-discounts]
+      summary: Add a maintenance discount rule (admin only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MaintenanceDiscountInput"
+      responses:
+        "201":
+          description: Maintenance discount created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MaintenanceDiscount"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+
+  /maintenance-discounts/{id}:
+    put:
+      operationId: updateMaintenanceDiscount
+      tags: [maintenance-discounts]
+      summary: Update a maintenance discount rule (admin only)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MaintenanceDiscountInput"
+      responses:
+        "200":
+          description: Maintenance discount updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MaintenanceDiscount"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+        "404":
+          description: Maintenance discount not found
+    delete:
+      operationId: deleteMaintenanceDiscount
+      tags: [maintenance-discounts]
+      summary: Delete a maintenance discount rule (admin only)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Maintenance discount deleted
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+        "404":
+          description: Maintenance discount not found
+
+  /special-contributions:
+    get:
+      operationId: listSpecialContributions
+      tags: [special-contributions]
+      summary: List special contributions (admin only)
+      responses:
+        "200":
+          description: Special contributions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SpecialContribution"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+    post:
+      operationId: createSpecialContribution
+      tags: [special-contributions]
+      summary: Announce a special contribution (admin only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SpecialContributionInput"
+      responses:
+        "201":
+          description: Special contribution created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SpecialContribution"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+
+  /special-contributions/{id}:
+    delete:
+      operationId: deleteSpecialContribution
+      tags: [special-contributions]
+      summary: Delete a special contribution (admin only)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Special contribution deleted
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+        "404":
+          description: Special contribution not found
+
+  /vendor-bills:
+    get:
+      operationId: listVendorBills
+      tags: [vendor-bills]
+      summary: List vendor bills (maintenance expenses), with paid-so-far and status (admin only)
+      responses:
+        "200":
+          description: Vendor bills
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VendorBill"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+    post:
+      operationId: createVendorBill
+      tags: [vendor-bills]
+      summary: Add a vendor bill (admin only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VendorBillInput"
+      responses:
+        "201":
+          description: Vendor bill created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VendorBill"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+        "404":
+          description: Unknown vendor or expense category
+
+  /vendor-bills/{id}:
+    delete:
+      operationId: deleteVendorBill
+      tags: [vendor-bills]
+      summary: Delete a vendor bill (admin only) — fails if payments have been recorded against it
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Vendor bill deleted
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+        "404":
+          description: Vendor bill not found
+        "409":
+          description: Payments have already been recorded against this bill
+
+  /bill-payments:
+    get:
+      operationId: listBillPayments
+      tags: [bill-payments]
+      summary: List bill payments, optionally filtered to one vendor bill (admin only)
+      parameters:
+        - in: query
+          name: vendorBillId
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Bill payments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BillPayment"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+    post:
+      operationId: createBillPayment
+      tags: [bill-payments]
+      summary: Record a payment against a vendor bill (admin only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BillPaymentInput"
+      responses:
+        "201":
+          description: Bill payment recorded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BillPayment"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+        "404":
+          description: Unknown vendor bill
+
+  /bill-payments/{id}:
+    delete:
+      operationId: deleteBillPayment
+      tags: [bill-payments]
+      summary: Delete a bill payment record (admin only)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Bill payment deleted
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+        "404":
+          description: Bill payment not found
+
+  /maintenance-collections:
+    get:
+      operationId: listMaintenanceCollections
+      tags: [maintenance-collections]
+      summary: List maintenance collections, optionally filtered to one flat (admin only)
+      parameters:
+        - in: query
+          name: flatId
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Maintenance collections
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MaintenanceCollection"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+    post:
+      operationId: createMaintenanceCollection
+      tags: [maintenance-collections]
+      summary: Record a maintenance payment for a flat (admin only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MaintenanceCollectionInput"
+      responses:
+        "201":
+          description: Maintenance collection recorded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MaintenanceCollection"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+        "404":
+          description: Unknown flat
+
+  /maintenance-collections/{id}:
+    delete:
+      operationId: deleteMaintenanceCollection
+      tags: [maintenance-collections]
+      summary: Delete a maintenance collection record (admin only)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Maintenance collection deleted
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+        "404":
+          description: Maintenance collection not found
+
 components:
   schemas:
     HealthStatus:
@@ -1986,3 +2441,310 @@ components:
         openingBalancePaise:
           type: integer
           minimum: 0
+
+    MaintenanceRate:
+      type: object
+      required: [id, flatType, monthlyAmountPaise]
+      properties:
+        id:
+          type: integer
+        flatType:
+          type: string
+          enum: [1bhk, 2bhk, 3bhk, 4bhk]
+        monthlyAmountPaise:
+          type: integer
+
+    MaintenanceRateInput:
+      type: object
+      required: [monthlyAmountPaise]
+      properties:
+        monthlyAmountPaise:
+          type: integer
+          minimum: 0
+
+    MaintenanceSettings:
+      type: object
+      required: [id, dueDay, lateFeePercent, openingBalanceNote]
+      properties:
+        id:
+          type: integer
+        dueDay:
+          type: integer
+        lateFeePercent:
+          type: integer
+        openingBalanceNote:
+          type: string
+
+    MaintenanceSettingsInput:
+      type: object
+      required: [dueDay, lateFeePercent, openingBalanceNote]
+      properties:
+        dueDay:
+          type: integer
+          minimum: 1
+          maximum: 28
+        lateFeePercent:
+          type: integer
+          minimum: 0
+          maximum: 100
+        openingBalanceNote:
+          type: string
+
+    MaintenanceDiscount:
+      type: object
+      required: [id, name, discountType, value, description, active]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        discountType:
+          type: string
+          enum: [percent, fixed]
+        value:
+          type: integer
+        description:
+          type: ["string", "null"]
+        active:
+          type: boolean
+
+    MaintenanceDiscountInput:
+      type: object
+      required: [name, discountType, value, active]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        discountType:
+          type: string
+          enum: [percent, fixed]
+        value:
+          type: integer
+          minimum: 0
+        description:
+          type: string
+        active:
+          type: boolean
+
+    SpecialContribution:
+      type: object
+      required: [id, title, description, amountPaise, dueDate, createdAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: ["string", "null"]
+        amountPaise:
+          type: integer
+        dueDate:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    SpecialContributionInput:
+      type: object
+      required: [title, amountPaise, dueDate]
+      properties:
+        title:
+          type: string
+          minLength: 1
+        description:
+          type: string
+        amountPaise:
+          type: integer
+          minimum: 0
+        dueDate:
+          type: string
+          minLength: 1
+
+    VendorBill:
+      type: object
+      required:
+        [
+          id,
+          vendorId,
+          vendorName,
+          expenseCategoryId,
+          expenseCategoryName,
+          billNumber,
+          billDate,
+          amountPaise,
+          description,
+          paidAmountPaise,
+          status,
+          createdAt,
+        ]
+      properties:
+        id:
+          type: integer
+        vendorId:
+          type: integer
+        vendorName:
+          type: string
+        expenseCategoryId:
+          type: integer
+        expenseCategoryName:
+          type: string
+        billNumber:
+          type: string
+        billDate:
+          type: string
+        amountPaise:
+          type: integer
+        description:
+          type: ["string", "null"]
+        paidAmountPaise:
+          type: integer
+        status:
+          type: string
+          enum: [unpaid, partially_paid, paid]
+        createdAt:
+          type: string
+          format: date-time
+
+    VendorBillInput:
+      type: object
+      required: [vendorId, expenseCategoryId, billNumber, billDate, amountPaise]
+      properties:
+        vendorId:
+          type: integer
+        expenseCategoryId:
+          type: integer
+        billNumber:
+          type: string
+          minLength: 1
+        billDate:
+          type: string
+          minLength: 1
+        amountPaise:
+          type: integer
+          minimum: 1
+        description:
+          type: string
+
+    BillPayment:
+      type: object
+      required:
+        [
+          id,
+          vendorBillId,
+          amountPaise,
+          paymentDate,
+          paymentMode,
+          referenceNumber,
+          notes,
+          createdAt,
+        ]
+      properties:
+        id:
+          type: integer
+        vendorBillId:
+          type: integer
+        amountPaise:
+          type: integer
+        paymentDate:
+          type: string
+        paymentMode:
+          type: string
+          enum: [cash, cheque, upi, bank_transfer]
+        referenceNumber:
+          type: ["string", "null"]
+        notes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+
+    BillPaymentInput:
+      type: object
+      required: [vendorBillId, amountPaise, paymentDate, paymentMode]
+      properties:
+        vendorBillId:
+          type: integer
+        amountPaise:
+          type: integer
+          minimum: 1
+        paymentDate:
+          type: string
+          minLength: 1
+        paymentMode:
+          type: string
+          enum: [cash, cheque, upi, bank_transfer]
+        referenceNumber:
+          type: string
+        notes:
+          type: string
+
+    MaintenanceCollection:
+      type: object
+      required:
+        [
+          id,
+          flatId,
+          buildingName,
+          flatNumber,
+          payerName,
+          amountPaise,
+          paymentDate,
+          paymentMode,
+          forMonth,
+          referenceNumber,
+          notes,
+          createdAt,
+        ]
+      properties:
+        id:
+          type: integer
+        flatId:
+          type: integer
+        buildingName:
+          type: string
+        flatNumber:
+          type: string
+        payerName:
+          type: string
+        amountPaise:
+          type: integer
+        paymentDate:
+          type: string
+        paymentMode:
+          type: string
+          enum: [cash, cheque, upi, bank_transfer]
+        forMonth:
+          type: string
+        referenceNumber:
+          type: ["string", "null"]
+        notes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+
+    MaintenanceCollectionInput:
+      type: object
+      required: [flatId, payerName, amountPaise, paymentDate, paymentMode, forMonth]
+      properties:
+        flatId:
+          type: integer
+        payerName:
+          type: string
+          minLength: 1
+        amountPaise:
+          type: integer
+          minimum: 1
+        paymentDate:
+          type: string
+          minLength: 1
+        paymentMode:
+          type: string
+          enum: [cash, cheque, upi, bank_transfer]
+        forMonth:
+          type: string
+          minLength: 1
+        referenceNumber:
+          type: string
+        notes:
+          type: string
