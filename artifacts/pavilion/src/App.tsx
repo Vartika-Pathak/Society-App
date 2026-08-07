@@ -1,13 +1,11 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import { Route, Switch, Router as WouterRouter } from 'wouter';
+import { Redirect, Route, Switch, Router as WouterRouter } from 'wouter';
 
-import { AuthProvider } from './context/auth-context';
+import { AuthProvider, useAuth } from './context/auth-context';
 import { RequireAuth } from './components/require-auth';
 import { Layout } from './components/layout';
-import Home from './pages/home';
-import About from './pages/about';
 import Members from './pages/members';
 import Events from './pages/events';
 
@@ -28,11 +26,27 @@ import NotFound from '@/pages/not-found';
 
 const queryClient = new QueryClient();
 
+// Pavilion is a resident-only app — there's no public landing page to show, so "/" just
+// sends people to wherever is actually useful to them: their dashboard if signed in,
+// otherwise the login page.
+function Root() {
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="w-full flex-1 flex items-center justify-center py-24">
+        <p className="text-muted-foreground">Loading…</p>
+      </div>
+    );
+  }
+
+  return <Redirect to={user ? '/dashboard' : '/login'} />;
+}
+
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Home} />
-      <Route path="/about" component={About} />
+      <Route path="/" component={Root} />
       <Route path="/members" component={Members} />
       <Route path="/events" component={Events} />
 

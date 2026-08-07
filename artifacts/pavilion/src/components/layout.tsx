@@ -18,11 +18,7 @@ export function Layout({ children }: LayoutProps) {
   const { user, logout, isLoggingOut } = useAuth();
 
   const navLinks = [
-    { href: "/", label: "Home" },
-    { href: "/about", label: "About" },
-
     { href: "/events", label: "Events" },
-
     { href: "/gallery", label: "Gallery" },
     { href: "/contact", label: "Contact" },
   ];
@@ -194,7 +190,6 @@ export function Layout({ children }: LayoutProps) {
             <div>
               <h3 className="font-serif font-medium text-lg mb-4">Quick Links</h3>
               <ul className="space-y-3">
-                <li><Link href="/about" className="text-muted-foreground hover:text-primary transition-colors">About Us</Link></li>
                 <li><Link href="/events" className="text-muted-foreground hover:text-primary transition-colors">Events Calendar</Link></li>
                 <li><Link href="/news" className="text-muted-foreground hover:text-primary transition-colors">Community News</Link></li>
                 <li><Link href="/contact" className="text-muted-foreground hover:text-primary transition-colors">Contact Committee</Link></li>
