@@ -4,6 +4,8 @@ import { eventsTable } from "./schema/events";
 import { festivalAndCommunityEvents } from "./seed-data/events";
 import { galleryPhotosTable } from "./schema/gallery";
 import { communityGalleryPhotos } from "./seed-data/gallery";
+import { residentMeetingsTable } from "./schema/residentMeetings";
+import { upcomingResidentMeetings } from "./seed-data/resident-meetings";
 
 // Idempotent: only inserts events whose title isn't already present, so this
 // is safe to call on every server startup (cheap no-op after the first run)
@@ -37,6 +39,28 @@ export async function seedGallery(): Promise<{ inserted: number; skipped: number
       continue;
     }
     await db.insert(galleryPhotosTable).values(photo);
+    inserted++;
+  }
+
+  return { inserted, skipped };
+}
+
+// Idempotent (checks by title+date before inserting, since the title alone repeats across
+// months for recurring meetings), same reasoning as seedEvents above.
+export async function seedResidentMeetings(): Promise<{ inserted: number; skipped: number }> {
+  let inserted = 0;
+  let skipped = 0;
+
+  for (const meeting of upcomingResidentMeetings) {
+    const existing = await db
+      .select()
+      .from(residentMeetingsTable)
+      .where(eq(residentMeetingsTable.date, meeting.date));
+    if (existing.length > 0) {
+      skipped++;
+      continue;
+    }
+    await db.insert(residentMeetingsTable).values(meeting);
     inserted++;
   }
 

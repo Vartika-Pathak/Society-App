@@ -1,11 +1,13 @@
 import type { InsertEvent } from "../schema/events";
 
-// A starter set of Indian festivals and community functions for the Social
-// Calendar. 2026 festival dates are the real ones (checked against calendar
-// sources, not guessed) — Independence Day, Raksha Bandhan, Ganesh Chaturthi,
-// Navratri, Dussehra, and Diwali all shift year to year on the lunar-solar
-// Panchang, so don't reuse these dates as-is in a future year without
-// re-checking them.
+// A starter set of Indian festivals, national holidays, and community functions for the
+// Social Calendar. 2026 festival dates are the real ones (checked against calendar sources,
+// not guessed) — Independence Day, Raksha Bandhan, Ganesh Chaturthi, Navratri, Dussehra, and
+// Diwali all shift year to year on the lunar-solar Panchang, so don't reuse these dates as-is
+// in a future year without re-checking them. Gandhi Jayanti, Christmas, New Year's Day, and
+// Republic Day are fixed solar-calendar dates, so those are safe to reuse every year as-is.
+// Deliberately not including other lunar-dated festivals (Holi, Eid, Onam, etc.) here — their
+// dates shift yearly too and none were verified against a real calendar source.
 export const festivalAndCommunityEvents: InsertEvent[] = [
   {
     title: "Independence Day Flag Hoisting & Cultural Program",
@@ -84,5 +86,33 @@ export const festivalAndCommunityEvents: InsertEvent[] = [
     date: new Date("2026-12-31T20:00:00"),
     location: "Clubhouse Terrace",
     organizer: "Events Committee",
+  },
+  {
+    title: "Gandhi Jayanti",
+    description: "National holiday marking Mahatma Gandhi's birth anniversary — a short tribute and prayer meet.",
+    date: new Date("2026-10-02T09:00:00"),
+    location: "Society Temple Courtyard",
+    organizer: "Residents' Welfare Committee",
+  },
+  {
+    title: "Christmas Celebration",
+    description: "Carols, a small Secret Santa exchange, and cake for kids and families in the community.",
+    date: new Date("2026-12-25T17:00:00"),
+    location: "Clubhouse Hall",
+    organizer: "Events Committee",
+  },
+  {
+    title: "New Year's Day",
+    description: "National holiday — office and management desk closed for the day.",
+    date: new Date("2027-01-01T00:00:00"),
+    location: "Society Premises",
+    organizer: "Managing Committee",
+  },
+  {
+    title: "Republic Day Flag Hoisting",
+    description: "Flag hoisting ceremony and patriotic cultural program marking Republic Day.",
+    date: new Date("2027-01-26T08:00:00"),
+    location: "Main Lawn",
+    organizer: "Residents' Welfare Committee",
   },
 ];

@@ -1,4 +1,4 @@
-import { seedEvents, seedGallery } from "@workspace/db";
+import { seedEvents, seedGallery, seedResidentMeetings } from "@workspace/db";
 import app from "./app";
 import { logger } from "./lib/logger";
 
@@ -38,6 +38,16 @@ seedGallery()
   })
   .catch((err) => {
     logger.error({ err }, "Failed to seed gallery photos");
+  });
+
+seedResidentMeetings()
+  .then(({ inserted, skipped }) => {
+    if (inserted > 0) {
+      logger.info({ inserted, skipped }, "Seeded resident meetings");
+    }
+  })
+  .catch((err) => {
+    logger.error({ err }, "Failed to seed resident meetings");
   });
 
 app.listen(port, (err) => {

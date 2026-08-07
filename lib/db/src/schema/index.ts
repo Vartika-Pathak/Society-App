@@ -1,5 +1,6 @@
 export * from "./members";
 export * from "./events";
+export * from "./residentMeetings";
 export * from "./news";
 export * from "./gallery";
 export * from "./joinRequests";
