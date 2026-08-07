@@ -56,6 +56,16 @@ export async function apiPatch<T>(path: string, body: unknown): Promise<T> {
   }
 }
 
+export async function apiDelete<T>(path: string): Promise<T> {
+  startManualRequest();
+  try {
+    const response = await fetch(path, { method: "DELETE", credentials: "include" });
+    return await parseResponse<T>(response);
+  } finally {
+    endManualRequest();
+  }
+}
+
 async function parseResponse<T>(response: Response): Promise<T> {
   const text = await response.text();
   const data = text ? JSON.parse(text) : null;

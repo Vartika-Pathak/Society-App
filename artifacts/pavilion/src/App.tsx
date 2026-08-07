@@ -42,6 +42,12 @@ import MonthlyExpenditureReport from './pages/admin/reports/monthly-expenditure'
 import IncomeVsExpenseTrend from './pages/admin/reports/income-vs-expense-trend';
 import BalanceSheet from './pages/admin/reports/balance-sheet';
 import IncomeStatement from './pages/admin/reports/income-statement';
+import AdminMembers from './pages/admin/members';
+import SocietyRules from './pages/admin/society-rules';
+import AdminServices from './pages/admin/services';
+import Notices from './pages/admin/notices';
+import AdminEvents from './pages/admin/events';
+import AuditLogs from './pages/admin/audit-logs';
 import NotFound from '@/pages/not-found';
 
 const queryClient = new QueryClient();
@@ -209,6 +215,36 @@ function Router() {
       <Route path="/admin/reports/income-statement">
         <RequireAuth roles={["admin"]}>
           <IncomeStatement />
+        </RequireAuth>
+      </Route>
+      <Route path="/admin/members">
+        <RequireAuth roles={["admin"]}>
+          <AdminMembers />
+        </RequireAuth>
+      </Route>
+      <Route path="/admin/society-rules">
+        <RequireAuth roles={["admin"]}>
+          <SocietyRules />
+        </RequireAuth>
+      </Route>
+      <Route path="/admin/services">
+        <RequireAuth roles={["admin"]}>
+          <AdminServices />
+        </RequireAuth>
+      </Route>
+      <Route path="/admin/notices">
+        <RequireAuth roles={["admin"]}>
+          <Notices />
+        </RequireAuth>
+      </Route>
+      <Route path="/admin/events">
+        <RequireAuth roles={["admin"]}>
+          <AdminEvents />
+        </RequireAuth>
+      </Route>
+      <Route path="/admin/audit-logs">
+        <RequireAuth roles={["admin"]}>
+          <AuditLogs />
         </RequireAuth>
       </Route>
       <Route component={NotFound} />

@@ -898,6 +898,112 @@ export interface IncomeStatement {
   netPaise: number;
 }
 
+export interface AuditLog {
+  id: number;
+  adminId: number;
+  adminName: string;
+  method: string;
+  path: string;
+  statusCode: number;
+  summary: string;
+  createdAt: string;
+}
+
+export interface SocietyRule {
+  id: number;
+  title: string;
+  description: string;
+  active: boolean;
+}
+
+export interface SocietyRuleInput {
+  /** @minLength 1 */
+  title: string;
+  /** @minLength 1 */
+  description: string;
+  active: boolean;
+}
+
+export interface Service {
+  id: number;
+  name: string;
+  category: string;
+  contactNumber: string;
+  /** @nullable */
+  notes: string | null;
+}
+
+export interface ServiceInput {
+  /** @minLength 1 */
+  name: string;
+  /** @minLength 1 */
+  category: string;
+  /** @minLength 1 */
+  contactNumber: string;
+  notes?: string;
+}
+
+export type NoticeCategory = typeof NoticeCategory[keyof typeof NoticeCategory];
+
+
+export const NoticeCategory = {
+  general: 'general',
+  maintenance: 'maintenance',
+  event: 'event',
+  urgent: 'urgent',
+} as const;
+
+export type NoticePriority = typeof NoticePriority[keyof typeof NoticePriority];
+
+
+export const NoticePriority = {
+  low: 'low',
+  normal: 'normal',
+  high: 'high',
+} as const;
+
+export interface Notice {
+  id: number;
+  title: string;
+  content: string;
+  category: NoticeCategory;
+  priority: NoticePriority;
+  pinned: boolean;
+  /** @nullable */
+  expiresAt: string | null;
+  createdAt: string;
+}
+
+export type NoticeInputCategory = typeof NoticeInputCategory[keyof typeof NoticeInputCategory];
+
+
+export const NoticeInputCategory = {
+  general: 'general',
+  maintenance: 'maintenance',
+  event: 'event',
+  urgent: 'urgent',
+} as const;
+
+export type NoticeInputPriority = typeof NoticeInputPriority[keyof typeof NoticeInputPriority];
+
+
+export const NoticeInputPriority = {
+  low: 'low',
+  normal: 'normal',
+  high: 'high',
+} as const;
+
+export interface NoticeInput {
+  /** @minLength 1 */
+  title: string;
+  /** @minLength 1 */
+  content: string;
+  category: NoticeInputCategory;
+  priority: NoticeInputPriority;
+  pinned: boolean;
+  expiresAt?: string;
+}
+
 export type GetAmenityAvailabilityParams = {
 amenityId: string;
 date: string;

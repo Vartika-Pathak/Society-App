@@ -5,6 +5,7 @@ import pinoHttp from "pino-http";
 import router from "./routes";
 import { logger } from "./lib/logger";
 import { uploadsDir } from "./lib/uploads";
+import { auditLogMiddleware } from "./middlewares/audit-log";
 
 const app: Express = express();
 
@@ -36,7 +37,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/uploads", express.static(uploadsDir));
-app.use("/api", router);
+app.use("/api", auditLogMiddleware(), router);
 
 // Catches thrown errors from routes/middleware (Express 5 forwards both sync
 // throws and rejected promises here automatically) — e.g. multer rejecting

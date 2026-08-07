@@ -62,6 +62,14 @@ tags:
     description: Maintenance payments recorded against a flat — admin-only
   - name: reports
     description: Derived financial reports and dashboard summaries, computed from Masters and Transactions data — admin-only
+  - name: audit-logs
+    description: A record of admin writes (create/update/delete), captured automatically — admin-only, read-only
+  - name: society-rules
+    description: Society rules & regulations, each with an active/inactive status — admin-only to manage
+  - name: services
+    description: A directory of local services (plumber, electrician, etc.) — admin-only to manage
+  - name: notices
+    description: Short operational notices, distinct from the news/blog feed — admin-only to manage
 paths:
   /healthz:
     get:
@@ -1821,6 +1829,295 @@ paths:
         "403":
           description: Not an admin
 
+  /audit-logs:
+    get:
+      operationId: listAuditLogs
+      tags: [audit-logs]
+      summary: List admin audit log entries, newest first (admin only)
+      responses:
+        "200":
+          description: Audit log entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AuditLog"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+
+  /society-rules:
+    get:
+      operationId: listSocietyRules
+      tags: [society-rules]
+      summary: List society rules (admin only)
+      responses:
+        "200":
+          description: Society rules
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SocietyRule"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+    post:
+      operationId: createSocietyRule
+      tags: [society-rules]
+      summary: Add a society rule (admin only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SocietyRuleInput"
+      responses:
+        "201":
+          description: Society rule created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SocietyRule"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+
+  /society-rules/{id}:
+    put:
+      operationId: updateSocietyRule
+      tags: [society-rules]
+      summary: Update a society rule (admin only)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SocietyRuleInput"
+      responses:
+        "200":
+          description: Society rule updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SocietyRule"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+        "404":
+          description: Society rule not found
+    delete:
+      operationId: deleteSocietyRule
+      tags: [society-rules]
+      summary: Delete a society rule (admin only)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Society rule deleted
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+        "404":
+          description: Society rule not found
+
+  /services:
+    get:
+      operationId: listServices
+      tags: [services]
+      summary: List directory services (admin only)
+      responses:
+        "200":
+          description: Services
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Service"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+    post:
+      operationId: createService
+      tags: [services]
+      summary: Add a directory service (admin only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ServiceInput"
+      responses:
+        "201":
+          description: Service created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Service"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+
+  /services/{id}:
+    put:
+      operationId: updateService
+      tags: [services]
+      summary: Update a directory service (admin only)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ServiceInput"
+      responses:
+        "200":
+          description: Service updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Service"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+        "404":
+          description: Service not found
+    delete:
+      operationId: deleteService
+      tags: [services]
+      summary: Delete a directory service (admin only)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Service deleted
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+        "404":
+          description: Service not found
+
+  /notices:
+    get:
+      operationId: listNotices
+      tags: [notices]
+      summary: List notices, pinned first then newest (admin only)
+      responses:
+        "200":
+          description: Notices
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Notice"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+    post:
+      operationId: createNotice
+      tags: [notices]
+      summary: Create a notice (admin only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NoticeInput"
+      responses:
+        "201":
+          description: Notice created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Notice"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+
+  /notices/{id}:
+    put:
+      operationId: updateNotice
+      tags: [notices]
+      summary: Update a notice (admin only)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NoticeInput"
+      responses:
+        "200":
+          description: Notice updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Notice"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+        "404":
+          description: Notice not found
+    delete:
+      operationId: deleteNotice
+      tags: [notices]
+      summary: Delete a notice (admin only)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Notice deleted
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+        "404":
+          description: Notice not found
+
 components:
   schemas:
     HealthStatus:
@@ -2992,3 +3289,127 @@ components:
           type: integer
         netPaise:
           type: integer
+
+    AuditLog:
+      type: object
+      required: [id, adminId, adminName, method, path, statusCode, summary, createdAt]
+      properties:
+        id:
+          type: integer
+        adminId:
+          type: integer
+        adminName:
+          type: string
+        method:
+          type: string
+        path:
+          type: string
+        statusCode:
+          type: integer
+        summary:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    SocietyRule:
+      type: object
+      required: [id, title, description, active]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        active:
+          type: boolean
+
+    SocietyRuleInput:
+      type: object
+      required: [title, description, active]
+      properties:
+        title:
+          type: string
+          minLength: 1
+        description:
+          type: string
+          minLength: 1
+        active:
+          type: boolean
+
+    Service:
+      type: object
+      required: [id, name, category, contactNumber, notes]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        category:
+          type: string
+        contactNumber:
+          type: string
+        notes:
+          type: ["string", "null"]
+
+    ServiceInput:
+      type: object
+      required: [name, category, contactNumber]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        category:
+          type: string
+          minLength: 1
+        contactNumber:
+          type: string
+          minLength: 1
+        notes:
+          type: string
+
+    Notice:
+      type: object
+      required: [id, title, content, category, priority, pinned, expiresAt, createdAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        content:
+          type: string
+        category:
+          type: string
+          enum: [general, maintenance, event, urgent]
+        priority:
+          type: string
+          enum: [low, normal, high]
+        pinned:
+          type: boolean
+        expiresAt:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+
+    NoticeInput:
+      type: object
+      required: [title, content, category, priority, pinned]
+      properties:
+        title:
+          type: string
+          minLength: 1
+        content:
+          type: string
+          minLength: 1
+        category:
+          type: string
+          enum: [general, maintenance, event, urgent]
+        priority:
+          type: string
+          enum: [low, normal, high]
+        pinned:
+          type: boolean
+        expiresAt:
+          type: string

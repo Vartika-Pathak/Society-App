@@ -1563,3 +1563,248 @@ export const GetIncomeVsExpenseTrendResponseItem = zod.object({
 export const GetIncomeVsExpenseTrendResponse = zod.array(GetIncomeVsExpenseTrendResponseItem)
 
 
+/**
+ * @summary List admin audit log entries, newest first (admin only)
+ */
+export const ListAuditLogsResponseItem = zod.object({
+  "id": zod.number(),
+  "adminId": zod.number(),
+  "adminName": zod.string(),
+  "method": zod.string(),
+  "path": zod.string(),
+  "statusCode": zod.number(),
+  "summary": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+export const ListAuditLogsResponse = zod.array(ListAuditLogsResponseItem)
+
+
+/**
+ * @summary List society rules (admin only)
+ */
+export const ListSocietyRulesResponseItem = zod.object({
+  "id": zod.number(),
+  "title": zod.string(),
+  "description": zod.string(),
+  "active": zod.boolean()
+})
+export const ListSocietyRulesResponse = zod.array(ListSocietyRulesResponseItem)
+
+
+/**
+ * @summary Add a society rule (admin only)
+ */
+
+
+
+
+export const CreateSocietyRuleBody = zod.object({
+  "title": zod.string().min(1),
+  "description": zod.string().min(1),
+  "active": zod.boolean()
+})
+
+export const CreateSocietyRuleResponse = zod.object({
+  "id": zod.number(),
+  "title": zod.string(),
+  "description": zod.string(),
+  "active": zod.boolean()
+})
+
+
+/**
+ * @summary Update a society rule (admin only)
+ */
+export const UpdateSocietyRuleParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+
+
+
+export const UpdateSocietyRuleBody = zod.object({
+  "title": zod.string().min(1),
+  "description": zod.string().min(1),
+  "active": zod.boolean()
+})
+
+export const UpdateSocietyRuleResponse = zod.object({
+  "id": zod.number(),
+  "title": zod.string(),
+  "description": zod.string(),
+  "active": zod.boolean()
+})
+
+
+/**
+ * @summary Delete a society rule (admin only)
+ */
+export const DeleteSocietyRuleParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const DeleteSocietyRuleResponse = zod.void()
+
+
+/**
+ * @summary List directory services (admin only)
+ */
+export const ListServicesResponseItem = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "category": zod.string(),
+  "contactNumber": zod.string(),
+  "notes": zod.string().nullable()
+})
+export const ListServicesResponse = zod.array(ListServicesResponseItem)
+
+
+/**
+ * @summary Add a directory service (admin only)
+ */
+
+
+
+
+
+export const CreateServiceBody = zod.object({
+  "name": zod.string().min(1),
+  "category": zod.string().min(1),
+  "contactNumber": zod.string().min(1),
+  "notes": zod.string().optional()
+})
+
+export const CreateServiceResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "category": zod.string(),
+  "contactNumber": zod.string(),
+  "notes": zod.string().nullable()
+})
+
+
+/**
+ * @summary Update a directory service (admin only)
+ */
+export const UpdateServiceParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+
+
+
+
+export const UpdateServiceBody = zod.object({
+  "name": zod.string().min(1),
+  "category": zod.string().min(1),
+  "contactNumber": zod.string().min(1),
+  "notes": zod.string().optional()
+})
+
+export const UpdateServiceResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "category": zod.string(),
+  "contactNumber": zod.string(),
+  "notes": zod.string().nullable()
+})
+
+
+/**
+ * @summary Delete a directory service (admin only)
+ */
+export const DeleteServiceParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const DeleteServiceResponse = zod.void()
+
+
+/**
+ * @summary List notices, pinned first then newest (admin only)
+ */
+export const ListNoticesResponseItem = zod.object({
+  "id": zod.number(),
+  "title": zod.string(),
+  "content": zod.string(),
+  "category": zod.enum(['general', 'maintenance', 'event', 'urgent']),
+  "priority": zod.enum(['low', 'normal', 'high']),
+  "pinned": zod.boolean(),
+  "expiresAt": zod.string().nullable(),
+  "createdAt": zod.coerce.date()
+})
+export const ListNoticesResponse = zod.array(ListNoticesResponseItem)
+
+
+/**
+ * @summary Create a notice (admin only)
+ */
+
+
+
+
+export const CreateNoticeBody = zod.object({
+  "title": zod.string().min(1),
+  "content": zod.string().min(1),
+  "category": zod.enum(['general', 'maintenance', 'event', 'urgent']),
+  "priority": zod.enum(['low', 'normal', 'high']),
+  "pinned": zod.boolean(),
+  "expiresAt": zod.string().optional()
+})
+
+export const CreateNoticeResponse = zod.object({
+  "id": zod.number(),
+  "title": zod.string(),
+  "content": zod.string(),
+  "category": zod.enum(['general', 'maintenance', 'event', 'urgent']),
+  "priority": zod.enum(['low', 'normal', 'high']),
+  "pinned": zod.boolean(),
+  "expiresAt": zod.string().nullable(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Update a notice (admin only)
+ */
+export const UpdateNoticeParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+
+
+
+export const UpdateNoticeBody = zod.object({
+  "title": zod.string().min(1),
+  "content": zod.string().min(1),
+  "category": zod.enum(['general', 'maintenance', 'event', 'urgent']),
+  "priority": zod.enum(['low', 'normal', 'high']),
+  "pinned": zod.boolean(),
+  "expiresAt": zod.string().optional()
+})
+
+export const UpdateNoticeResponse = zod.object({
+  "id": zod.number(),
+  "title": zod.string(),
+  "content": zod.string(),
+  "category": zod.enum(['general', 'maintenance', 'event', 'urgent']),
+  "priority": zod.enum(['low', 'normal', 'high']),
+  "pinned": zod.boolean(),
+  "expiresAt": zod.string().nullable(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Delete a notice (admin only)
+ */
+export const DeleteNoticeParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const DeleteNoticeResponse = zod.void()
+
+

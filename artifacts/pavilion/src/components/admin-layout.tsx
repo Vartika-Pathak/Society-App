@@ -1,6 +1,18 @@
 import React from "react";
 import { Link, useLocation } from "wouter";
-import { LayoutDashboard, ChevronDown, Building2, Receipt, ListChecks, BarChart3, ShieldCheck } from "lucide-react";
+import {
+  LayoutDashboard,
+  ChevronDown,
+  Building2,
+  Receipt,
+  ListChecks,
+  BarChart3,
+  ShieldCheck,
+  Users,
+  BookText,
+  Wrench,
+  History,
+} from "lucide-react";
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -9,7 +21,11 @@ interface AdminLayoutProps {
 const topLinks = [
   { href: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin", label: "Admin", icon: ShieldCheck },
+  { href: "/admin/members", label: "Members", icon: Users },
   { href: "/admin/due-list", label: "Due List", icon: ListChecks },
+  { href: "/admin/society-rules", label: "Society Rules", icon: BookText },
+  { href: "/admin/services", label: "Services", icon: Wrench },
+  { href: "/admin/audit-logs", label: "Audit Logs", icon: History },
 ];
 
 const mastersLinks = [
@@ -38,22 +54,25 @@ const reportsLinks = [
   { href: "/admin/reports/income-statement", label: "Income Statement" },
 ];
 
+const noticesAndEventsLinks = [
+  { href: "/admin/notices", label: "Society Notices" },
+  { href: "/admin/events", label: "Events" },
+];
+
 interface NavSection {
   icon: React.ComponentType<{ className?: string }>;
   label: string;
-  prefix: string;
   links: { href: string; label: string }[];
 }
 
 const sections: NavSection[] = [
-  { icon: Building2, label: "Masters", prefix: "/admin/masters", links: mastersLinks },
-  { icon: Receipt, label: "Transactions", prefix: "/admin/transactions", links: transactionsLinks },
-  { icon: BarChart3, label: "Reports", prefix: "/admin/reports", links: reportsLinks },
+  { icon: Building2, label: "Masters", links: mastersLinks },
+  { icon: Receipt, label: "Transactions", links: transactionsLinks },
+  { icon: BarChart3, label: "Reports", links: reportsLinks },
+  { icon: BookText, label: "Notices & Events", links: noticesAndEventsLinks },
 ];
 
-// A dedicated left-nav shell for the /admin/* area, separate from the site's public top nav —
-// this section will keep growing (Services, Society Rules, etc. in later phases), so it gets
-// its own chrome rather than trying to cram everything into the public nav bar.
+// A dedicated left-nav shell for the /admin/* area, separate from the site's public top nav.
 export function AdminLayout({ children }: AdminLayoutProps) {
   const [location] = useLocation();
 
@@ -78,10 +97,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
           })}
 
           {sections.map((section) => {
-            const isActiveSection = location.startsWith(section.prefix);
+            const isActiveSection = section.links.some((link) => location === link.href);
             const Icon = section.icon;
             return (
-              <div key={section.prefix}>
+              <div key={section.label}>
                 <div className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-muted-foreground">
                   <Icon className="h-4 w-4" />
                   {section.label}

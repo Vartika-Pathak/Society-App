@@ -23,3 +23,7 @@ export * from "./specialContributions";
 export * from "./vendorBills";
 export * from "./billPayments";
 export * from "./maintenanceCollections";
+export * from "./auditLogs";
+export * from "./societyRules";
+export * from "./services";
+export * from "./notices";

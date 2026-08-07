@@ -27,6 +27,10 @@ import vendorBillsRouter from "./vendorBills";
 import billPaymentsRouter from "./billPayments";
 import maintenanceCollectionsRouter from "./maintenanceCollections";
 import reportsRouter from "./reports";
+import auditLogsRouter from "./auditLogs";
+import societyRulesRouter from "./societyRules";
+import servicesRouter from "./services";
+import noticesRouter from "./notices";
 
 const router: IRouter = Router();
 
@@ -58,5 +62,9 @@ router.use(vendorBillsRouter);
 router.use(billPaymentsRouter);
 router.use(maintenanceCollectionsRouter);
 router.use(reportsRouter);
+router.use(auditLogsRouter);
+router.use(societyRulesRouter);
+router.use(servicesRouter);
+router.use(noticesRouter);
 
 export default router;
