@@ -1,3 +1,5 @@
+import { startManualRequest, endManualRequest } from "./loading-store";
+
 /**
  * Minimal hand-written POST helper for endpoints that only the Java backend
  * implements (staged signup / visit OTP verification) and that therefore
@@ -13,30 +15,45 @@ export class ApiFetchError extends Error {
 }
 
 export async function apiPost<T>(path: string, body: unknown): Promise<T> {
-  const response = await fetch(path, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify(body),
-  });
+  startManualRequest();
+  try {
+    const response = await fetch(path, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(body),
+    });
 
-  return parseResponse<T>(response);
+    return await parseResponse<T>(response);
+  } finally {
+    endManualRequest();
+  }
 }
 
 export async function apiGet<T>(path: string): Promise<T> {
-  const response = await fetch(path, { credentials: "include" });
-  return parseResponse<T>(response);
+  startManualRequest();
+  try {
+    const response = await fetch(path, { credentials: "include" });
+    return await parseResponse<T>(response);
+  } finally {
+    endManualRequest();
+  }
 }
 
 export async function apiPatch<T>(path: string, body: unknown): Promise<T> {
-  const response = await fetch(path, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    credentials: "include",
-    body: JSON.stringify(body),
-  });
+  startManualRequest();
+  try {
+    const response = await fetch(path, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(body),
+    });
 
-  return parseResponse<T>(response);
+    return await parseResponse<T>(response);
+  } finally {
+    endManualRequest();
+  }
 }
 
 async function parseResponse<T>(response: Response): Promise<T> {
