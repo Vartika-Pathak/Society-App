@@ -471,6 +471,134 @@ export interface ConfirmAmenityBookingInput {
   sessionId: string;
 }
 
+export interface SocietyInfo {
+  id: number;
+  name: string;
+  address: string;
+  contactNumber: string;
+  email: string;
+}
+
+export interface SocietyInfoInput {
+  /** @minLength 1 */
+  name: string;
+  /** @minLength 1 */
+  address: string;
+  /** @minLength 1 */
+  contactNumber: string;
+  /** @minLength 1 */
+  email: string;
+}
+
+export interface Building {
+  id: number;
+  name: string;
+  totalFlats: number;
+}
+
+export interface BuildingInput {
+  /** @minLength 1 */
+  name: string;
+  /** @minimum 1 */
+  totalFlats: number;
+}
+
+export type FlatFlatType = typeof FlatFlatType[keyof typeof FlatFlatType];
+
+
+export const FlatFlatType = {
+  '1bhk': '1bhk',
+  '2bhk': '2bhk',
+  '3bhk': '3bhk',
+  '4bhk': '4bhk',
+} as const;
+
+export type FlatOwnershipType = typeof FlatOwnershipType[keyof typeof FlatOwnershipType];
+
+
+export const FlatOwnershipType = {
+  owner: 'owner',
+  rented: 'rented',
+} as const;
+
+export interface Flat {
+  id: number;
+  buildingId: number;
+  buildingName: string;
+  flatNumber: string;
+  flatType: FlatFlatType;
+  occupied: boolean;
+  ownershipType: FlatOwnershipType;
+}
+
+export type FlatInputFlatType = typeof FlatInputFlatType[keyof typeof FlatInputFlatType];
+
+
+export const FlatInputFlatType = {
+  '1bhk': '1bhk',
+  '2bhk': '2bhk',
+  '3bhk': '3bhk',
+  '4bhk': '4bhk',
+} as const;
+
+export type FlatInputOwnershipType = typeof FlatInputOwnershipType[keyof typeof FlatInputOwnershipType];
+
+
+export const FlatInputOwnershipType = {
+  owner: 'owner',
+  rented: 'rented',
+} as const;
+
+export interface FlatInput {
+  buildingId: number;
+  /** @minLength 1 */
+  flatNumber: string;
+  flatType: FlatInputFlatType;
+  occupied: boolean;
+  ownershipType: FlatInputOwnershipType;
+}
+
+export interface ExpenseCategory {
+  id: number;
+  name: string;
+  gstSlabPercent: number;
+}
+
+export interface ExpenseCategoryInput {
+  /** @minLength 1 */
+  name: string;
+  /**
+     * @minimum 0
+     * @maximum 100
+     */
+  gstSlabPercent: number;
+}
+
+export interface Vendor {
+  id: number;
+  name: string;
+  contactPersonName: string;
+  contactNumber: string;
+  /** @nullable */
+  address: string | null;
+  /** @nullable */
+  gstNumber: string | null;
+  openingBalancePaise: number;
+}
+
+export interface VendorInput {
+  /** @minLength 1 */
+  name: string;
+  /** @minLength 1 */
+  contactPersonName: string;
+  /** @minLength 1 */
+  contactNumber: string;
+  address?: string;
+  gstNumber?: string;
+  /** @minimum 0 */
+  openingBalancePaise?: number;
+}
+
 export type GetAmenityAvailabilityParams = {
 amenityId: string;
 date: string;

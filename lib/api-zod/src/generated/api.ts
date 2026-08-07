@@ -749,3 +749,338 @@ export const ConfirmAmenityBookingResponse = zod.object({
 })
 
 
+/**
+ * @summary Get the society's profile (admin only)
+ */
+export const GetSocietyInfoResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "address": zod.string(),
+  "contactNumber": zod.string(),
+  "email": zod.string()
+})
+
+
+/**
+ * @summary Update the society's profile (admin only)
+ */
+
+
+
+
+
+
+export const UpdateSocietyInfoBody = zod.object({
+  "name": zod.string().min(1),
+  "address": zod.string().min(1),
+  "contactNumber": zod.string().min(1),
+  "email": zod.string().min(1)
+})
+
+export const UpdateSocietyInfoResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "address": zod.string(),
+  "contactNumber": zod.string(),
+  "email": zod.string()
+})
+
+
+/**
+ * @summary List all buildings (admin only)
+ */
+export const ListBuildingsResponseItem = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "totalFlats": zod.number()
+})
+export const ListBuildingsResponse = zod.array(ListBuildingsResponseItem)
+
+
+/**
+ * @summary Add a building (admin only)
+ */
+
+
+
+
+export const CreateBuildingBody = zod.object({
+  "name": zod.string().min(1),
+  "totalFlats": zod.number().min(1)
+})
+
+export const CreateBuildingResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "totalFlats": zod.number()
+})
+
+
+/**
+ * @summary Update a building (admin only)
+ */
+export const UpdateBuildingParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+
+
+
+export const UpdateBuildingBody = zod.object({
+  "name": zod.string().min(1),
+  "totalFlats": zod.number().min(1)
+})
+
+export const UpdateBuildingResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "totalFlats": zod.number()
+})
+
+
+/**
+ * @summary Delete a building (admin only)
+ */
+export const DeleteBuildingParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const DeleteBuildingResponse = zod.void()
+
+
+/**
+ * @summary List all flats, with building name and occupancy (admin only)
+ */
+export const ListFlatsResponseItem = zod.object({
+  "id": zod.number(),
+  "buildingId": zod.number(),
+  "buildingName": zod.string(),
+  "flatNumber": zod.string(),
+  "flatType": zod.enum(['1bhk', '2bhk', '3bhk', '4bhk']),
+  "occupied": zod.boolean(),
+  "ownershipType": zod.enum(['owner', 'rented'])
+})
+export const ListFlatsResponse = zod.array(ListFlatsResponseItem)
+
+
+/**
+ * @summary Add a flat (admin only)
+ */
+
+
+
+export const CreateFlatBody = zod.object({
+  "buildingId": zod.number(),
+  "flatNumber": zod.string().min(1),
+  "flatType": zod.enum(['1bhk', '2bhk', '3bhk', '4bhk']),
+  "occupied": zod.boolean(),
+  "ownershipType": zod.enum(['owner', 'rented'])
+})
+
+export const CreateFlatResponse = zod.object({
+  "id": zod.number(),
+  "buildingId": zod.number(),
+  "buildingName": zod.string(),
+  "flatNumber": zod.string(),
+  "flatType": zod.enum(['1bhk', '2bhk', '3bhk', '4bhk']),
+  "occupied": zod.boolean(),
+  "ownershipType": zod.enum(['owner', 'rented'])
+})
+
+
+/**
+ * @summary Update a flat (admin only)
+ */
+export const UpdateFlatParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+
+
+export const UpdateFlatBody = zod.object({
+  "buildingId": zod.number(),
+  "flatNumber": zod.string().min(1),
+  "flatType": zod.enum(['1bhk', '2bhk', '3bhk', '4bhk']),
+  "occupied": zod.boolean(),
+  "ownershipType": zod.enum(['owner', 'rented'])
+})
+
+export const UpdateFlatResponse = zod.object({
+  "id": zod.number(),
+  "buildingId": zod.number(),
+  "buildingName": zod.string(),
+  "flatNumber": zod.string(),
+  "flatType": zod.enum(['1bhk', '2bhk', '3bhk', '4bhk']),
+  "occupied": zod.boolean(),
+  "ownershipType": zod.enum(['owner', 'rented'])
+})
+
+
+/**
+ * @summary Delete a flat (admin only)
+ */
+export const DeleteFlatParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const DeleteFlatResponse = zod.void()
+
+
+/**
+ * @summary List all expense categories (admin only)
+ */
+export const ListExpenseCategoriesResponseItem = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "gstSlabPercent": zod.number()
+})
+export const ListExpenseCategoriesResponse = zod.array(ListExpenseCategoriesResponseItem)
+
+
+/**
+ * @summary Add an expense category (admin only)
+ */
+
+export const createExpenseCategoryBodyGstSlabPercentMin = 0;
+export const createExpenseCategoryBodyGstSlabPercentMax = 100;
+
+
+
+export const CreateExpenseCategoryBody = zod.object({
+  "name": zod.string().min(1),
+  "gstSlabPercent": zod.number().min(createExpenseCategoryBodyGstSlabPercentMin).max(createExpenseCategoryBodyGstSlabPercentMax)
+})
+
+export const CreateExpenseCategoryResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "gstSlabPercent": zod.number()
+})
+
+
+/**
+ * @summary Update an expense category (admin only)
+ */
+export const UpdateExpenseCategoryParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+export const updateExpenseCategoryBodyGstSlabPercentMin = 0;
+export const updateExpenseCategoryBodyGstSlabPercentMax = 100;
+
+
+
+export const UpdateExpenseCategoryBody = zod.object({
+  "name": zod.string().min(1),
+  "gstSlabPercent": zod.number().min(updateExpenseCategoryBodyGstSlabPercentMin).max(updateExpenseCategoryBodyGstSlabPercentMax)
+})
+
+export const UpdateExpenseCategoryResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "gstSlabPercent": zod.number()
+})
+
+
+/**
+ * @summary Delete an expense category (admin only)
+ */
+export const DeleteExpenseCategoryParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const DeleteExpenseCategoryResponse = zod.void()
+
+
+/**
+ * @summary List all vendors (admin only)
+ */
+export const ListVendorsResponseItem = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "contactPersonName": zod.string(),
+  "contactNumber": zod.string(),
+  "address": zod.string().nullable(),
+  "gstNumber": zod.string().nullable(),
+  "openingBalancePaise": zod.number()
+})
+export const ListVendorsResponse = zod.array(ListVendorsResponseItem)
+
+
+/**
+ * @summary Add a vendor (admin only)
+ */
+
+
+
+export const createVendorBodyOpeningBalancePaiseMin = 0;
+
+
+
+export const CreateVendorBody = zod.object({
+  "name": zod.string().min(1),
+  "contactPersonName": zod.string().min(1),
+  "contactNumber": zod.string().min(1),
+  "address": zod.string().optional(),
+  "gstNumber": zod.string().optional(),
+  "openingBalancePaise": zod.number().min(createVendorBodyOpeningBalancePaiseMin).optional()
+})
+
+export const CreateVendorResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "contactPersonName": zod.string(),
+  "contactNumber": zod.string(),
+  "address": zod.string().nullable(),
+  "gstNumber": zod.string().nullable(),
+  "openingBalancePaise": zod.number()
+})
+
+
+/**
+ * @summary Update a vendor (admin only)
+ */
+export const UpdateVendorParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+
+
+export const updateVendorBodyOpeningBalancePaiseMin = 0;
+
+
+
+export const UpdateVendorBody = zod.object({
+  "name": zod.string().min(1),
+  "contactPersonName": zod.string().min(1),
+  "contactNumber": zod.string().min(1),
+  "address": zod.string().optional(),
+  "gstNumber": zod.string().optional(),
+  "openingBalancePaise": zod.number().min(updateVendorBodyOpeningBalancePaiseMin).optional()
+})
+
+export const UpdateVendorResponse = zod.object({
+  "id": zod.number(),
+  "name": zod.string(),
+  "contactPersonName": zod.string(),
+  "contactNumber": zod.string(),
+  "address": zod.string().nullable(),
+  "gstNumber": zod.string().nullable(),
+  "openingBalancePaise": zod.number()
+})
+
+
+/**
+ * @summary Delete a vendor (admin only)
+ */
+export const DeleteVendorParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const DeleteVendorResponse = zod.void()
+
+
