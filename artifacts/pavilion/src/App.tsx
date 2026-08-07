@@ -23,6 +23,7 @@ import Maintenance from './pages/maintenance';
 import Complain from './pages/complain';
 import Emergency from './pages/emergency';
 import Amenities from './pages/amenities';
+import Admin from './pages/admin';
 import NotFound from '@/pages/not-found';
 
 const queryClient = new QueryClient();
@@ -73,6 +74,11 @@ function Router() {
       <Route path="/amenities">
         <RequireAuth>
           <Amenities />
+        </RequireAuth>
+      </Route>
+      <Route path="/admin">
+        <RequireAuth roles={["admin"]}>
+          <Admin />
         </RequireAuth>
       </Route>
       <Route component={NotFound} />

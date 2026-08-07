@@ -5,7 +5,7 @@ import { useAuth } from "@/context/auth-context";
 import { useListActiveEmergencyAlerts, getListActiveEmergencyAlertsQueryKey } from "@workspace/api-client-react";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { DoorOpen, Wrench, MessageSquareWarning, CalendarCheck, Siren, ShieldCheck } from "lucide-react";
+import { DoorOpen, Wrench, MessageSquareWarning, CalendarCheck, Siren, ShieldCheck, BadgeCheck } from "lucide-react";
 
 // Matches the polling interval on the Emergency page — the dashboard banner
 // should surface a new alert without anyone needing to refresh.
@@ -135,21 +135,41 @@ export default function Dashboard() {
         {(user?.role === "guard" || user?.role === "admin") && (
           <div className="mb-10">
             <h2 className="text-xl font-serif font-medium mb-6">Gate duty</h2>
-            <Link href="/gate">
-              <Card className="cursor-pointer border-primary bg-primary/5 hover:border-primary/70 transition-colors">
-                <CardHeader>
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                      <ShieldCheck className="h-5 w-5" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <Link href="/gate">
+                <Card className="cursor-pointer border-primary bg-primary/5 hover:border-primary/70 transition-colors">
+                  <CardHeader>
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                        <ShieldCheck className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-lg">Gate</CardTitle>
+                        <CardDescription>Check a visitor's OTP and approve or deny entry.</CardDescription>
+                      </div>
                     </div>
-                    <div>
-                      <CardTitle className="text-lg">Gate</CardTitle>
-                      <CardDescription>Check a visitor's OTP and approve or deny entry.</CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-              </Card>
-            </Link>
+                  </CardHeader>
+                </Card>
+              </Link>
+
+              {user?.role === "admin" && (
+                <Link href="/admin">
+                  <Card className="cursor-pointer border-primary bg-primary/5 hover:border-primary/70 transition-colors">
+                    <CardHeader>
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                          <BadgeCheck className="h-5 w-5" />
+                        </div>
+                        <div>
+                          <CardTitle className="text-lg">Admin</CardTitle>
+                          <CardDescription>Review and approve first-time residents' verification requests.</CardDescription>
+                        </div>
+                      </div>
+                    </CardHeader>
+                  </Card>
+                </Link>
+              )}
+            </div>
           </div>
         )}
 

@@ -12,7 +12,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
-import { apiPost, ApiFetchError } from "@/lib/api-fetch";
+import { apiPost, apiGet, ApiFetchError } from "@/lib/api-fetch";
+
+// Matches the polling interval already used for emergency alerts on the dashboard.
+const VERIFICATION_POLL_INTERVAL_MS = 5000;
 
 // Some backends (Java) stage the account and require the emailed OTP to be
 // entered before it's actually created; others (Node) create it immediately.
@@ -41,14 +44,16 @@ function formatFlatNumber(raw: string): string {
 }
 
 export default function Signup() {
-  // "verify" confirms a first-time resident's name against the flat before letting them
-  // into the account-creation form; "family" is a second, conditional page for family
+  // "verify" is where a first-time resident submits their name + flat for an admin to review;
+  // "pending_review" polls for that admin's decision; "form" is the actual account-creation
+  // step (only reachable once approved); "family" is a second, conditional page for family
   // member details, only shown when the resident says they have family with them.
-  const [step, setStep] = useState<"verify" | "form" | "family">("verify");
+  const [step, setStep] = useState<"verify" | "pending_review" | "form" | "family">("verify");
 
   const [verifyForm, setVerifyForm] = useState({ flatNumber: "", name: "" });
   const [isVerifyingResident, setIsVerifyingResident] = useState(false);
   const [verifyError, setVerifyError] = useState<string | null>(null);
+  const [reviewStatus, setReviewStatus] = useState<"pending" | "rejected">("pending");
 
   const [form, setForm] = useState({ name: "", flatNumber: "", email: "", password: "" });
   const [hasFamily, setHasFamily] = useState(false);
@@ -80,17 +85,24 @@ export default function Signup() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
 
-  const handleVerifyResident = async (e: React.FormEvent) => {
+  const handleSubmitVerification = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsVerifyingResident(true);
     setVerifyError(null);
     try {
-      const result = await apiPost<{ verified: boolean; message: string }>("/api/auth/verify-resident", verifyForm);
-      if (result.verified) {
+      const result = await apiPost<{ status: string; message: string }>(
+        "/api/auth/verification-requests",
+        verifyForm
+      );
+      if (result.status === "approved") {
         setForm((f) => ({ ...f, name: verifyForm.name, flatNumber: verifyForm.flatNumber }));
         setStep("form");
+      } else if (result.status === "rejected") {
+        setReviewStatus("rejected");
+        setStep("pending_review");
       } else {
-        setVerifyError(result.message);
+        setReviewStatus("pending");
+        setStep("pending_review");
       }
     } catch (error) {
       if (error instanceof ApiFetchError && error.status === 404) {
@@ -100,13 +112,38 @@ export default function Signup() {
         setStep("form");
       } else {
         setVerifyError(
-          error instanceof ApiFetchError ? error.message : "Couldn't verify your details. Please try again."
+          error instanceof ApiFetchError ? error.message : "Couldn't submit your request. Please try again."
         );
       }
     } finally {
       setIsVerifyingResident(false);
     }
   };
+
+  // While on the "under review" screen, quietly poll for the admin's decision so approval
+  // takes effect without the resident having to do anything else.
+  useEffect(() => {
+    if (step !== "pending_review" || reviewStatus !== "pending") return;
+
+    const interval = setInterval(async () => {
+      try {
+        const params = new URLSearchParams({ flatNumber: verifyForm.flatNumber, name: verifyForm.name });
+        const result = await apiGet<{ status: string; message: string }>(
+          `/api/auth/verification-requests/status?${params.toString()}`
+        );
+        if (result.status === "approved") {
+          setForm((f) => ({ ...f, name: verifyForm.name, flatNumber: verifyForm.flatNumber }));
+          setStep("form");
+        } else if (result.status === "rejected") {
+          setReviewStatus("rejected");
+        }
+      } catch {
+        // Transient poll failure — just try again on the next tick.
+      }
+    }, VERIFICATION_POLL_INTERVAL_MS);
+
+    return () => clearInterval(interval);
+  }, [step, reviewStatus, verifyForm.flatNumber, verifyForm.name]);
 
   const updateFamilyMember = (index: number, field: keyof FamilyMemberForm, value: string) =>
     setFamilyMembers((members) => members.map((m, i) => (i === index ? { ...m, [field]: value } : m)));
@@ -293,7 +330,7 @@ export default function Signup() {
                 </p>
               </div>
 
-              <form onSubmit={handleVerifyResident} className="space-y-5">
+              <form onSubmit={handleSubmitVerification} className="space-y-5">
                 <div className="space-y-2">
                   <Label htmlFor="verifyFlatNumber">Flat number</Label>
                   <div className="relative">
@@ -336,7 +373,7 @@ export default function Signup() {
                 </div>
 
                 <Button type="submit" size="lg" className="w-full rounded-full" disabled={isVerifyingResident}>
-                  {isVerifyingResident ? "Checking…" : "Continue"}
+                  {isVerifyingResident ? "Submitting…" : "Submit for review"}
                 </Button>
               </form>
 
@@ -347,6 +384,41 @@ export default function Signup() {
                 </Link>
               </p>
             </>
+          )}
+
+          {step === "pending_review" && (
+            <div className="flex flex-col items-center text-center gap-4 py-8">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                <ShieldCheck className="h-6 w-6 text-primary" />
+              </div>
+              {reviewStatus === "pending" ? (
+                <>
+                  <h1 className="text-2xl font-serif font-medium">Your request is under review</h1>
+                  <p className="text-muted-foreground text-sm">
+                    The committee is checking flat <span className="font-medium text-foreground">{verifyForm.flatNumber}</span> for{" "}
+                    <span className="font-medium text-foreground">{verifyForm.name}</span>. This page will move on
+                    automatically once it's approved — no need to refresh.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <h1 className="text-2xl font-serif font-medium">Request declined</h1>
+                  <p className="text-muted-foreground text-sm">
+                    Your request wasn't approved. Please check with the committee if you believe this is a mistake.
+                  </p>
+                </>
+              )}
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => {
+                  setStep("verify");
+                  setReviewStatus("pending");
+                }}
+              >
+                Back
+              </Button>
+            </div>
           )}
 
           {step === "form" && (
