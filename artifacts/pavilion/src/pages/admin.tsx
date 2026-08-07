@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { apiGet, apiPatch, apiPost, ApiFetchError } from "@/lib/api-fetch";
+import { AdminLayout } from "@/components/admin-layout";
 
 interface VerificationRequest {
   id: number;
@@ -189,6 +190,7 @@ export default function Admin() {
   const reviewed = requests?.filter((r) => r.status !== "pending") ?? [];
 
   return (
+    <AdminLayout>
     <div className="w-full">
       <div className="bg-primary/5 py-16 border-b">
         <div className="container mx-auto px-4 md:px-8">
@@ -322,5 +324,6 @@ export default function Admin() {
         )}
       </div>
     </div>
+    </AdminLayout>
   );
 }

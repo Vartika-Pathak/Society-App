@@ -23,6 +23,11 @@ import Complain from './pages/complain';
 import Emergency from './pages/emergency';
 import Amenities from './pages/amenities';
 import Admin from './pages/admin';
+import SocietyMaster from './pages/admin/masters/society';
+import BuildingMaster from './pages/admin/masters/buildings';
+import FlatMaster from './pages/admin/masters/flats';
+import ExpenseMaster from './pages/admin/masters/expenses';
+import VendorMaster from './pages/admin/masters/vendors';
 import NotFound from '@/pages/not-found';
 
 const queryClient = new QueryClient();
@@ -95,6 +100,31 @@ function Router() {
       <Route path="/admin">
         <RequireAuth roles={["admin"]}>
           <Admin />
+        </RequireAuth>
+      </Route>
+      <Route path="/admin/masters/society">
+        <RequireAuth roles={["admin"]}>
+          <SocietyMaster />
+        </RequireAuth>
+      </Route>
+      <Route path="/admin/masters/buildings">
+        <RequireAuth roles={["admin"]}>
+          <BuildingMaster />
+        </RequireAuth>
+      </Route>
+      <Route path="/admin/masters/flats">
+        <RequireAuth roles={["admin"]}>
+          <FlatMaster />
+        </RequireAuth>
+      </Route>
+      <Route path="/admin/masters/expenses">
+        <RequireAuth roles={["admin"]}>
+          <ExpenseMaster />
+        </RequireAuth>
+      </Route>
+      <Route path="/admin/masters/vendors">
+        <RequireAuth roles={["admin"]}>
+          <VendorMaster />
         </RequireAuth>
       </Route>
       <Route component={NotFound} />

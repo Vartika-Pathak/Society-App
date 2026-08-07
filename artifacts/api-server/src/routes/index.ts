@@ -14,6 +14,11 @@ import maintenanceRouter from "./maintenance";
 import complaintsRouter from "./complaints";
 import emergencyRouter from "./emergency";
 import amenitiesRouter from "./amenities";
+import societyRouter from "./society";
+import buildingsRouter from "./buildings";
+import flatsRouter from "./flats";
+import expenseCategoriesRouter from "./expenseCategories";
+import vendorsRouter from "./vendors";
 
 const router: IRouter = Router();
 
@@ -32,5 +37,10 @@ router.use(maintenanceRouter);
 router.use(complaintsRouter);
 router.use(emergencyRouter);
 router.use(amenitiesRouter);
+router.use(societyRouter);
+router.use(buildingsRouter);
+router.use(flatsRouter);
+router.use(expenseCategoriesRouter);
+router.use(vendorsRouter);
 
 export default router;
