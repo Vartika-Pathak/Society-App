@@ -13,6 +13,7 @@ import {
 } from "@workspace/api-zod";
 import { getAuthedUser } from "../lib/auth";
 import { AMENITIES_CATALOG, getAmenity } from "../lib/amenities-catalog";
+import { isSlotPast } from "../lib/amenity-slots";
 import { stripe } from "../lib/stripe";
 
 const router: IRouter = Router();
@@ -126,6 +127,11 @@ router.post("/amenities/bookings", async (req, res): Promise<void> => {
     return;
   }
 
+  if (isSlotPast(bookingDate, slot)) {
+    res.status(400).json({ error: "That date and time slot has already passed" });
+    return;
+  }
+
   if (await findExistingBooking(amenityId, bookingDate, slot)) {
     res.status(409).json({ error: "That slot is already booked" });
     return;
@@ -217,6 +223,16 @@ router.post("/amenities/bookings/confirm", async (req, res): Promise<void> => {
     }
     res.status(409).json({
       error: "That slot was booked by someone else while you were paying — you've been refunded.",
+    });
+    return;
+  }
+
+  if (isSlotPast(bookingDate, slot as AmenityBookingRow["slot"])) {
+    if (typeof session.payment_intent === "string") {
+      await stripe.refunds.create({ payment_intent: session.payment_intent });
+    }
+    res.status(409).json({
+      error: "That time slot passed while you were paying — you've been refunded.",
     });
     return;
   }

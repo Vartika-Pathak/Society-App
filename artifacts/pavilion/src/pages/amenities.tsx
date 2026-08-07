@@ -25,6 +25,20 @@ const slotLabels: Record<AmenityBookingSlot, string> = {
   evening: "Evening (6pm–9pm)",
 };
 
+// The hour each slot ends at — keep in sync with SLOT_END_HOUR in the api-server's
+// lib/amenity-slots.ts, which enforces the same cutoff server-side.
+const slotEndHour: Record<AmenityBookingSlot, number> = {
+  morning: 12,
+  afternoon: 17,
+  evening: 21,
+};
+
+function isSlotPast(dateStr: string, slot: AmenityBookingSlot): boolean {
+  const slotEnd = new Date(`${dateStr}T00:00:00`);
+  slotEnd.setHours(slotEndHour[slot], 0, 0, 0);
+  return slotEnd.getTime() <= Date.now();
+}
+
 function formatPrice(cents: number): string {
   return cents === 0 ? "Free" : `$${(cents / 100).toFixed(2)}`;
 }
@@ -191,14 +205,16 @@ export default function Amenities() {
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   {(Object.keys(slotLabels) as AmenityBookingSlot[]).map((s) => {
                     const taken = bookedSlots.has(s);
+                    const past = !taken && isSlotPast(date, s);
+                    const disabled = taken || past || availability.isLoading;
                     return (
                       <button
                         key={s}
                         type="button"
-                        disabled={taken || availability.isLoading}
+                        disabled={disabled}
                         onClick={() => setSlot(s)}
                         className={`rounded-lg border p-3 text-sm text-left transition-colors ${
-                          taken
+                          disabled
                             ? "opacity-40 cursor-not-allowed"
                             : slot === s
                               ? "border-primary bg-primary/5 cursor-pointer"
@@ -210,6 +226,7 @@ export default function Amenities() {
                           {slot === s && <Check className="h-4 w-4 text-primary" />}
                         </div>
                         {taken && <p className="text-xs text-muted-foreground mt-1">Already booked</p>}
+                        {past && <p className="text-xs text-muted-foreground mt-1">Already passed</p>}
                       </button>
                     );
                   })}
