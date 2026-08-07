@@ -16,7 +16,7 @@ export const communityGalleryPhotos: InsertGalleryPhoto[] = [
     uploadedBy: "Amenities Committee",
   },
   {
-    imageUrl: "https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=1200&q=80",
+    imageUrl: "https://images.unsplash.com/photo-1577083753695-e010191bacb5?q=80&w=1170&auto=format&fit=crop",
     title: "Diwali Mela",
     description: "Diyas and rangoli lit up the central courtyard for last year's Diwali Mela.",
     uploadedBy: "Events Committee",
@@ -55,12 +55,6 @@ export const communityGalleryPhotos: InsertGalleryPhoto[] = [
     imageUrl: "https://images.unsplash.com/photo-1543269664-56d93c1b41a6?auto=format&fit=crop&w=1200&q=80",
     title: "New Year's Eve Party",
     description: "Ringing in the New Year together on the clubhouse terrace.",
-    uploadedBy: "Events Committee",
-  },
-  {
-    imageUrl: "https://images.unsplash.com/photo-1605106702734-205df224ecce?auto=format&fit=crop&w=1200&q=80",
-    title: "Diwali Diyas",
-    description: "Residents lighting diyas together on Diwali evening.",
     uploadedBy: "Events Committee",
   },
   {
