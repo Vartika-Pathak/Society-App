@@ -585,7 +585,7 @@ export default function Signup() {
                             type="number"
                             placeholder="Age"
                             min={0}
-                            max={120}
+                            max={100}
                             value={member.age}
                             onChange={(e) => updateFamilyMember(index, "age", e.target.value)}
                           />
