@@ -1,6 +1,5 @@
 import { sqliteTable, integer, text } from "drizzle-orm/sqlite-core";
 import { sql } from "drizzle-orm";
-import { usersTable } from "./users";
 
 export const amenitySlots = ["morning", "afternoon", "evening"] as const;
 export type AmenitySlot = (typeof amenitySlots)[number];
@@ -10,7 +9,10 @@ export type AmenitySlot = (typeof amenitySlots)[number];
 // There is no "pending" status to manage.
 export const amenityBookingsTable = sqliteTable("amenity_bookings", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  residentId: integer("resident_id").notNull().references(() => usersTable.id),
+  // Not a foreign key: the resident's real account lives in the separate Java backend's
+  // database, so this id (from that backend's JWT) usually has no matching row in this
+  // server's own usersTable to reference.
+  residentId: integer("resident_id").notNull(),
   amenityId: text("amenity_id").notNull(),
   bookingDate: text("booking_date").notNull(),
   slot: text("slot").$type<AmenitySlot>().notNull(),

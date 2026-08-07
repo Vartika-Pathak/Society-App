@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { and, desc, eq } from "drizzle-orm";
-import { db, emergencyAlertsTable, usersTable, type EmergencyAlert, type User } from "@workspace/db";
+import { db, emergencyAlertsTable, type EmergencyAlert } from "@workspace/db";
 import {
   RaiseEmergencyAlertResponse,
   GetMyEmergencyAlertResponse,
@@ -12,12 +12,12 @@ import { getAuthedUser } from "../lib/auth";
 
 const router: IRouter = Router();
 
-function toAlert(alert: EmergencyAlert, resident: Pick<User, "name" | "flatNumber">) {
+function toAlert(alert: EmergencyAlert) {
   return {
     id: alert.id,
     status: alert.status,
-    residentName: resident.name,
-    residentFlatNumber: resident.flatNumber,
+    residentName: alert.residentName,
+    residentFlatNumber: alert.residentFlatNumber,
     createdAt: alert.createdAt.toISOString(),
     resolvedAt: alert.resolvedAt?.toISOString() ?? null,
   };
@@ -36,16 +36,16 @@ router.post("/emergency-alerts", async (req, res): Promise<void> => {
     .where(and(eq(emergencyAlertsTable.residentId, user.id), eq(emergencyAlertsTable.status, "active")));
 
   if (existing) {
-    res.status(201).json(RaiseEmergencyAlertResponse.parse(toAlert(existing, user)));
+    res.status(201).json(RaiseEmergencyAlertResponse.parse(toAlert(existing)));
     return;
   }
 
   const [alert] = await db
     .insert(emergencyAlertsTable)
-    .values({ residentId: user.id })
+    .values({ residentId: user.id, residentName: user.name, residentFlatNumber: user.flatNumber })
     .returning();
 
-  res.status(201).json(RaiseEmergencyAlertResponse.parse(toAlert(alert, user)));
+  res.status(201).json(RaiseEmergencyAlertResponse.parse(toAlert(alert)));
 });
 
 router.get("/emergency-alerts/mine", async (req, res): Promise<void> => {
@@ -65,7 +65,7 @@ router.get("/emergency-alerts/mine", async (req, res): Promise<void> => {
     return;
   }
 
-  res.status(200).json(GetMyEmergencyAlertResponse.parse(toAlert(alert, user)));
+  res.status(200).json(GetMyEmergencyAlertResponse.parse(toAlert(alert)));
 });
 
 router.get("/emergency-alerts/active", async (req, res): Promise<void> => {
@@ -76,15 +76,12 @@ router.get("/emergency-alerts/active", async (req, res): Promise<void> => {
   }
 
   const rows = await db
-    .select({ alert: emergencyAlertsTable, resident: usersTable })
+    .select()
     .from(emergencyAlertsTable)
-    .innerJoin(usersTable, eq(emergencyAlertsTable.residentId, usersTable.id))
     .where(eq(emergencyAlertsTable.status, "active"))
     .orderBy(desc(emergencyAlertsTable.createdAt));
 
-  res.status(200).json(
-    ListActiveEmergencyAlertsResponse.parse(rows.map(({ alert, resident }) => toAlert(alert, resident))),
-  );
+  res.status(200).json(ListActiveEmergencyAlertsResponse.parse(rows.map(toAlert)));
 });
 
 router.post("/emergency-alerts/:id/resolve", async (req, res): Promise<void> => {
@@ -100,18 +97,17 @@ router.post("/emergency-alerts/:id/resolve", async (req, res): Promise<void> => 
     return;
   }
 
-  const [row] = await db
-    .select({ alert: emergencyAlertsTable, resident: usersTable })
+  const [existing] = await db
+    .select()
     .from(emergencyAlertsTable)
-    .innerJoin(usersTable, eq(emergencyAlertsTable.residentId, usersTable.id))
     .where(eq(emergencyAlertsTable.id, params.data.id));
 
-  if (!row) {
+  if (!existing) {
     res.status(404).json({ error: "Alert not found" });
     return;
   }
 
-  const isReportingResident = row.alert.residentId === user.id;
+  const isReportingResident = existing.residentId === user.id;
   const isStaff = user.role === "guard" || user.role === "admin";
   if (!isReportingResident && !isStaff) {
     res.status(403).json({ error: "Only the reporting resident, a guard, or an admin can resolve this alert" });
@@ -124,7 +120,7 @@ router.post("/emergency-alerts/:id/resolve", async (req, res): Promise<void> => 
     .where(eq(emergencyAlertsTable.id, params.data.id))
     .returning();
 
-  res.status(200).json(ResolveEmergencyAlertResponse.parse(toAlert(updated, row.resident)));
+  res.status(200).json(ResolveEmergencyAlertResponse.parse(toAlert(updated)));
 });
 
 export default router;

@@ -1,12 +1,6 @@
 import { Router, type IRouter } from "express";
 import { desc, eq } from "drizzle-orm";
-import {
-  db,
-  maintenanceRequestsTable,
-  usersTable,
-  type MaintenanceRequest,
-  type User,
-} from "@workspace/db";
+import { db, maintenanceRequestsTable, type MaintenanceRequest } from "@workspace/db";
 import {
   CreateMaintenanceRequestBody,
   UpdateMaintenanceStatusParams,
@@ -17,15 +11,15 @@ import { uploadImages, uploadedFileUrls, deleteUploadedFiles } from "../lib/uplo
 
 const router: IRouter = Router();
 
-function toMaintenanceRequest(request: MaintenanceRequest, resident: Pick<User, "name" | "flatNumber">) {
+function toMaintenanceRequest(request: MaintenanceRequest) {
   return {
     id: request.id,
     category: request.category,
     description: request.description,
     photoUrls: request.photoUrls,
     status: request.status,
-    residentName: resident.name,
-    residentFlatNumber: resident.flatNumber,
+    residentName: request.residentName,
+    residentFlatNumber: request.residentFlatNumber,
     createdAt: request.createdAt.toISOString(),
   };
 }
@@ -40,13 +34,12 @@ router.get("/maintenance", async (req, res): Promise<void> => {
   const canSeeAll = user.role === "guard" || user.role === "admin";
 
   const rows = await db
-    .select({ request: maintenanceRequestsTable, resident: usersTable })
+    .select()
     .from(maintenanceRequestsTable)
-    .innerJoin(usersTable, eq(maintenanceRequestsTable.residentId, usersTable.id))
     .where(canSeeAll ? undefined : eq(maintenanceRequestsTable.residentId, user.id))
     .orderBy(desc(maintenanceRequestsTable.createdAt));
 
-  res.status(200).json(rows.map(({ request, resident }) => toMaintenanceRequest(request, resident)));
+  res.status(200).json(rows.map(toMaintenanceRequest));
 });
 
 router.post("/maintenance", uploadImages.array("photos", 6), async (req, res): Promise<void> => {
@@ -70,13 +63,15 @@ router.post("/maintenance", uploadImages.array("photos", 6), async (req, res): P
     .insert(maintenanceRequestsTable)
     .values({
       residentId: user.id,
+      residentName: user.name,
+      residentFlatNumber: user.flatNumber,
       category: parsed.data.category,
       description: parsed.data.description,
       photoUrls: uploadedFileUrls(files),
     })
     .returning();
 
-  res.status(201).json(toMaintenanceRequest(request, user));
+  res.status(201).json(toMaintenanceRequest(request));
 });
 
 router.post("/maintenance/:id/status", async (req, res): Promise<void> => {
@@ -97,13 +92,12 @@ router.post("/maintenance/:id/status", async (req, res): Promise<void> => {
     return;
   }
 
-  const [row] = await db
-    .select({ request: maintenanceRequestsTable, resident: usersTable })
+  const [existing] = await db
+    .select()
     .from(maintenanceRequestsTable)
-    .innerJoin(usersTable, eq(maintenanceRequestsTable.residentId, usersTable.id))
     .where(eq(maintenanceRequestsTable.id, params.data.id));
 
-  if (!row) {
+  if (!existing) {
     res.status(404).json({ error: "Request not found" });
     return;
   }
@@ -114,7 +108,7 @@ router.post("/maintenance/:id/status", async (req, res): Promise<void> => {
     .where(eq(maintenanceRequestsTable.id, params.data.id))
     .returning();
 
-  res.status(200).json(toMaintenanceRequest(updated, row.resident));
+  res.status(200).json(toMaintenanceRequest(updated));
 });
 
 export default router;

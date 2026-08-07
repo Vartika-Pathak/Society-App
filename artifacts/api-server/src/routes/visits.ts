@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { and, desc, eq } from "drizzle-orm";
-import { db, visitsTable, usersTable, type Visit } from "@workspace/db";
+import { db, visitsTable, type Visit } from "@workspace/db";
 import {
   CreateVisitBody,
   CreateVisitResponse,
@@ -51,6 +51,8 @@ router.post("/visits", async (req, res): Promise<void> => {
     .insert(visitsTable)
     .values({
       residentId: user.id,
+      residentName: user.name,
+      residentFlatNumber: user.flatNumber,
       visitType: parsed.data.visitType,
       visitorName: parsed.data.visitorName,
       visitorPhone: parsed.data.visitorPhone,
@@ -95,22 +97,21 @@ router.post("/visits/lookup", async (req, res): Promise<void> => {
     return;
   }
 
-  const [row] = await db
-    .select({ visit: visitsTable, resident: usersTable })
+  const [visit] = await db
+    .select()
     .from(visitsTable)
-    .innerJoin(usersTable, eq(visitsTable.residentId, usersTable.id))
     .where(and(eq(visitsTable.otpCode, parsed.data.otpCode), eq(visitsTable.status, "pending")));
 
-  if (!row || row.visit.expiresAt.getTime() < Date.now()) {
+  if (!visit || visit.expiresAt.getTime() < Date.now()) {
     res.status(404).json({ error: "No matching pending visitor entry for that code" });
     return;
   }
 
   res.status(200).json(
     LookupVisitResponse.parse({
-      ...toVisit(row.visit),
-      residentName: row.resident.name,
-      residentFlatNumber: row.resident.flatNumber,
+      ...toVisit(visit),
+      residentName: visit.residentName,
+      residentFlatNumber: visit.residentFlatNumber,
     }),
   );
 });

@@ -1,6 +1,5 @@
 import { sqliteTable, integer, text } from "drizzle-orm/sqlite-core";
 import { sql } from "drizzle-orm";
-import { usersTable } from "./users";
 
 export const maintenanceCategories = [
   "plumbing",
@@ -16,7 +15,13 @@ export type MaintenanceStatus = (typeof maintenanceStatuses)[number];
 
 export const maintenanceRequestsTable = sqliteTable("maintenance_requests", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  residentId: integer("resident_id").notNull().references(() => usersTable.id),
+  // Not a foreign key: the resident's real account lives in the separate Java backend's
+  // database, so this id (from that backend's JWT) usually has no matching row in this
+  // server's own usersTable to reference.
+  residentId: integer("resident_id").notNull(),
+  // Denormalized at insert time rather than joined from usersTable — same reason as above.
+  residentName: text("resident_name").notNull(),
+  residentFlatNumber: text("resident_flat_number").notNull(),
   category: text("category").$type<MaintenanceCategory>().notNull(),
   description: text("description").notNull(),
   photoUrls: text("photo_urls", { mode: "json" }).$type<string[]>().notNull().default([]),

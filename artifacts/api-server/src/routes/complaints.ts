@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { desc, eq } from "drizzle-orm";
-import { db, complaintsTable, usersTable, type Complaint, type User } from "@workspace/db";
+import { db, complaintsTable, type Complaint } from "@workspace/db";
 import {
   CreateComplaintBody,
   ListComplaintsResponse,
@@ -13,15 +13,15 @@ import { getAuthedUser } from "../lib/auth";
 
 const router: IRouter = Router();
 
-function toComplaint(complaint: Complaint, resident: Pick<User, "name" | "flatNumber">) {
+function toComplaint(complaint: Complaint) {
   return {
     id: complaint.id,
     category: complaint.category,
     description: complaint.description,
     status: complaint.status,
     resolutionNote: complaint.resolutionNote,
-    residentName: resident.name,
-    residentFlatNumber: resident.flatNumber,
+    residentName: complaint.residentName,
+    residentFlatNumber: complaint.residentFlatNumber,
     createdAt: complaint.createdAt.toISOString(),
   };
 }
@@ -36,13 +36,12 @@ router.get("/complaints", async (req, res): Promise<void> => {
   const canSeeAll = user.role === "guard" || user.role === "admin";
 
   const rows = await db
-    .select({ complaint: complaintsTable, resident: usersTable })
+    .select()
     .from(complaintsTable)
-    .innerJoin(usersTable, eq(complaintsTable.residentId, usersTable.id))
     .where(canSeeAll ? undefined : eq(complaintsTable.residentId, user.id))
     .orderBy(desc(complaintsTable.createdAt));
 
-  res.status(200).json(ListComplaintsResponse.parse(rows.map(({ complaint, resident }) => toComplaint(complaint, resident))));
+  res.status(200).json(ListComplaintsResponse.parse(rows.map(toComplaint)));
 });
 
 router.post("/complaints", async (req, res): Promise<void> => {
@@ -62,12 +61,14 @@ router.post("/complaints", async (req, res): Promise<void> => {
     .insert(complaintsTable)
     .values({
       residentId: user.id,
+      residentName: user.name,
+      residentFlatNumber: user.flatNumber,
       category: parsed.data.category,
       description: parsed.data.description,
     })
     .returning();
 
-  res.status(201).json(CreateComplaintResponse.parse(toComplaint(complaint, user)));
+  res.status(201).json(CreateComplaintResponse.parse(toComplaint(complaint)));
 });
 
 router.post("/complaints/:id/status", async (req, res): Promise<void> => {
@@ -88,13 +89,9 @@ router.post("/complaints/:id/status", async (req, res): Promise<void> => {
     return;
   }
 
-  const [row] = await db
-    .select({ complaint: complaintsTable, resident: usersTable })
-    .from(complaintsTable)
-    .innerJoin(usersTable, eq(complaintsTable.residentId, usersTable.id))
-    .where(eq(complaintsTable.id, params.data.id));
+  const [existing] = await db.select().from(complaintsTable).where(eq(complaintsTable.id, params.data.id));
 
-  if (!row) {
+  if (!existing) {
     res.status(404).json({ error: "Complaint not found" });
     return;
   }
@@ -103,13 +100,13 @@ router.post("/complaints/:id/status", async (req, res): Promise<void> => {
     .update(complaintsTable)
     .set({
       status: body.data.status,
-      resolutionNote: body.data.resolutionNote ?? row.complaint.resolutionNote,
+      resolutionNote: body.data.resolutionNote ?? existing.resolutionNote,
       updatedAt: new Date(),
     })
     .where(eq(complaintsTable.id, params.data.id))
     .returning();
 
-  res.status(200).json(UpdateComplaintStatusResponse.parse(toComplaint(updated, row.resident)));
+  res.status(200).json(UpdateComplaintStatusResponse.parse(toComplaint(updated)));
 });
 
 export default router;
