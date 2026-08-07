@@ -91,7 +91,7 @@ export function ChatWidget() {
       {isOpen && (
         <div className="mb-3 w-80 sm:w-96 h-[28rem] rounded-xl border bg-card shadow-xl flex flex-col overflow-hidden">
           <div className="flex items-center justify-between border-b px-4 py-3 bg-primary text-primary-foreground">
-            <span className="font-medium text-sm">Pavilion Assistant</span>
+            <span className="font-medium text-sm">Pavi</span>
             <button onClick={() => setIsOpen(false)} aria-label="Close chat" className="hover:opacity-80">
               <X className="h-4 w-4" />
             </button>
@@ -102,7 +102,7 @@ export function ChatWidget() {
               {messages.length === 0 && (
                 <div className="space-y-3">
                   <p className="text-sm text-muted-foreground">
-                    Ask me anything about using Pavilion, or pick a topic below:
+                    Ask Pavi anything about Pavilion, or pick a topic below:
                   </p>
                   <div className="flex flex-col gap-2">
                     {quickReplies.map((q) => (
