@@ -12,6 +12,7 @@ import Events from './pages/events';
 import Gallery from './pages/gallery';
 import Join from './pages/join';
 import Contact from './pages/contact';
+import SelectSociety from './pages/select-society';
 import Login from './pages/login';
 import Signup from './pages/signup';
 import Dashboard from './pages/dashboard';
@@ -27,8 +28,8 @@ import NotFound from '@/pages/not-found';
 const queryClient = new QueryClient();
 
 // Pavilion is a resident-only app — there's no public landing page to show, so "/" just
-// sends people to wherever is actually useful to them: their dashboard if signed in,
-// otherwise the login page.
+// sends people to wherever is actually useful to them: their dashboard if signed in, or
+// the "choose your society" step (which leads into login) if not.
 function Root() {
   const { user, isLoading } = useAuth();
 
@@ -40,7 +41,7 @@ function Root() {
     );
   }
 
-  return <Redirect to={user ? '/dashboard' : '/login'} />;
+  return <Redirect to={user ? '/dashboard' : '/select-society'} />;
 }
 
 function Router() {
@@ -53,6 +54,7 @@ function Router() {
       <Route path="/gallery" component={Gallery} />
       <Route path="/join" component={Join} />
       <Route path="/contact" component={Contact} />
+      <Route path="/select-society" component={SelectSociety} />
       <Route path="/login" component={Login} />
       <Route path="/signup" component={Signup} />
       <Route path="/dashboard">
