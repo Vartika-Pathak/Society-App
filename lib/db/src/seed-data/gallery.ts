@@ -57,4 +57,28 @@ export const communityGalleryPhotos: InsertGalleryPhoto[] = [
     description: "Ringing in the New Year together on the clubhouse terrace.",
     uploadedBy: "Events Committee",
   },
+  {
+    imageUrl: "https://images.unsplash.com/photo-1605106702734-205df224ecce?auto=format&fit=crop&w=1200&q=80",
+    title: "Diwali Diyas",
+    description: "Residents lighting diyas together on Diwali evening.",
+    uploadedBy: "Events Committee",
+  },
+  {
+    imageUrl: "https://images.unsplash.com/photo-1615485500704-8e990f9900f7?auto=format&fit=crop&w=1200&q=80",
+    title: "Holi Celebration",
+    description: "Residents drenched in color, celebrating Holi together in the courtyard.",
+    uploadedBy: "Cultural Committee",
+  },
+  {
+    imageUrl: "https://images.unsplash.com/photo-1530549387789-4c1017266635?auto=format&fit=crop&w=1200&q=80",
+    title: "Pool Party",
+    description: "A weekend pool party — the rooftop pool at its liveliest.",
+    uploadedBy: "Amenities Committee",
+  },
+  {
+    imageUrl: "https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=1200&q=80",
+    title: "Morning Yoga Session",
+    description: "Residents unwinding with a morning yoga session in the green gardens.",
+    uploadedBy: "Amenities Committee",
+  },
 ];
