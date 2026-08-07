@@ -41,4 +41,4 @@ export const db = drizzle(sqlite, { schema });
 migrate(db, { migrationsFolder: path.join(repoRoot, "lib/db/drizzle") });
 
 export * from "./schema";
-export { seedEvents } from "./seed";
+export { seedEvents, seedGallery } from "./seed";

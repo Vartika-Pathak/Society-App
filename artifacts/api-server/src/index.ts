@@ -1,4 +1,4 @@
-import { seedEvents } from "@workspace/db";
+import { seedEvents, seedGallery } from "@workspace/db";
 import app from "./app";
 import { logger } from "./lib/logger";
 
@@ -28,6 +28,16 @@ seedEvents()
   })
   .catch((err) => {
     logger.error({ err }, "Failed to seed Social Calendar events");
+  });
+
+seedGallery()
+  .then(({ inserted, skipped }) => {
+    if (inserted > 0) {
+      logger.info({ inserted, skipped }, "Seeded gallery photos");
+    }
+  })
+  .catch((err) => {
+    logger.error({ err }, "Failed to seed gallery photos");
   });
 
 app.listen(port, (err) => {

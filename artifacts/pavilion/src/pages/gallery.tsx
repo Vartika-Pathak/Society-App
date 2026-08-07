@@ -9,10 +9,15 @@ export default function Gallery() {
   return (
     <div className="w-full pb-24">
       {/* Header */}
-      <div className="bg-primary/5 py-12 border-b">
-        <div className="container mx-auto px-4 md:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-serif font-medium mb-4">Life at Pavilion</h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+      <div className="relative overflow-hidden bg-primary py-12 border-b">
+        <img
+          src="https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?auto=format&fit=crop&w=1600&q=80"
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover opacity-20"
+        />
+        <div className="relative z-10 container mx-auto px-4 md:px-8 text-center">
+          <h1 className="text-4xl md:text-5xl font-serif font-medium mb-4 text-primary-foreground">Life at Pavilion</h1>
+          <p className="text-lg text-primary-foreground/80 max-w-2xl mx-auto">
             Moments, events, and everyday life in our community.
           </p>
         </div>
