@@ -36,6 +36,16 @@ tags:
     description: Emergency alerts — one-tap alert visible to neighbors, guard, and admin until resolved
   - name: amenities
     description: Amenity booking, with Stripe Checkout for amenities that require payment
+  - name: society
+    description: Society profile — admin-only, one record describing the society itself
+  - name: buildings
+    description: Buildings master data — admin-only
+  - name: flats
+    description: Flats master data — admin-only
+  - name: expense-categories
+    description: Expense categories with GST slabs — admin-only
+  - name: vendors
+    description: Vendors — admin-only
 paths:
   /healthz:
     get:
@@ -827,6 +837,404 @@ paths:
         "409":
           description: Payment succeeded but the slot was taken meanwhile — refunded automatically
 
+  /society-info:
+    get:
+      operationId: getSocietyInfo
+      tags: [society]
+      summary: Get the society's profile (admin only)
+      responses:
+        "200":
+          description: Society profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SocietyInfo"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+    put:
+      operationId: updateSocietyInfo
+      tags: [society]
+      summary: Update the society's profile (admin only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SocietyInfoInput"
+      responses:
+        "200":
+          description: Society profile updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SocietyInfo"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+
+  /buildings:
+    get:
+      operationId: listBuildings
+      tags: [buildings]
+      summary: List all buildings (admin only)
+      responses:
+        "200":
+          description: Buildings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Building"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+    post:
+      operationId: createBuilding
+      tags: [buildings]
+      summary: Add a building (admin only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BuildingInput"
+      responses:
+        "201":
+          description: Building created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Building"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+
+  /buildings/{id}:
+    put:
+      operationId: updateBuilding
+      tags: [buildings]
+      summary: Update a building (admin only)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BuildingInput"
+      responses:
+        "200":
+          description: Building updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Building"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+        "404":
+          description: Building not found
+    delete:
+      operationId: deleteBuilding
+      tags: [buildings]
+      summary: Delete a building (admin only)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Building deleted
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+        "404":
+          description: Building not found
+
+  /flats:
+    get:
+      operationId: listFlats
+      tags: [flats]
+      summary: List all flats, with building name and occupancy (admin only)
+      responses:
+        "200":
+          description: Flats
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Flat"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+    post:
+      operationId: createFlat
+      tags: [flats]
+      summary: Add a flat (admin only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FlatInput"
+      responses:
+        "201":
+          description: Flat created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Flat"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+
+  /flats/{id}:
+    put:
+      operationId: updateFlat
+      tags: [flats]
+      summary: Update a flat (admin only)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FlatInput"
+      responses:
+        "200":
+          description: Flat updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Flat"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+        "404":
+          description: Flat not found
+    delete:
+      operationId: deleteFlat
+      tags: [flats]
+      summary: Delete a flat (admin only)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Flat deleted
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+        "404":
+          description: Flat not found
+
+  /expense-categories:
+    get:
+      operationId: listExpenseCategories
+      tags: [expense-categories]
+      summary: List all expense categories (admin only)
+      responses:
+        "200":
+          description: Expense categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ExpenseCategory"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+    post:
+      operationId: createExpenseCategory
+      tags: [expense-categories]
+      summary: Add an expense category (admin only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExpenseCategoryInput"
+      responses:
+        "201":
+          description: Expense category created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExpenseCategory"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+
+  /expense-categories/{id}:
+    put:
+      operationId: updateExpenseCategory
+      tags: [expense-categories]
+      summary: Update an expense category (admin only)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExpenseCategoryInput"
+      responses:
+        "200":
+          description: Expense category updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExpenseCategory"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+        "404":
+          description: Expense category not found
+    delete:
+      operationId: deleteExpenseCategory
+      tags: [expense-categories]
+      summary: Delete an expense category (admin only)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Expense category deleted
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+        "404":
+          description: Expense category not found
+
+  /vendors:
+    get:
+      operationId: listVendors
+      tags: [vendors]
+      summary: List all vendors (admin only)
+      responses:
+        "200":
+          description: Vendors
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Vendor"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+    post:
+      operationId: createVendor
+      tags: [vendors]
+      summary: Add a vendor (admin only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VendorInput"
+      responses:
+        "201":
+          description: Vendor created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vendor"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+
+  /vendors/{id}:
+    put:
+      operationId: updateVendor
+      tags: [vendors]
+      summary: Update a vendor (admin only)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VendorInput"
+      responses:
+        "200":
+          description: Vendor updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vendor"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+        "404":
+          description: Vendor not found
+    delete:
+      operationId: deleteVendor
+      tags: [vendors]
+      summary: Delete a vendor (admin only)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Vendor deleted
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+        "404":
+          description: Vendor not found
+
 components:
   schemas:
     HealthStatus:
@@ -1422,3 +1830,159 @@ components:
       properties:
         sessionId:
           type: string
+
+    SocietyInfo:
+      type: object
+      required: [id, name, address, contactNumber, email]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        address:
+          type: string
+        contactNumber:
+          type: string
+        email:
+          type: string
+
+    SocietyInfoInput:
+      type: object
+      required: [name, address, contactNumber, email]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        address:
+          type: string
+          minLength: 1
+        contactNumber:
+          type: string
+          minLength: 1
+        email:
+          type: string
+          minLength: 1
+
+    Building:
+      type: object
+      required: [id, name, totalFlats]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        totalFlats:
+          type: integer
+
+    BuildingInput:
+      type: object
+      required: [name, totalFlats]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        totalFlats:
+          type: integer
+          minimum: 1
+
+    Flat:
+      type: object
+      required: [id, buildingId, buildingName, flatNumber, flatType, occupied, ownershipType]
+      properties:
+        id:
+          type: integer
+        buildingId:
+          type: integer
+        buildingName:
+          type: string
+        flatNumber:
+          type: string
+        flatType:
+          type: string
+          enum: [1bhk, 2bhk, 3bhk, 4bhk]
+        occupied:
+          type: boolean
+        ownershipType:
+          type: string
+          enum: [owner, rented]
+
+    FlatInput:
+      type: object
+      required: [buildingId, flatNumber, flatType, occupied, ownershipType]
+      properties:
+        buildingId:
+          type: integer
+        flatNumber:
+          type: string
+          minLength: 1
+        flatType:
+          type: string
+          enum: [1bhk, 2bhk, 3bhk, 4bhk]
+        occupied:
+          type: boolean
+        ownershipType:
+          type: string
+          enum: [owner, rented]
+
+    ExpenseCategory:
+      type: object
+      required: [id, name, gstSlabPercent]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        gstSlabPercent:
+          type: integer
+
+    ExpenseCategoryInput:
+      type: object
+      required: [name, gstSlabPercent]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        gstSlabPercent:
+          type: integer
+          minimum: 0
+          maximum: 100
+
+    Vendor:
+      type: object
+      required: [id, name, contactPersonName, contactNumber, address, gstNumber, openingBalancePaise]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        contactPersonName:
+          type: string
+        contactNumber:
+          type: string
+        address:
+          type: ["string", "null"]
+        gstNumber:
+          type: ["string", "null"]
+        openingBalancePaise:
+          type: integer
+
+    VendorInput:
+      type: object
+      required: [name, contactPersonName, contactNumber]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        contactPersonName:
+          type: string
+          minLength: 1
+        contactNumber:
+          type: string
+          minLength: 1
+        address:
+          type: string
+        gstNumber:
+          type: string
+        openingBalancePaise:
+          type: integer
+          minimum: 0
