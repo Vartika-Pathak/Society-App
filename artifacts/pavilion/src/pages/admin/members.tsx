@@ -7,9 +7,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 
 type Role = "resident" | "guard" | "admin";
 
@@ -22,14 +20,11 @@ interface Member {
   createdAt: string;
 }
 
-const roleVariants: Record<Role, "default" | "secondary" | "outline"> = {
-  admin: "default",
-  guard: "secondary",
-  resident: "outline",
-};
+const emptyForm = { name: "", email: "", password: "", flatNumber: "" };
 
-const emptyForm = { name: "", email: "", password: "", flatNumber: "", role: "resident" as Role };
-
+// Guards and admins aren't "members" here — a member is the one account per flat that
+// represents that resident. Guard accounts are created from the Admin page and will get
+// their own management screen under Maintenance later; this list only ever shows residents.
 export default function Members() {
   const { toast } = useToast();
   const [members, setMembers] = useState<Member[] | null>(null);
@@ -42,7 +37,7 @@ export default function Members() {
   const loadMembers = useCallback(async () => {
     try {
       const data = await apiGet<Member[]>("/api/admin/users");
-      setMembers(data);
+      setMembers(data.filter((member) => member.role === "resident"));
     } catch (error) {
       toast({
         title: "Couldn't load members",
@@ -65,7 +60,7 @@ export default function Members() {
 
   const startEdit = (member: Member) => {
     setEditingId(member.id);
-    setForm({ name: member.name, email: member.email, password: "", flatNumber: member.flatNumber, role: member.role });
+    setForm({ name: member.name, email: member.email, password: "", flatNumber: member.flatNumber });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -75,8 +70,8 @@ export default function Members() {
       if (editingId) {
         await apiPatch(`/api/admin/users/${editingId}`, {
           name: form.name,
-          flatNumber: form.role === "resident" ? form.flatNumber : undefined,
-          role: form.role,
+          flatNumber: form.flatNumber,
+          role: "resident",
         });
         toast({ title: "Member updated" });
       } else {
@@ -84,8 +79,8 @@ export default function Members() {
           name: form.name,
           email: form.email,
           password: form.password,
-          flatNumber: form.role === "resident" ? form.flatNumber : undefined,
-          role: form.role,
+          flatNumber: form.flatNumber,
+          role: "resident",
         });
         toast({ title: "Member created" });
       }
@@ -125,7 +120,8 @@ export default function Members() {
         <div>
           <h1 className="text-2xl font-serif font-medium mb-1">Members Management</h1>
           <p className="text-muted-foreground text-sm">
-            Manage resident, guard, and admin accounts. These are the same accounts used to log in.
+            One account per flat — the resident who signs in, not family members. Guard accounts are managed
+            separately from the Admin page.
           </p>
         </div>
 
@@ -172,30 +168,15 @@ export default function Members() {
                 </div>
               )}
               <div className="space-y-2">
-                <Label>Role</Label>
-                <Select value={form.role} onValueChange={(v) => setForm((f) => ({ ...f, role: v as Role }))}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="resident">Resident</SelectItem>
-                    <SelectItem value="guard">Guard</SelectItem>
-                    <SelectItem value="admin">Admin</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label htmlFor="member-flat">Flat Number</Label>
+                <Input
+                  id="member-flat"
+                  placeholder="e.g. A-100"
+                  value={form.flatNumber}
+                  onChange={(e) => setForm((f) => ({ ...f, flatNumber: e.target.value }))}
+                  required
+                />
               </div>
-              {form.role === "resident" && (
-                <div className="space-y-2">
-                  <Label htmlFor="member-flat">Flat Number</Label>
-                  <Input
-                    id="member-flat"
-                    placeholder="e.g. A-100"
-                    value={form.flatNumber}
-                    onChange={(e) => setForm((f) => ({ ...f, flatNumber: e.target.value }))}
-                    required
-                  />
-                </div>
-              )}
               <div className="sm:col-span-2 flex gap-2">
                 <Button type="submit" disabled={isSaving}>
                   {isSaving ? "Saving…" : editingId ? "Update Member" : "Create Member"}
@@ -224,7 +205,6 @@ export default function Members() {
                     <TableHead>Name</TableHead>
                     <TableHead>Email</TableHead>
                     <TableHead>Flat</TableHead>
-                    <TableHead>Role</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -234,11 +214,6 @@ export default function Members() {
                       <TableCell className="font-medium">{member.name}</TableCell>
                       <TableCell>{member.email}</TableCell>
                       <TableCell>{member.flatNumber}</TableCell>
-                      <TableCell>
-                        <Badge variant={roleVariants[member.role]} className="capitalize">
-                          {member.role}
-                        </Badge>
-                      </TableCell>
                       <TableCell className="text-right space-x-2">
                         <Button type="button" size="sm" variant="outline" onClick={() => startEdit(member)}>
                           <Pencil className="h-3.5 w-3.5 mr-1" /> Edit
