@@ -14,6 +14,8 @@ export * from './amenityBookingSlot';
 export * from './auditLog';
 export * from './authUser';
 export * from './authUserRole';
+export * from './backfillMaintenanceCollectionsInput';
+export * from './backfillMaintenanceCollectionsResult';
 export * from './balanceSheet';
 export * from './billPayment';
 export * from './billPaymentInput';

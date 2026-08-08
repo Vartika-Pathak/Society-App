@@ -1469,6 +1469,25 @@ export const CreateMaintenanceCollectionResponse = zod.object({
 
 
 /**
+ * @summary Generate maintenance collections for past months against the flats/rates that currently exist — mostly full payments, with a few flats left unpaid each month to look realistic. Skips any flat/month pair that already has a collection, so it's safe to run more than once (admin only).
+ */
+export const backfillMaintenanceCollectionsBodyMonthsDefault = 3;
+export const backfillMaintenanceCollectionsBodyMonthsMax = 12;
+
+
+
+export const BackfillMaintenanceCollectionsBody = zod.object({
+  "months": zod.number().min(1).max(backfillMaintenanceCollectionsBodyMonthsMax).default(backfillMaintenanceCollectionsBodyMonthsDefault).describe('How many months before the current month to backfill.')
+})
+
+export const BackfillMaintenanceCollectionsResponse = zod.object({
+  "monthsBackfilled": zod.array(zod.string()),
+  "createdCount": zod.number(),
+  "skippedCount": zod.number()
+})
+
+
+/**
  * @summary Delete a maintenance collection record (admin only)
  */
 export const DeleteMaintenanceCollectionParams = zod.object({

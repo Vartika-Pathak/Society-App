@@ -1692,6 +1692,33 @@ paths:
         "404":
           description: Unknown flat
 
+  /maintenance-collections/backfill:
+    post:
+      operationId: backfillMaintenanceCollections
+      tags: [maintenance-collections]
+      summary: >-
+        Generate maintenance collections for past months against the flats/rates that currently
+        exist — mostly full payments, with a few flats left unpaid each month to look realistic.
+        Skips any flat/month pair that already has a collection, so it's safe to run more than
+        once (admin only).
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BackfillMaintenanceCollectionsInput"
+      responses:
+        "200":
+          description: Backfill complete
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BackfillMaintenanceCollectionsResult"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+
   /maintenance-collections/{id}:
     delete:
       operationId: deleteMaintenanceCollection
@@ -3413,3 +3440,26 @@ components:
           type: boolean
         expiresAt:
           type: string
+
+    BackfillMaintenanceCollectionsInput:
+      type: object
+      properties:
+        months:
+          type: integer
+          minimum: 1
+          maximum: 12
+          default: 3
+          description: How many months before the current month to backfill.
+
+    BackfillMaintenanceCollectionsResult:
+      type: object
+      required: [monthsBackfilled, createdCount, skippedCount]
+      properties:
+        monthsBackfilled:
+          type: array
+          items:
+            type: string
+        createdCount:
+          type: integer
+        skippedCount:
+          type: integer

@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Trash2 } from "lucide-react";
+import { Trash2, History } from "lucide-react";
 import {
   useListMaintenanceCollections,
   useCreateMaintenanceCollection,
   useDeleteMaintenanceCollection,
+  useBackfillMaintenanceCollections,
   useListFlats,
   getListMaintenanceCollectionsQueryKey,
   getListFlatsQueryKey,
@@ -69,6 +70,18 @@ export default function MaintenanceCollections() {
   const remove = useDeleteMaintenanceCollection({
     mutation: { onSuccess: () => onMutated("Payment deleted"), onError: onError("Couldn't delete payment") },
   });
+  const backfill = useBackfillMaintenanceCollections({
+    mutation: {
+      onSuccess: (result) => {
+        queryClient.invalidateQueries({ queryKey: getListMaintenanceCollectionsQueryKey() });
+        toast({
+          title: "Backfill complete",
+          description: `${result.createdCount} payments added across ${result.monthsBackfilled.join(", ")} (${result.skippedCount} left unpaid or already recorded).`,
+        });
+      },
+      onError: onError("Couldn't backfill past months"),
+    },
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -90,9 +103,20 @@ export default function MaintenanceCollections() {
   return (
     <AdminLayout>
       <div className="container mx-auto px-4 md:px-8 py-10 max-w-5xl space-y-8">
-        <div>
-          <h1 className="text-2xl font-serif font-medium mb-1">Maintenance Collections</h1>
-          <p className="text-muted-foreground text-sm">Record maintenance payments received from residents.</p>
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-serif font-medium mb-1">Maintenance Collections</h1>
+            <p className="text-muted-foreground text-sm">Record maintenance payments received from residents.</p>
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            disabled={backfill.isPending || !flats.data?.length}
+            onClick={() => backfill.mutate({ data: { months: 3 } })}
+          >
+            <History className="h-4 w-4 mr-2" />
+            {backfill.isPending ? "Backfilling…" : "Backfill past 3 months"}
+          </Button>
         </div>
 
         <Card>

@@ -25,6 +25,8 @@ import type {
   AmenityBooking,
   AuditLog,
   AuthUser,
+  BackfillMaintenanceCollectionsInput,
+  BackfillMaintenanceCollectionsResult,
   BalanceSheet,
   BillPayment,
   BillPaymentInput,
@@ -5969,6 +5971,77 @@ export const useCreateMaintenanceCollection = <TError = ErrorType<void>,
         TContext
       > => {
       return useMutation(getCreateMaintenanceCollectionMutationOptions(options));
+    }
+
+export const getBackfillMaintenanceCollectionsUrl = () => {
+
+
+
+
+  return `/api/maintenance-collections/backfill`
+}
+
+/**
+ * @summary Generate maintenance collections for past months against the flats/rates that currently exist — mostly full payments, with a few flats left unpaid each month to look realistic. Skips any flat/month pair that already has a collection, so it's safe to run more than once (admin only).
+ */
+export const backfillMaintenanceCollections = async (backfillMaintenanceCollectionsInput?: BackfillMaintenanceCollectionsInput, options?: RequestInit): Promise<BackfillMaintenanceCollectionsResult> => {
+
+  return customFetch<BackfillMaintenanceCollectionsResult>(getBackfillMaintenanceCollectionsUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(backfillMaintenanceCollectionsInput)
+  }
+);}
+
+
+
+
+
+export const getBackfillMaintenanceCollectionsMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof backfillMaintenanceCollections>>, TError,{data?: BodyType<BackfillMaintenanceCollectionsInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof backfillMaintenanceCollections>>, TError,{data?: BodyType<BackfillMaintenanceCollectionsInput>}, TContext> => {
+
+const mutationKey = ['backfillMaintenanceCollections'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof backfillMaintenanceCollections>>, {data?: BodyType<BackfillMaintenanceCollectionsInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  backfillMaintenanceCollections(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type BackfillMaintenanceCollectionsMutationResult = NonNullable<Awaited<ReturnType<typeof backfillMaintenanceCollections>>>
+    export type BackfillMaintenanceCollectionsMutationBody = BodyType<BackfillMaintenanceCollectionsInput> | undefined
+    export type BackfillMaintenanceCollectionsMutationError = ErrorType<void>
+
+    /**
+ * @summary Generate maintenance collections for past months against the flats/rates that currently exist — mostly full payments, with a few flats left unpaid each month to look realistic. Skips any flat/month pair that already has a collection, so it's safe to run more than once (admin only).
+ */
+export const useBackfillMaintenanceCollections = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof backfillMaintenanceCollections>>, TError,{data?: BodyType<BackfillMaintenanceCollectionsInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof backfillMaintenanceCollections>>,
+        TError,
+        {data?: BodyType<BackfillMaintenanceCollectionsInput>},
+        TContext
+      > => {
+      return useMutation(getBackfillMaintenanceCollectionsMutationOptions(options));
     }
 
 export const getDeleteMaintenanceCollectionUrl = (id: number,) => {

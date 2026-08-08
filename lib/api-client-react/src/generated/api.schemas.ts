@@ -1004,6 +1004,21 @@ export interface NoticeInput {
   expiresAt?: string;
 }
 
+export interface BackfillMaintenanceCollectionsInput {
+  /**
+     * How many months before the current month to backfill.
+     * @minimum 1
+     * @maximum 12
+     */
+  months?: number;
+}
+
+export interface BackfillMaintenanceCollectionsResult {
+  monthsBackfilled: string[];
+  createdCount: number;
+  skippedCount: number;
+}
+
 export type GetAmenityAvailabilityParams = {
 amenityId: string;
 date: string;
