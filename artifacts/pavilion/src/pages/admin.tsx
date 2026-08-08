@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { BadgeCheck, X, ShieldPlus } from "lucide-react";
+import { BadgeCheck, X, ShieldPlus, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -40,6 +40,7 @@ function CreateGuardCard() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -72,6 +73,7 @@ function CreateGuardCard() {
       setName("");
       setEmail("");
       setPassword("");
+      setShowPassword(false);
     } catch (error) {
       toast({
         title: "Couldn't create guard account",
@@ -121,15 +123,25 @@ function CreateGuardCard() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="guard-password">Password</Label>
-            <Input
-              id="guard-password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="At least 8 characters"
-              required
-              disabled={isSubmitting}
-            />
+            <div className="relative">
+              <Input
+                id="guard-password"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="At least 8 characters"
+                required
+                disabled={isSubmitting}
+                className="pr-9"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
           </div>
           <div className="sm:col-span-3">
             <Button type="submit" disabled={isSubmitting}>
@@ -192,10 +204,15 @@ export default function Admin() {
   return (
     <AdminLayout>
     <div className="w-full">
-      <div className="bg-primary/5 py-16 border-b">
-        <div className="container mx-auto px-4 md:px-8">
-          <h1 className="text-3xl md:text-4xl font-serif font-medium mb-2">Resident verification</h1>
-          <p className="text-muted-foreground">
+      <div className="relative overflow-hidden bg-primary py-16 border-b">
+        <img
+          src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1600&q=80"
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover opacity-20"
+        />
+        <div className="relative z-10 container mx-auto px-4 md:px-8">
+          <h1 className="text-3xl md:text-4xl font-serif font-medium mb-2 text-primary-foreground">Resident verification</h1>
+          <p className="text-primary-foreground/80">
             Review first-time residents' requests before they can sign up. Confirm documents and payment some other
             way, then tick both off here before approving.
           </p>
