@@ -68,12 +68,29 @@ export async function apiDelete<T>(path: string): Promise<T> {
 
 async function parseResponse<T>(response: Response): Promise<T> {
   const text = await response.text();
-  const data = text ? JSON.parse(text) : null;
+  // A non-JSON body (e.g. Express's default HTML page for a route that doesn't exist
+  // at all, as opposed to one that handled the request and returned a JSON error)
+  // shouldn't blow up parsing — callers still need a proper ApiFetchError with the
+  // real status code to make sense of it.
+  let data: unknown = null;
+  if (text) {
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = null;
+    }
+  }
 
   if (!response.ok) {
-    const message = (data && typeof data.error === "string" && data.error) || `Request failed (${response.status})`;
-    throw new ApiFetchError(response.status, message);
+    throw new ApiFetchError(response.status, extractErrorMessage(data, response.status));
   }
 
   return data as T;
+}
+
+function extractErrorMessage(data: unknown, status: number): string {
+  if (data && typeof data === "object" && "error" in data && typeof (data as { error: unknown }).error === "string") {
+    return (data as { error: string }).error;
+  }
+  return `Request failed (${status})`;
 }
