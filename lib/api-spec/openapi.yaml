@@ -3094,9 +3094,11 @@ components:
 
     SyncFlatResidentsResult:
       type: object
-      required: [matchedCount, issues]
+      required: [matchedCount, createdCount, issues]
       properties:
         matchedCount:
+          type: integer
+        createdCount:
           type: integer
         issues:
           type: array

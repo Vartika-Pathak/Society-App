@@ -438,13 +438,22 @@ export default function FlatResident() {
           {syncResult && (
             <div className="space-y-4">
               <p className="text-sm">
-                {syncResult.matchedCount === 0
-                  ? "No new matches — everything that could be auto-matched already has been."
-                  : `Matched ${syncResult.matchedCount} resident${syncResult.matchedCount === 1 ? "" : "s"} to their flat.`}
+                {syncResult.matchedCount === 0 && syncResult.createdCount === 0
+                  ? "Nothing to do — everything that could be auto-matched already has been."
+                  : [
+                      syncResult.matchedCount > 0
+                        ? `Linked ${syncResult.matchedCount} resident${syncResult.matchedCount === 1 ? "" : "s"} to an existing flat.`
+                        : null,
+                      syncResult.createdCount > 0
+                        ? `Created ${syncResult.createdCount} new flat${syncResult.createdCount === 1 ? "" : "s"} (placeholder type/ownership — review below).`
+                        : null,
+                    ]
+                      .filter(Boolean)
+                      .join(" ")}
               </p>
               {syncResult.issues.length > 0 && (
                 <div className="space-y-2">
-                  <p className="text-sm font-medium">Needs a manual look ({syncResult.issues.length}):</p>
+                  <p className="text-sm font-medium">Details ({syncResult.issues.length}):</p>
                   <ul className="text-sm text-muted-foreground list-disc pl-5 space-y-1">
                     {syncResult.issues.map((issue, i) => (
                       <li key={i}>{issue}</li>

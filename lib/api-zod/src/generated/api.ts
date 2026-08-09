@@ -1037,6 +1037,7 @@ export const UpdateFlatChangeRequestStatusResponse = zod.object({
  */
 export const SyncFlatResidentsResponse = zod.object({
   "matchedCount": zod.number(),
+  "createdCount": zod.number(),
   "issues": zod.array(zod.string())
 })
 

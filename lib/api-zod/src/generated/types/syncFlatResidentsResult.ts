@@ -8,5 +8,6 @@
 
 export interface SyncFlatResidentsResult {
   matchedCount: number;
+  createdCount: number;
   issues: string[];
 }
