@@ -5,19 +5,12 @@
  * Pavilion community website API
  * OpenAPI spec version: 0.1.0
  */
-import type { FlatFlatType } from './flatFlatType';
-import type { FlatOwnershipType } from './flatOwnershipType';
 
-export interface Flat {
-  id: number;
-  buildingId: number;
+export interface FlatDirectoryEntry {
+  flatId: number;
   buildingName: string;
   flatNumber: string;
-  flatType: FlatFlatType;
   occupied: boolean;
-  ownershipType: FlatOwnershipType;
-  /** @nullable */
-  residentId?: number | null;
   /** @nullable */
   residentName?: string | null;
   /** @nullable */

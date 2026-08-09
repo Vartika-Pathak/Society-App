@@ -1079,6 +1079,123 @@ paths:
         "404":
           description: Flat not found
 
+  /flats/directory:
+    get:
+      operationId: listFlatDirectory
+      tags: [flats]
+      summary: Read-only flat -> resident lookup, for guards verifying visitors at the gate (guard or admin)
+      responses:
+        "200":
+          description: Flat directory
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FlatDirectoryEntry"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not a guard or admin
+
+  /flats/mine:
+    get:
+      operationId: getMyFlat
+      tags: [flats]
+      summary: The signed-in resident's own assigned flat
+      responses:
+        "200":
+          description: The resident's flat
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Flat"
+        "204":
+          description: No flat assigned yet
+        "401":
+          description: Not signed in
+
+  /flats/{id}/change-requests:
+    post:
+      operationId: requestFlatChange
+      tags: [flats]
+      summary: A resident asking the admin to correct their flat's details
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FlatChangeRequestInput"
+      responses:
+        "201":
+          description: Change request submitted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FlatChangeRequest"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not your flat
+        "404":
+          description: Flat not found
+
+  /flats/change-requests:
+    get:
+      operationId: listFlatChangeRequests
+      tags: [flats]
+      summary: All pending/reviewed flat change requests (admin only)
+      responses:
+        "200":
+          description: Change requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FlatChangeRequest"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+
+  /flats/change-requests/{id}/status:
+    patch:
+      operationId: updateFlatChangeRequestStatus
+      tags: [flats]
+      summary: Mark a flat change request reviewed (admin only)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FlatChangeRequestStatusInput"
+      responses:
+        "200":
+          description: Change request updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FlatChangeRequest"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+        "404":
+          description: Change request not found
+
   /expense-categories:
     get:
       operationId: listExpenseCategories
@@ -2815,6 +2932,12 @@ components:
         ownershipType:
           type: string
           enum: [owner, rented]
+        residentId:
+          type: ["integer", "null"]
+        residentName:
+          type: ["string", "null"]
+        residentEmail:
+          type: ["string", "null"]
 
     FlatInput:
       type: object
@@ -2833,6 +2956,62 @@ components:
         ownershipType:
           type: string
           enum: [owner, rented]
+        residentId:
+          type: ["integer", "null"]
+
+    FlatDirectoryEntry:
+      type: object
+      required: [flatId, buildingName, flatNumber, occupied]
+      properties:
+        flatId:
+          type: integer
+        buildingName:
+          type: string
+        flatNumber:
+          type: string
+        occupied:
+          type: boolean
+        residentName:
+          type: ["string", "null"]
+        residentEmail:
+          type: ["string", "null"]
+
+    FlatChangeRequest:
+      type: object
+      required: [id, flatId, residentId, residentName, message, status, createdAt]
+      properties:
+        id:
+          type: integer
+        flatId:
+          type: integer
+        residentId:
+          type: integer
+        residentName:
+          type: string
+        message:
+          type: string
+        status:
+          type: string
+          enum: [pending, reviewed]
+        createdAt:
+          type: string
+          format: date-time
+
+    FlatChangeRequestInput:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+          minLength: 1
+
+    FlatChangeRequestStatusInput:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [pending, reviewed]
 
     ExpenseCategory:
       type: object

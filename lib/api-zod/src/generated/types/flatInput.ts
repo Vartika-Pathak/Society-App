@@ -15,4 +15,6 @@ export interface FlatInput {
   flatType: FlatInputFlatType;
   occupied: boolean;
   ownershipType: FlatInputOwnershipType;
+  /** @nullable */
+  residentId?: number | null;
 }

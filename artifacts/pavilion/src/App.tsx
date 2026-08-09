@@ -22,10 +22,12 @@ import Maintenance from './pages/maintenance';
 import Complain from './pages/complain';
 import Emergency from './pages/emergency';
 import Amenities from './pages/amenities';
+import FlatDirectory from './pages/flat-directory';
+import MyFlat from './pages/my-flat';
 import Admin from './pages/admin';
 import SocietyMaster from './pages/admin/masters/society';
 import BuildingMaster from './pages/admin/masters/buildings';
-import FlatMaster from './pages/admin/masters/flats';
+import FlatResident from './pages/admin/masters/flats';
 import ExpenseMaster from './pages/admin/masters/expenses';
 import VendorMaster from './pages/admin/masters/vendors';
 import MaintenanceSettings from './pages/admin/transactions/maintenance-settings';
@@ -117,6 +119,16 @@ function Router() {
           <Amenities />
         </RequireAuth>
       </Route>
+      <Route path="/flat-directory">
+        <RequireAuth roles={["guard", "admin"]}>
+          <FlatDirectory />
+        </RequireAuth>
+      </Route>
+      <Route path="/my-flat">
+        <RequireAuth>
+          <MyFlat />
+        </RequireAuth>
+      </Route>
       <Route path="/admin">
         <RequireAuth roles={["admin"]}>
           <Admin />
@@ -134,7 +146,7 @@ function Router() {
       </Route>
       <Route path="/admin/masters/flats">
         <RequireAuth roles={["admin"]}>
-          <FlatMaster />
+          <FlatResident />
         </RequireAuth>
       </Route>
       <Route path="/admin/masters/expenses">

@@ -5,7 +5,7 @@ import { useAuth } from "@/context/auth-context";
 import { useListActiveEmergencyAlerts, getListActiveEmergencyAlertsQueryKey } from "@workspace/api-client-react";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { DoorOpen, Wrench, MessageSquareWarning, CalendarCheck, Siren, ShieldCheck, BadgeCheck } from "lucide-react";
+import { DoorOpen, Wrench, MessageSquareWarning, CalendarCheck, Siren, ShieldCheck, BadgeCheck, Home, BookUser } from "lucide-react";
 
 // Matches the polling interval on the Emergency page — the dashboard banner
 // should surface a new alert without anyone needing to refresh.
@@ -49,6 +49,12 @@ const featureTiles: FeatureTile[] = [
     description: "Alert neighbors, the guard, and the admin immediately in an emergency.",
     icon: Siren,
     href: "/emergency",
+  },
+  {
+    title: "My Flat",
+    description: "View your flat's details, and request a correction if something's wrong.",
+    icon: Home,
+    href: "/my-flat",
   },
 ];
 
@@ -146,6 +152,22 @@ export default function Dashboard() {
                       <div>
                         <CardTitle className="text-lg">Gate</CardTitle>
                         <CardDescription>Check a visitor's OTP and approve or deny entry.</CardDescription>
+                      </div>
+                    </div>
+                  </CardHeader>
+                </Card>
+              </Link>
+
+              <Link href="/flat-directory">
+                <Card className="cursor-pointer border-primary bg-primary/5 hover:border-primary/70 transition-colors">
+                  <CardHeader>
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                        <BookUser className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-lg">Flat Directory</CardTitle>
+                        <CardDescription>Look up which resident lives in a flat.</CardDescription>
                       </div>
                     </div>
                   </CardHeader>

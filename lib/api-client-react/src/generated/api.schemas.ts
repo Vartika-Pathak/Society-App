@@ -529,6 +529,12 @@ export interface Flat {
   flatType: FlatFlatType;
   occupied: boolean;
   ownershipType: FlatOwnershipType;
+  /** @nullable */
+  residentId?: number | null;
+  /** @nullable */
+  residentName?: string | null;
+  /** @nullable */
+  residentEmail?: string | null;
 }
 
 export type FlatInputFlatType = typeof FlatInputFlatType[keyof typeof FlatInputFlatType];
@@ -556,6 +562,54 @@ export interface FlatInput {
   flatType: FlatInputFlatType;
   occupied: boolean;
   ownershipType: FlatInputOwnershipType;
+  /** @nullable */
+  residentId?: number | null;
+}
+
+export interface FlatDirectoryEntry {
+  flatId: number;
+  buildingName: string;
+  flatNumber: string;
+  occupied: boolean;
+  /** @nullable */
+  residentName?: string | null;
+  /** @nullable */
+  residentEmail?: string | null;
+}
+
+export type FlatChangeRequestStatus = typeof FlatChangeRequestStatus[keyof typeof FlatChangeRequestStatus];
+
+
+export const FlatChangeRequestStatus = {
+  pending: 'pending',
+  reviewed: 'reviewed',
+} as const;
+
+export interface FlatChangeRequest {
+  id: number;
+  flatId: number;
+  residentId: number;
+  residentName: string;
+  message: string;
+  status: FlatChangeRequestStatus;
+  createdAt: string;
+}
+
+export interface FlatChangeRequestInput {
+  /** @minLength 1 */
+  message: string;
+}
+
+export type FlatChangeRequestStatusInputStatus = typeof FlatChangeRequestStatusInputStatus[keyof typeof FlatChangeRequestStatusInputStatus];
+
+
+export const FlatChangeRequestStatusInputStatus = {
+  pending: 'pending',
+  reviewed: 'reviewed',
+} as const;
+
+export interface FlatChangeRequestStatusInput {
+  status: FlatChangeRequestStatusInputStatus;
 }
 
 export interface ExpenseCategory {

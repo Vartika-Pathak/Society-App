@@ -859,7 +859,10 @@ export const ListFlatsResponseItem = zod.object({
   "flatNumber": zod.string(),
   "flatType": zod.enum(['1bhk', '2bhk', '3bhk', '4bhk']),
   "occupied": zod.boolean(),
-  "ownershipType": zod.enum(['owner', 'rented'])
+  "ownershipType": zod.enum(['owner', 'rented']),
+  "residentId": zod.number().nullish(),
+  "residentName": zod.string().nullish(),
+  "residentEmail": zod.string().nullish()
 })
 export const ListFlatsResponse = zod.array(ListFlatsResponseItem)
 
@@ -875,7 +878,8 @@ export const CreateFlatBody = zod.object({
   "flatNumber": zod.string().min(1),
   "flatType": zod.enum(['1bhk', '2bhk', '3bhk', '4bhk']),
   "occupied": zod.boolean(),
-  "ownershipType": zod.enum(['owner', 'rented'])
+  "ownershipType": zod.enum(['owner', 'rented']),
+  "residentId": zod.number().nullish()
 })
 
 export const CreateFlatResponse = zod.object({
@@ -885,7 +889,10 @@ export const CreateFlatResponse = zod.object({
   "flatNumber": zod.string(),
   "flatType": zod.enum(['1bhk', '2bhk', '3bhk', '4bhk']),
   "occupied": zod.boolean(),
-  "ownershipType": zod.enum(['owner', 'rented'])
+  "ownershipType": zod.enum(['owner', 'rented']),
+  "residentId": zod.number().nullish(),
+  "residentName": zod.string().nullish(),
+  "residentEmail": zod.string().nullish()
 })
 
 
@@ -904,7 +911,8 @@ export const UpdateFlatBody = zod.object({
   "flatNumber": zod.string().min(1),
   "flatType": zod.enum(['1bhk', '2bhk', '3bhk', '4bhk']),
   "occupied": zod.boolean(),
-  "ownershipType": zod.enum(['owner', 'rented'])
+  "ownershipType": zod.enum(['owner', 'rented']),
+  "residentId": zod.number().nullish()
 })
 
 export const UpdateFlatResponse = zod.object({
@@ -914,7 +922,10 @@ export const UpdateFlatResponse = zod.object({
   "flatNumber": zod.string(),
   "flatType": zod.enum(['1bhk', '2bhk', '3bhk', '4bhk']),
   "occupied": zod.boolean(),
-  "ownershipType": zod.enum(['owner', 'rented'])
+  "ownershipType": zod.enum(['owner', 'rented']),
+  "residentId": zod.number().nullish(),
+  "residentName": zod.string().nullish(),
+  "residentEmail": zod.string().nullish()
 })
 
 
@@ -926,6 +937,99 @@ export const DeleteFlatParams = zod.object({
 })
 
 export const DeleteFlatResponse = zod.void()
+
+
+/**
+ * @summary Read-only flat -> resident lookup, for guards verifying visitors at the gate (guard or admin)
+ */
+export const ListFlatDirectoryResponseItem = zod.object({
+  "flatId": zod.number(),
+  "buildingName": zod.string(),
+  "flatNumber": zod.string(),
+  "occupied": zod.boolean(),
+  "residentName": zod.string().nullish(),
+  "residentEmail": zod.string().nullish()
+})
+export const ListFlatDirectoryResponse = zod.array(ListFlatDirectoryResponseItem)
+
+
+/**
+ * @summary The signed-in resident's own assigned flat
+ */
+export const GetMyFlatResponse = zod.object({
+  "id": zod.number(),
+  "buildingId": zod.number(),
+  "buildingName": zod.string(),
+  "flatNumber": zod.string(),
+  "flatType": zod.enum(['1bhk', '2bhk', '3bhk', '4bhk']),
+  "occupied": zod.boolean(),
+  "ownershipType": zod.enum(['owner', 'rented']),
+  "residentId": zod.number().nullish(),
+  "residentName": zod.string().nullish(),
+  "residentEmail": zod.string().nullish()
+})
+
+
+/**
+ * @summary A resident asking the admin to correct their flat's details
+ */
+export const RequestFlatChangeParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+
+
+export const RequestFlatChangeBody = zod.object({
+  "message": zod.string().min(1)
+})
+
+export const RequestFlatChangeResponse = zod.object({
+  "id": zod.number(),
+  "flatId": zod.number(),
+  "residentId": zod.number(),
+  "residentName": zod.string(),
+  "message": zod.string(),
+  "status": zod.enum(['pending', 'reviewed']),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary All pending/reviewed flat change requests (admin only)
+ */
+export const ListFlatChangeRequestsResponseItem = zod.object({
+  "id": zod.number(),
+  "flatId": zod.number(),
+  "residentId": zod.number(),
+  "residentName": zod.string(),
+  "message": zod.string(),
+  "status": zod.enum(['pending', 'reviewed']),
+  "createdAt": zod.coerce.date()
+})
+export const ListFlatChangeRequestsResponse = zod.array(ListFlatChangeRequestsResponseItem)
+
+
+/**
+ * @summary Mark a flat change request reviewed (admin only)
+ */
+export const UpdateFlatChangeRequestStatusParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const UpdateFlatChangeRequestStatusBody = zod.object({
+  "status": zod.enum(['pending', 'reviewed'])
+})
+
+export const UpdateFlatChangeRequestStatusResponse = zod.object({
+  "id": zod.number(),
+  "flatId": zod.number(),
+  "residentId": zod.number(),
+  "residentName": zod.string(),
+  "message": zod.string(),
+  "status": zod.enum(['pending', 'reviewed']),
+  "createdAt": zod.coerce.date()
+})
 
 
 /**

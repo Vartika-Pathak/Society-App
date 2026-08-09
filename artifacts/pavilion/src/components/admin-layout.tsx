@@ -31,7 +31,7 @@ const topLinks = [
 const mastersLinks = [
   { href: "/admin/masters/society", label: "Society Master" },
   { href: "/admin/masters/buildings", label: "Building Master" },
-  { href: "/admin/masters/flats", label: "Flat Master" },
+  { href: "/admin/masters/flats", label: "Flat Resident" },
   { href: "/admin/masters/expenses", label: "Expense Master" },
   { href: "/admin/masters/vendors", label: "Vendor Master" },
 ];

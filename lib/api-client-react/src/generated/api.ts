@@ -49,6 +49,10 @@ import type {
   ExpenseCategory,
   ExpenseCategoryInput,
   Flat,
+  FlatChangeRequest,
+  FlatChangeRequestInput,
+  FlatChangeRequestStatusInput,
+  FlatDirectoryEntry,
   FlatInput,
   GalleryPhoto,
   GalleryPhotoInput,
@@ -3975,6 +3979,381 @@ export const useDeleteFlat = <TError = ErrorType<void>,
         TContext
       > => {
       return useMutation(getDeleteFlatMutationOptions(options));
+    }
+
+export const getListFlatDirectoryUrl = () => {
+
+
+
+
+  return `/api/flats/directory`
+}
+
+/**
+ * @summary Read-only flat -> resident lookup, for guards verifying visitors at the gate (guard or admin)
+ */
+export const listFlatDirectory = async ( options?: RequestInit): Promise<FlatDirectoryEntry[]> => {
+
+  return customFetch<FlatDirectoryEntry[]>(getListFlatDirectoryUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListFlatDirectoryQueryKey = () => {
+    return [
+    `/api/flats/directory`
+    ] as const;
+    }
+
+
+export const getListFlatDirectoryQueryOptions = <TData = Awaited<ReturnType<typeof listFlatDirectory>>, TError = ErrorType<void>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listFlatDirectory>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListFlatDirectoryQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listFlatDirectory>>> = ({ signal }) => listFlatDirectory({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listFlatDirectory>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListFlatDirectoryQueryResult = NonNullable<Awaited<ReturnType<typeof listFlatDirectory>>>
+export type ListFlatDirectoryQueryError = ErrorType<void>
+
+
+/**
+ * @summary Read-only flat -> resident lookup, for guards verifying visitors at the gate (guard or admin)
+ */
+
+export function useListFlatDirectory<TData = Awaited<ReturnType<typeof listFlatDirectory>>, TError = ErrorType<void>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listFlatDirectory>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListFlatDirectoryQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getGetMyFlatUrl = () => {
+
+
+
+
+  return `/api/flats/mine`
+}
+
+/**
+ * @summary The signed-in resident's own assigned flat
+ */
+export const getMyFlat = async ( options?: RequestInit): Promise<Flat | void> => {
+
+  return customFetch<Flat | void>(getGetMyFlatUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetMyFlatQueryKey = () => {
+    return [
+    `/api/flats/mine`
+    ] as const;
+    }
+
+
+export const getGetMyFlatQueryOptions = <TData = Awaited<ReturnType<typeof getMyFlat>>, TError = ErrorType<void>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getMyFlat>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetMyFlatQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getMyFlat>>> = ({ signal }) => getMyFlat({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getMyFlat>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetMyFlatQueryResult = NonNullable<Awaited<ReturnType<typeof getMyFlat>>>
+export type GetMyFlatQueryError = ErrorType<void>
+
+
+/**
+ * @summary The signed-in resident's own assigned flat
+ */
+
+export function useGetMyFlat<TData = Awaited<ReturnType<typeof getMyFlat>>, TError = ErrorType<void>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getMyFlat>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetMyFlatQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getRequestFlatChangeUrl = (id: number,) => {
+
+
+
+
+  return `/api/flats/${id}/change-requests`
+}
+
+/**
+ * @summary A resident asking the admin to correct their flat's details
+ */
+export const requestFlatChange = async (id: number,
+    flatChangeRequestInput: FlatChangeRequestInput, options?: RequestInit): Promise<FlatChangeRequest> => {
+
+  return customFetch<FlatChangeRequest>(getRequestFlatChangeUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(flatChangeRequestInput)
+  }
+);}
+
+
+
+
+
+export const getRequestFlatChangeMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof requestFlatChange>>, TError,{id: number;data: BodyType<FlatChangeRequestInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof requestFlatChange>>, TError,{id: number;data: BodyType<FlatChangeRequestInput>}, TContext> => {
+
+const mutationKey = ['requestFlatChange'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof requestFlatChange>>, {id: number;data: BodyType<FlatChangeRequestInput>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  requestFlatChange(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RequestFlatChangeMutationResult = NonNullable<Awaited<ReturnType<typeof requestFlatChange>>>
+    export type RequestFlatChangeMutationBody = BodyType<FlatChangeRequestInput>
+    export type RequestFlatChangeMutationError = ErrorType<void>
+
+    /**
+ * @summary A resident asking the admin to correct their flat's details
+ */
+export const useRequestFlatChange = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof requestFlatChange>>, TError,{id: number;data: BodyType<FlatChangeRequestInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof requestFlatChange>>,
+        TError,
+        {id: number;data: BodyType<FlatChangeRequestInput>},
+        TContext
+      > => {
+      return useMutation(getRequestFlatChangeMutationOptions(options));
+    }
+
+export const getListFlatChangeRequestsUrl = () => {
+
+
+
+
+  return `/api/flats/change-requests`
+}
+
+/**
+ * @summary All pending/reviewed flat change requests (admin only)
+ */
+export const listFlatChangeRequests = async ( options?: RequestInit): Promise<FlatChangeRequest[]> => {
+
+  return customFetch<FlatChangeRequest[]>(getListFlatChangeRequestsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListFlatChangeRequestsQueryKey = () => {
+    return [
+    `/api/flats/change-requests`
+    ] as const;
+    }
+
+
+export const getListFlatChangeRequestsQueryOptions = <TData = Awaited<ReturnType<typeof listFlatChangeRequests>>, TError = ErrorType<void>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listFlatChangeRequests>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListFlatChangeRequestsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listFlatChangeRequests>>> = ({ signal }) => listFlatChangeRequests({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listFlatChangeRequests>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListFlatChangeRequestsQueryResult = NonNullable<Awaited<ReturnType<typeof listFlatChangeRequests>>>
+export type ListFlatChangeRequestsQueryError = ErrorType<void>
+
+
+/**
+ * @summary All pending/reviewed flat change requests (admin only)
+ */
+
+export function useListFlatChangeRequests<TData = Awaited<ReturnType<typeof listFlatChangeRequests>>, TError = ErrorType<void>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listFlatChangeRequests>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListFlatChangeRequestsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getUpdateFlatChangeRequestStatusUrl = (id: number,) => {
+
+
+
+
+  return `/api/flats/change-requests/${id}/status`
+}
+
+/**
+ * @summary Mark a flat change request reviewed (admin only)
+ */
+export const updateFlatChangeRequestStatus = async (id: number,
+    flatChangeRequestStatusInput: FlatChangeRequestStatusInput, options?: RequestInit): Promise<FlatChangeRequest> => {
+
+  return customFetch<FlatChangeRequest>(getUpdateFlatChangeRequestStatusUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(flatChangeRequestStatusInput)
+  }
+);}
+
+
+
+
+
+export const getUpdateFlatChangeRequestStatusMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateFlatChangeRequestStatus>>, TError,{id: number;data: BodyType<FlatChangeRequestStatusInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateFlatChangeRequestStatus>>, TError,{id: number;data: BodyType<FlatChangeRequestStatusInput>}, TContext> => {
+
+const mutationKey = ['updateFlatChangeRequestStatus'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateFlatChangeRequestStatus>>, {id: number;data: BodyType<FlatChangeRequestStatusInput>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateFlatChangeRequestStatus(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateFlatChangeRequestStatusMutationResult = NonNullable<Awaited<ReturnType<typeof updateFlatChangeRequestStatus>>>
+    export type UpdateFlatChangeRequestStatusMutationBody = BodyType<FlatChangeRequestStatusInput>
+    export type UpdateFlatChangeRequestStatusMutationError = ErrorType<void>
+
+    /**
+ * @summary Mark a flat change request reviewed (admin only)
+ */
+export const useUpdateFlatChangeRequestStatus = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateFlatChangeRequestStatus>>, TError,{id: number;data: BodyType<FlatChangeRequestStatusInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateFlatChangeRequestStatus>>,
+        TError,
+        {id: number;data: BodyType<FlatChangeRequestStatusInput>},
+        TContext
+      > => {
+      return useMutation(getUpdateFlatChangeRequestStatusMutationOptions(options));
     }
 
 export const getListExpenseCategoriesUrl = () => {
