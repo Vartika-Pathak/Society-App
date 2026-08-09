@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Pencil, Trash2, Check } from "lucide-react";
+import { Pencil, Trash2, Check, RefreshCw } from "lucide-react";
 import {
   useListFlats,
   useCreateFlat,
@@ -9,12 +9,14 @@ import {
   useListBuildings,
   useListFlatChangeRequests,
   useUpdateFlatChangeRequestStatus,
+  useSyncFlatResidents,
   getListFlatsQueryKey,
   getListBuildingsQueryKey,
   getListFlatChangeRequestsQueryKey,
   type Flat,
   type FlatFlatType,
   type FlatOwnershipType,
+  type SyncFlatResidentsResult,
 } from "@workspace/api-client-react";
 import { apiGet, ApiFetchError } from "@/lib/api-fetch";
 import { useToast } from "@/hooks/use-toast";
@@ -27,6 +29,7 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const flatTypeLabels: Record<FlatFlatType, string> = {
   "1bhk": "1 BHK",
@@ -70,6 +73,7 @@ export default function FlatResident() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form, setForm] = useState<FlatForm>(emptyForm);
   const [residents, setResidents] = useState<ResidentAccount[] | null>(null);
+  const [syncResult, setSyncResult] = useState<SyncFlatResidentsResult | null>(null);
 
   const flats = useListFlats({ query: { queryKey: getListFlatsQueryKey() } });
   const buildings = useListBuildings({ query: { queryKey: getListBuildingsQueryKey() } });
@@ -129,6 +133,15 @@ export default function FlatResident() {
       onError: onError("Couldn't update the change request"),
     },
   });
+  const syncResidents = useSyncFlatResidents({
+    mutation: {
+      onSuccess: (result) => {
+        queryClient.invalidateQueries({ queryKey: getListFlatsQueryKey() });
+        setSyncResult(result);
+      },
+      onError: onError("Couldn't sync residents"),
+    },
+  });
 
   const startEdit = (flat: Flat) => {
     setEditingId(flat.id);
@@ -170,9 +183,21 @@ export default function FlatResident() {
   return (
     <AdminLayout>
       <div className="container mx-auto px-4 md:px-8 py-10 max-w-5xl space-y-8">
-        <div>
-          <h1 className="text-2xl font-serif font-medium mb-1">Flat Resident</h1>
-          <p className="text-muted-foreground text-sm">Manage flats and which resident lives in each one.</p>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-serif font-medium mb-1">Flat Resident</h1>
+            <p className="text-muted-foreground text-sm">Manage flats and which resident lives in each one.</p>
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            disabled={syncResidents.isPending}
+            onClick={() => syncResidents.mutate()}
+          >
+            <RefreshCw className="h-3.5 w-3.5 mr-2" />
+            {syncResidents.isPending ? "Syncing…" : "Sync residents by flat number"}
+          </Button>
         </div>
 
         <Card>
@@ -404,6 +429,33 @@ export default function FlatResident() {
           </CardContent>
         </Card>
       </div>
+
+      <Dialog open={syncResult !== null} onOpenChange={(open) => !open && setSyncResult(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Sync results</DialogTitle>
+          </DialogHeader>
+          {syncResult && (
+            <div className="space-y-4">
+              <p className="text-sm">
+                {syncResult.matchedCount === 0
+                  ? "No new matches — everything that could be auto-matched already has been."
+                  : `Matched ${syncResult.matchedCount} resident${syncResult.matchedCount === 1 ? "" : "s"} to their flat.`}
+              </p>
+              {syncResult.issues.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-sm font-medium">Needs a manual look ({syncResult.issues.length}):</p>
+                  <ul className="text-sm text-muted-foreground list-disc pl-5 space-y-1">
+                    {syncResult.issues.map((issue, i) => (
+                      <li key={i}>{issue}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 }

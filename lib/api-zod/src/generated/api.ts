@@ -1033,6 +1033,15 @@ export const UpdateFlatChangeRequestStatusResponse = zod.object({
 
 
 /**
+ * @summary Match residents whose accounts predate Flat Resident to an existing, currently-unassigned flat with the same flat number. Never overwrites an existing assignment or creates new flats/buildings — unmatched residents come back in issues (admin only).
+ */
+export const SyncFlatResidentsResponse = zod.object({
+  "matchedCount": zod.number(),
+  "issues": zod.array(zod.string())
+})
+
+
+/**
  * @summary List all expense categories (admin only)
  */
 export const ListExpenseCategoriesResponseItem = zod.object({

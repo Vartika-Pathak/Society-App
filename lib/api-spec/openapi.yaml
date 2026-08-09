@@ -1196,6 +1196,26 @@ paths:
         "404":
           description: Change request not found
 
+  /flats/sync-residents:
+    post:
+      operationId: syncFlatResidents
+      tags: [flats]
+      summary: >-
+        Match residents whose accounts predate Flat Resident to an existing, currently-unassigned
+        flat with the same flat number. Never overwrites an existing assignment or creates new
+        flats/buildings — unmatched residents come back in issues (admin only).
+      responses:
+        "200":
+          description: Sync complete
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SyncFlatResidentsResult"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
+
   /expense-categories:
     get:
       operationId: listExpenseCategories
@@ -3071,6 +3091,17 @@ components:
         status:
           type: string
           enum: [pending, reviewed]
+
+    SyncFlatResidentsResult:
+      type: object
+      required: [matchedCount, issues]
+      properties:
+        matchedCount:
+          type: integer
+        issues:
+          type: array
+          items:
+            type: string
 
     ExpenseCategory:
       type: object

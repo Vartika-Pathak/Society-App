@@ -97,6 +97,7 @@ import type {
   SocietyRuleInput,
   SpecialContribution,
   SpecialContributionInput,
+  SyncFlatResidentsResult,
   Vendor,
   VendorBill,
   VendorBillInput,
@@ -4357,6 +4358,77 @@ export const useUpdateFlatChangeRequestStatus = <TError = ErrorType<void>,
         TContext
       > => {
       return useMutation(getUpdateFlatChangeRequestStatusMutationOptions(options));
+    }
+
+export const getSyncFlatResidentsUrl = () => {
+
+
+
+
+  return `/api/flats/sync-residents`
+}
+
+/**
+ * @summary Match residents whose accounts predate Flat Resident to an existing, currently-unassigned flat with the same flat number. Never overwrites an existing assignment or creates new flats/buildings — unmatched residents come back in issues (admin only).
+ */
+export const syncFlatResidents = async ( options?: RequestInit): Promise<SyncFlatResidentsResult> => {
+
+  return customFetch<SyncFlatResidentsResult>(getSyncFlatResidentsUrl(),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getSyncFlatResidentsMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof syncFlatResidents>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof syncFlatResidents>>, TError,void, TContext> => {
+
+const mutationKey = ['syncFlatResidents'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof syncFlatResidents>>, void> = () => {
+
+
+          return  syncFlatResidents(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SyncFlatResidentsMutationResult = NonNullable<Awaited<ReturnType<typeof syncFlatResidents>>>
+
+    export type SyncFlatResidentsMutationError = ErrorType<void>
+
+    /**
+ * @summary Match residents whose accounts predate Flat Resident to an existing, currently-unassigned flat with the same flat number. Never overwrites an existing assignment or creates new flats/buildings — unmatched residents come back in issues (admin only).
+ */
+export const useSyncFlatResidents = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof syncFlatResidents>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof syncFlatResidents>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getSyncFlatResidentsMutationOptions(options));
     }
 
 export const getListExpenseCategoriesUrl = () => {

@@ -612,6 +612,11 @@ export interface FlatChangeRequestStatusInput {
   status: FlatChangeRequestStatusInputStatus;
 }
 
+export interface SyncFlatResidentsResult {
+  matchedCount: number;
+  issues: string[];
+}
+
 export interface ExpenseCategory {
   id: number;
   name: string;
