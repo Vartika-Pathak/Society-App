@@ -4,6 +4,8 @@ import {
   useCreateComplaint,
   useListComplaints,
   useUpdateComplaintStatus,
+  useConfirmComplaintResolved,
+  useReopenComplaint,
   getListComplaintsQueryKey,
   type Complaint,
   type ComplaintCategory,
@@ -16,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { CheckCircle2 } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -35,30 +38,58 @@ const statusLabels: Record<ComplaintStatus, string> = {
   open: "Open",
   in_progress: "In progress",
   resolved: "Resolved",
+  closed: "Closed",
 };
 
 const statusVariants: Record<ComplaintStatus, "secondary" | "default" | "outline"> = {
   open: "secondary",
   in_progress: "default",
   resolved: "outline",
+  closed: "secondary",
 };
 
 function ComplaintCard({ complaint, canManage }: { complaint: Complaint; canManage: boolean }) {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const [note, setNote] = useState(complaint.resolutionNote ?? "");
+  const [reopenNote, setReopenNote] = useState("");
+
+  const invalidate = () => queryClient.invalidateQueries({ queryKey: getListComplaintsQueryKey() });
 
   const updateStatus = useUpdateComplaintStatus({
     mutation: {
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: getListComplaintsQueryKey() });
-      },
+      onSuccess: invalidate,
       onError: () => {
         toast({
           title: "Couldn't update status",
           description: "Please try again.",
           variant: "destructive",
         });
+      },
+    },
+  });
+
+  const confirmResolved = useConfirmComplaintResolved({
+    mutation: {
+      onSuccess: () => {
+        invalidate();
+        toast({ title: "Closed", description: "Glad it's sorted out." });
+      },
+      onError: () => {
+        toast({ title: "Couldn't close this complaint", description: "Please try again.", variant: "destructive" });
+      },
+    },
+  });
+
+  const reopen = useReopenComplaint({
+    mutation: {
+      onSuccess: () => {
+        invalidate();
+        setReopenNote("");
+        toast({ title: "Reopened", description: "The committee will take another look." });
+      },
+      onError: () => {
+        toast({ title: "Couldn't reopen this complaint", description: "Please try again.", variant: "destructive" });
       },
     },
   });
@@ -83,7 +114,50 @@ function ComplaintCard({ complaint, canManage }: { complaint: Complaint; canMana
         {complaint.resolutionNote && !canManage && (
           <div className="rounded-lg bg-muted p-3 text-sm">
             <p className="font-medium mb-1">Note from the committee</p>
-            <p className="text-muted-foreground">{complaint.resolutionNote}</p>
+            <p className="text-muted-foreground whitespace-pre-line">{complaint.resolutionNote}</p>
+          </div>
+        )}
+
+        {!canManage && complaint.status === "resolved" && (
+          <div className="space-y-3 pt-2 border-t">
+            <p className="text-sm font-medium">Are you satisfied with this resolution?</p>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                type="button"
+                size="sm"
+                disabled={confirmResolved.isPending}
+                onClick={() => confirmResolved.mutate({ id: complaint.id })}
+              >
+                <CheckCircle2 className="h-3.5 w-3.5 mr-1.5" /> Yes, close it
+              </Button>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor={`reopen-note-${complaint.id}`} className="text-xs text-muted-foreground">
+                Not satisfied? Tell us what's still wrong, then reopen it
+              </Label>
+              <Textarea
+                id={`reopen-note-${complaint.id}`}
+                value={reopenNote}
+                onChange={(e) => setReopenNote(e.target.value)}
+                placeholder="e.g. Still leaking after the fix"
+                className="min-h-16"
+              />
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                disabled={reopen.isPending}
+                onClick={() => reopen.mutate({ id: complaint.id, data: { note: reopenNote || undefined } })}
+              >
+                Not satisfied, reopen
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {!canManage && complaint.status === "closed" && (
+          <div className="flex items-center gap-2 rounded-lg border border-primary/30 bg-primary/5 p-3 text-primary text-sm">
+            <CheckCircle2 className="h-4 w-4 shrink-0" /> You confirmed this is resolved.
           </div>
         )}
 

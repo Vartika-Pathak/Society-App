@@ -675,6 +675,66 @@ paths:
         "404":
           description: Complaint not found
 
+  /complaints/{id}/confirm:
+    post:
+      operationId: confirmComplaintResolved
+      tags: [complaints]
+      summary: The resident confirms they're satisfied with a resolved complaint, closing it
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Complaint closed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Complaint"
+        "400":
+          description: Not currently resolved
+        "401":
+          description: Not signed in
+        "403":
+          description: Not your complaint
+        "404":
+          description: Complaint not found
+
+  /complaints/{id}/reopen:
+    post:
+      operationId: reopenComplaint
+      tags: [complaints]
+      summary: The resident isn't satisfied with a resolved complaint, so it goes back to open
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ComplaintReopenInput"
+      responses:
+        "200":
+          description: Complaint reopened
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Complaint"
+        "400":
+          description: Not currently resolved
+        "401":
+          description: Not signed in
+        "403":
+          description: Not your complaint
+        "404":
+          description: Complaint not found
+
   /emergency-alerts:
     post:
       operationId: raiseEmergencyAlert
@@ -2783,7 +2843,7 @@ components:
           type: string
         status:
           type: string
-          enum: [open, in_progress, resolved]
+          enum: [open, in_progress, resolved, closed]
         resolutionNote:
           type: ["string", "null"]
         residentName:
@@ -2811,8 +2871,14 @@ components:
       properties:
         status:
           type: string
-          enum: [open, in_progress, resolved]
+          enum: [open, in_progress, resolved, closed]
         resolutionNote:
+          type: string
+
+    ComplaintReopenInput:
+      type: object
+      properties:
+        note:
           type: string
 
     EmergencyAlert:

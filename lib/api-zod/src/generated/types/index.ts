@@ -32,6 +32,7 @@ export * from './complaint';
 export * from './complaintCategory';
 export * from './complaintInput';
 export * from './complaintInputCategory';
+export * from './complaintReopenInput';
 export * from './complaintStatus';
 export * from './complaintStatusInput';
 export * from './complaintStatusInputStatus';

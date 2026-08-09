@@ -37,6 +37,7 @@ import type {
   CommunityStats,
   Complaint,
   ComplaintInput,
+  ComplaintReopenInput,
   ComplaintStatusInput,
   ConfirmAmenityBookingInput,
   ConfirmMaintenancePaymentInput,
@@ -2577,6 +2578,149 @@ export const useUpdateComplaintStatus = <TError = ErrorType<void>,
         TContext
       > => {
       return useMutation(getUpdateComplaintStatusMutationOptions(options));
+    }
+
+export const getConfirmComplaintResolvedUrl = (id: number,) => {
+
+
+
+
+  return `/api/complaints/${id}/confirm`
+}
+
+/**
+ * @summary The resident confirms they're satisfied with a resolved complaint, closing it
+ */
+export const confirmComplaintResolved = async (id: number, options?: RequestInit): Promise<Complaint> => {
+
+  return customFetch<Complaint>(getConfirmComplaintResolvedUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getConfirmComplaintResolvedMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof confirmComplaintResolved>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof confirmComplaintResolved>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['confirmComplaintResolved'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof confirmComplaintResolved>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  confirmComplaintResolved(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ConfirmComplaintResolvedMutationResult = NonNullable<Awaited<ReturnType<typeof confirmComplaintResolved>>>
+
+    export type ConfirmComplaintResolvedMutationError = ErrorType<void>
+
+    /**
+ * @summary The resident confirms they're satisfied with a resolved complaint, closing it
+ */
+export const useConfirmComplaintResolved = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof confirmComplaintResolved>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof confirmComplaintResolved>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+      return useMutation(getConfirmComplaintResolvedMutationOptions(options));
+    }
+
+export const getReopenComplaintUrl = (id: number,) => {
+
+
+
+
+  return `/api/complaints/${id}/reopen`
+}
+
+/**
+ * @summary The resident isn't satisfied with a resolved complaint, so it goes back to open
+ */
+export const reopenComplaint = async (id: number,
+    complaintReopenInput?: ComplaintReopenInput, options?: RequestInit): Promise<Complaint> => {
+
+  return customFetch<Complaint>(getReopenComplaintUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(complaintReopenInput)
+  }
+);}
+
+
+
+
+
+export const getReopenComplaintMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof reopenComplaint>>, TError,{id: number;data?: BodyType<ComplaintReopenInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof reopenComplaint>>, TError,{id: number;data?: BodyType<ComplaintReopenInput>}, TContext> => {
+
+const mutationKey = ['reopenComplaint'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof reopenComplaint>>, {id: number;data?: BodyType<ComplaintReopenInput>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  reopenComplaint(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ReopenComplaintMutationResult = NonNullable<Awaited<ReturnType<typeof reopenComplaint>>>
+    export type ReopenComplaintMutationBody = BodyType<ComplaintReopenInput> | undefined
+    export type ReopenComplaintMutationError = ErrorType<void>
+
+    /**
+ * @summary The resident isn't satisfied with a resolved complaint, so it goes back to open
+ */
+export const useReopenComplaint = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof reopenComplaint>>, TError,{id: number;data?: BodyType<ComplaintReopenInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof reopenComplaint>>,
+        TError,
+        {id: number;data?: BodyType<ComplaintReopenInput>},
+        TContext
+      > => {
+      return useMutation(getReopenComplaintMutationOptions(options));
     }
 
 export const getRaiseEmergencyAlertUrl = () => {

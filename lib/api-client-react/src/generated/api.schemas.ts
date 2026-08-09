@@ -333,6 +333,7 @@ export const ComplaintStatus = {
   open: 'open',
   in_progress: 'in_progress',
   resolved: 'resolved',
+  closed: 'closed',
 } as const;
 
 export interface Complaint {
@@ -370,11 +371,16 @@ export const ComplaintStatusInputStatus = {
   open: 'open',
   in_progress: 'in_progress',
   resolved: 'resolved',
+  closed: 'closed',
 } as const;
 
 export interface ComplaintStatusInput {
   status: ComplaintStatusInputStatus;
   resolutionNote?: string;
+}
+
+export interface ComplaintReopenInput {
+  note?: string;
 }
 
 export type EmergencyAlertStatus = typeof EmergencyAlertStatus[keyof typeof EmergencyAlertStatus];

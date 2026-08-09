@@ -546,7 +546,7 @@ export const ListComplaintsResponseItem = zod.object({
   "id": zod.number(),
   "category": zod.enum(['maintenance', 'security', 'noise', 'other']),
   "description": zod.string(),
-  "status": zod.enum(['open', 'in_progress', 'resolved']),
+  "status": zod.enum(['open', 'in_progress', 'resolved', 'closed']),
   "resolutionNote": zod.string().nullable(),
   "residentName": zod.string(),
   "residentFlatNumber": zod.string(),
@@ -570,7 +570,7 @@ export const CreateComplaintResponse = zod.object({
   "id": zod.number(),
   "category": zod.enum(['maintenance', 'security', 'noise', 'other']),
   "description": zod.string(),
-  "status": zod.enum(['open', 'in_progress', 'resolved']),
+  "status": zod.enum(['open', 'in_progress', 'resolved', 'closed']),
   "resolutionNote": zod.string().nullable(),
   "residentName": zod.string(),
   "residentFlatNumber": zod.string(),
@@ -586,7 +586,7 @@ export const UpdateComplaintStatusParams = zod.object({
 })
 
 export const UpdateComplaintStatusBody = zod.object({
-  "status": zod.enum(['open', 'in_progress', 'resolved']),
+  "status": zod.enum(['open', 'in_progress', 'resolved', 'closed']),
   "resolutionNote": zod.string().optional()
 })
 
@@ -594,7 +594,49 @@ export const UpdateComplaintStatusResponse = zod.object({
   "id": zod.number(),
   "category": zod.enum(['maintenance', 'security', 'noise', 'other']),
   "description": zod.string(),
-  "status": zod.enum(['open', 'in_progress', 'resolved']),
+  "status": zod.enum(['open', 'in_progress', 'resolved', 'closed']),
+  "resolutionNote": zod.string().nullable(),
+  "residentName": zod.string(),
+  "residentFlatNumber": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary The resident confirms they're satisfied with a resolved complaint, closing it
+ */
+export const ConfirmComplaintResolvedParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const ConfirmComplaintResolvedResponse = zod.object({
+  "id": zod.number(),
+  "category": zod.enum(['maintenance', 'security', 'noise', 'other']),
+  "description": zod.string(),
+  "status": zod.enum(['open', 'in_progress', 'resolved', 'closed']),
+  "resolutionNote": zod.string().nullable(),
+  "residentName": zod.string(),
+  "residentFlatNumber": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary The resident isn't satisfied with a resolved complaint, so it goes back to open
+ */
+export const ReopenComplaintParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const ReopenComplaintBody = zod.object({
+  "note": zod.string().optional()
+})
+
+export const ReopenComplaintResponse = zod.object({
+  "id": zod.number(),
+  "category": zod.enum(['maintenance', 'security', 'noise', 'other']),
+  "description": zod.string(),
+  "status": zod.enum(['open', 'in_progress', 'resolved', 'closed']),
   "resolutionNote": zod.string().nullable(),
   "residentName": zod.string(),
   "residentFlatNumber": zod.string(),

@@ -27,6 +27,7 @@ const statusVariants: Record<ComplaintStatus, "default" | "secondary" | "outline
   open: "outline",
   in_progress: "secondary",
   resolved: "default",
+  closed: "secondary",
 };
 
 function StatCard({ label, valuePaise }: { label: string; valuePaise: number }) {
@@ -144,6 +145,7 @@ function ComplaintsCard() {
                     <SelectItem value="open">Open</SelectItem>
                     <SelectItem value="in_progress">In Progress</SelectItem>
                     <SelectItem value="resolved">Resolved</SelectItem>
+                    <SelectItem value="closed">Closed</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
