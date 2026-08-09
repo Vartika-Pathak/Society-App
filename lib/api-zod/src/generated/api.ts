@@ -1527,7 +1527,7 @@ export const ListMaintenanceCollectionsResponseItem = zod.object({
   "payerName": zod.string(),
   "amountPaise": zod.number(),
   "paymentDate": zod.string(),
-  "paymentMode": zod.enum(['cash', 'cheque', 'upi', 'bank_transfer']),
+  "paymentMode": zod.enum(['cash', 'cheque', 'upi', 'bank_transfer', 'online']),
   "forMonth": zod.string(),
   "referenceNumber": zod.string().nullable(),
   "notes": zod.string().nullable(),
@@ -1550,7 +1550,7 @@ export const CreateMaintenanceCollectionBody = zod.object({
   "payerName": zod.string().min(1),
   "amountPaise": zod.number().min(1),
   "paymentDate": zod.string().min(1),
-  "paymentMode": zod.enum(['cash', 'cheque', 'upi', 'bank_transfer']),
+  "paymentMode": zod.enum(['cash', 'cheque', 'upi', 'bank_transfer', 'online']),
   "forMonth": zod.string().min(1),
   "referenceNumber": zod.string().optional(),
   "notes": zod.string().optional()
@@ -1564,7 +1564,7 @@ export const CreateMaintenanceCollectionResponse = zod.object({
   "payerName": zod.string(),
   "amountPaise": zod.number(),
   "paymentDate": zod.string(),
-  "paymentMode": zod.enum(['cash', 'cheque', 'upi', 'bank_transfer']),
+  "paymentMode": zod.enum(['cash', 'cheque', 'upi', 'bank_transfer', 'online']),
   "forMonth": zod.string(),
   "referenceNumber": zod.string().nullable(),
   "notes": zod.string().nullable(),
@@ -1599,6 +1599,51 @@ export const DeleteMaintenanceCollectionParams = zod.object({
 })
 
 export const DeleteMaintenanceCollectionResponse = zod.void()
+
+
+/**
+ * @summary This month's expected vs collected vs due for the signed-in resident's own flat
+ */
+export const GetMyMaintenanceDueResponse = zod.object({
+  "forMonth": zod.string(),
+  "buildingName": zod.string().nullable(),
+  "flatNumber": zod.string(),
+  "expectedAmountPaise": zod.number(),
+  "collectedAmountPaise": zod.number(),
+  "dueAmountPaise": zod.number()
+})
+
+
+/**
+ * @summary Start a Stripe Checkout session for this month's due, in full (resident only)
+ */
+export const PayMaintenanceResponse = zod.object({
+  "status": zod.enum(['nothing_due', 'requires_payment']),
+  "checkoutUrl": zod.string().nullish()
+})
+
+
+/**
+ * @summary Confirm a maintenance payment after a successful Stripe Checkout redirect
+ */
+export const ConfirmMaintenancePaymentBody = zod.object({
+  "sessionId": zod.string()
+})
+
+export const ConfirmMaintenancePaymentResponse = zod.object({
+  "id": zod.number(),
+  "flatId": zod.number(),
+  "buildingName": zod.string(),
+  "flatNumber": zod.string(),
+  "payerName": zod.string(),
+  "amountPaise": zod.number(),
+  "paymentDate": zod.string(),
+  "paymentMode": zod.enum(['cash', 'cheque', 'upi', 'bank_transfer', 'online']),
+  "forMonth": zod.string(),
+  "referenceNumber": zod.string().nullable(),
+  "notes": zod.string().nullable(),
+  "createdAt": zod.coerce.date()
+})
 
 
 /**

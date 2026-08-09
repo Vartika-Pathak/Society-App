@@ -1857,6 +1857,65 @@ paths:
         "404":
           description: Maintenance collection not found
 
+  /maintenance-collections/mine/due:
+    get:
+      operationId: getMyMaintenanceDue
+      tags: [maintenance-collections]
+      summary: This month's expected vs collected vs due for the signed-in resident's own flat
+      responses:
+        "200":
+          description: This month's due
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MyMaintenanceDue"
+        "401":
+          description: Not signed in
+        "404":
+          description: No flat assigned to your account yet
+
+  /maintenance-collections/pay:
+    post:
+      operationId: payMaintenance
+      tags: [maintenance-collections]
+      summary: Start a Stripe Checkout session for this month's due, in full (resident only)
+      responses:
+        "200":
+          description: Nothing due, or a Stripe Checkout session to complete payment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PayMaintenanceResult"
+        "401":
+          description: Not signed in
+        "404":
+          description: No flat assigned to your account yet
+
+  /maintenance-collections/confirm:
+    post:
+      operationId: confirmMaintenancePayment
+      tags: [maintenance-collections]
+      summary: Confirm a maintenance payment after a successful Stripe Checkout redirect
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfirmMaintenancePaymentInput"
+      responses:
+        "200":
+          description: Payment confirmed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MaintenanceCollection"
+        "401":
+          description: Not signed in
+        "402":
+          description: Payment was not completed
+        "409":
+          description: This month was already paid while you were paying — refunded automatically
+
   /reports/due-list:
     get:
       operationId: getDueList
@@ -3346,7 +3405,7 @@ components:
           type: string
         paymentMode:
           type: string
-          enum: [cash, cheque, upi, bank_transfer]
+          enum: [cash, cheque, upi, bank_transfer, online]
         forMonth:
           type: string
         referenceNumber:
@@ -3374,13 +3433,47 @@ components:
           minLength: 1
         paymentMode:
           type: string
-          enum: [cash, cheque, upi, bank_transfer]
+          enum: [cash, cheque, upi, bank_transfer, online]
         forMonth:
           type: string
           minLength: 1
         referenceNumber:
           type: string
         notes:
+          type: string
+
+    MyMaintenanceDue:
+      type: object
+      required: [forMonth, buildingName, flatNumber, expectedAmountPaise, collectedAmountPaise, dueAmountPaise]
+      properties:
+        forMonth:
+          type: string
+        buildingName:
+          type: ["string", "null"]
+        flatNumber:
+          type: string
+        expectedAmountPaise:
+          type: integer
+        collectedAmountPaise:
+          type: integer
+        dueAmountPaise:
+          type: integer
+
+    PayMaintenanceResult:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [nothing_due, requires_payment]
+        checkoutUrl:
+          type: ["string", "null"]
+
+    ConfirmMaintenancePaymentInput:
+      type: object
+      required: [sessionId]
+      properties:
+        sessionId:
           type: string
 
     DueListEntry:

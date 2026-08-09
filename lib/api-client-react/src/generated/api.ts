@@ -39,6 +39,7 @@ import type {
   ComplaintInput,
   ComplaintStatusInput,
   ConfirmAmenityBookingInput,
+  ConfirmMaintenancePaymentInput,
   ContactMessage,
   ContactMessageInput,
   DashboardSummary,
@@ -81,10 +82,12 @@ import type {
   MaintenanceStatusInput,
   Member,
   MonthlyTrendPoint,
+  MyMaintenanceDue,
   NewsPost,
   NewsPostInput,
   Notice,
   NoticeInput,
+  PayMaintenanceResult,
   Service,
   ServiceInput,
   SignupInput,
@@ -6492,6 +6495,225 @@ export const useDeleteMaintenanceCollection = <TError = ErrorType<void>,
         TContext
       > => {
       return useMutation(getDeleteMaintenanceCollectionMutationOptions(options));
+    }
+
+export const getGetMyMaintenanceDueUrl = () => {
+
+
+
+
+  return `/api/maintenance-collections/mine/due`
+}
+
+/**
+ * @summary This month's expected vs collected vs due for the signed-in resident's own flat
+ */
+export const getMyMaintenanceDue = async ( options?: RequestInit): Promise<MyMaintenanceDue> => {
+
+  return customFetch<MyMaintenanceDue>(getGetMyMaintenanceDueUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetMyMaintenanceDueQueryKey = () => {
+    return [
+    `/api/maintenance-collections/mine/due`
+    ] as const;
+    }
+
+
+export const getGetMyMaintenanceDueQueryOptions = <TData = Awaited<ReturnType<typeof getMyMaintenanceDue>>, TError = ErrorType<void>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getMyMaintenanceDue>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetMyMaintenanceDueQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getMyMaintenanceDue>>> = ({ signal }) => getMyMaintenanceDue({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getMyMaintenanceDue>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetMyMaintenanceDueQueryResult = NonNullable<Awaited<ReturnType<typeof getMyMaintenanceDue>>>
+export type GetMyMaintenanceDueQueryError = ErrorType<void>
+
+
+/**
+ * @summary This month's expected vs collected vs due for the signed-in resident's own flat
+ */
+
+export function useGetMyMaintenanceDue<TData = Awaited<ReturnType<typeof getMyMaintenanceDue>>, TError = ErrorType<void>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getMyMaintenanceDue>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetMyMaintenanceDueQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getPayMaintenanceUrl = () => {
+
+
+
+
+  return `/api/maintenance-collections/pay`
+}
+
+/**
+ * @summary Start a Stripe Checkout session for this month's due, in full (resident only)
+ */
+export const payMaintenance = async ( options?: RequestInit): Promise<PayMaintenanceResult> => {
+
+  return customFetch<PayMaintenanceResult>(getPayMaintenanceUrl(),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getPayMaintenanceMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof payMaintenance>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof payMaintenance>>, TError,void, TContext> => {
+
+const mutationKey = ['payMaintenance'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof payMaintenance>>, void> = () => {
+
+
+          return  payMaintenance(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PayMaintenanceMutationResult = NonNullable<Awaited<ReturnType<typeof payMaintenance>>>
+
+    export type PayMaintenanceMutationError = ErrorType<void>
+
+    /**
+ * @summary Start a Stripe Checkout session for this month's due, in full (resident only)
+ */
+export const usePayMaintenance = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof payMaintenance>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof payMaintenance>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getPayMaintenanceMutationOptions(options));
+    }
+
+export const getConfirmMaintenancePaymentUrl = () => {
+
+
+
+
+  return `/api/maintenance-collections/confirm`
+}
+
+/**
+ * @summary Confirm a maintenance payment after a successful Stripe Checkout redirect
+ */
+export const confirmMaintenancePayment = async (confirmMaintenancePaymentInput: ConfirmMaintenancePaymentInput, options?: RequestInit): Promise<MaintenanceCollection> => {
+
+  return customFetch<MaintenanceCollection>(getConfirmMaintenancePaymentUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(confirmMaintenancePaymentInput)
+  }
+);}
+
+
+
+
+
+export const getConfirmMaintenancePaymentMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof confirmMaintenancePayment>>, TError,{data: BodyType<ConfirmMaintenancePaymentInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof confirmMaintenancePayment>>, TError,{data: BodyType<ConfirmMaintenancePaymentInput>}, TContext> => {
+
+const mutationKey = ['confirmMaintenancePayment'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof confirmMaintenancePayment>>, {data: BodyType<ConfirmMaintenancePaymentInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  confirmMaintenancePayment(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ConfirmMaintenancePaymentMutationResult = NonNullable<Awaited<ReturnType<typeof confirmMaintenancePayment>>>
+    export type ConfirmMaintenancePaymentMutationBody = BodyType<ConfirmMaintenancePaymentInput>
+    export type ConfirmMaintenancePaymentMutationError = ErrorType<void>
+
+    /**
+ * @summary Confirm a maintenance payment after a successful Stripe Checkout redirect
+ */
+export const useConfirmMaintenancePayment = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof confirmMaintenancePayment>>, TError,{data: BodyType<ConfirmMaintenancePaymentInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof confirmMaintenancePayment>>,
+        TError,
+        {data: BodyType<ConfirmMaintenancePaymentInput>},
+        TContext
+      > => {
+      return useMutation(getConfirmMaintenancePaymentMutationOptions(options));
     }
 
 export const getGetDueListUrl = (params: GetDueListParams,) => {

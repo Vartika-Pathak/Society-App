@@ -25,6 +25,7 @@ const paymentModeLabels: Record<MaintenanceCollectionPaymentMode, string> = {
   cheque: "Cheque",
   upi: "UPI",
   bank_transfer: "Bank Transfer",
+  online: "Online (Stripe)",
 };
 
 const emptyForm = {

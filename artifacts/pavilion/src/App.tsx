@@ -24,6 +24,7 @@ import Emergency from './pages/emergency';
 import Amenities from './pages/amenities';
 import FlatDirectory from './pages/flat-directory';
 import MyFlat from './pages/my-flat';
+import PayMaintenance from './pages/pay-maintenance';
 import Admin from './pages/admin';
 import SocietyMaster from './pages/admin/masters/society';
 import BuildingMaster from './pages/admin/masters/buildings';
@@ -127,6 +128,11 @@ function Router() {
       <Route path="/my-flat">
         <RequireAuth>
           <MyFlat />
+        </RequireAuth>
+      </Route>
+      <Route path="/pay-maintenance">
+        <RequireAuth>
+          <PayMaintenance />
         </RequireAuth>
       </Route>
       <Route path="/admin">

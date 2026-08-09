@@ -5,7 +5,7 @@ import { useAuth } from "@/context/auth-context";
 import { useListActiveEmergencyAlerts, getListActiveEmergencyAlertsQueryKey } from "@workspace/api-client-react";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { DoorOpen, Wrench, MessageSquareWarning, CalendarCheck, Siren, ShieldCheck, BadgeCheck, Home, BookUser } from "lucide-react";
+import { DoorOpen, Wrench, MessageSquareWarning, CalendarCheck, Siren, ShieldCheck, BadgeCheck, Home, BookUser, Receipt } from "lucide-react";
 
 // Matches the polling interval on the Emergency page — the dashboard banner
 // should surface a new alert without anyone needing to refresh.
@@ -55,6 +55,12 @@ const featureTiles: FeatureTile[] = [
     description: "View your flat's details, and request a correction if something's wrong.",
     icon: Home,
     href: "/my-flat",
+  },
+  {
+    title: "Pay Maintenance",
+    description: "Pay this month's maintenance due for your flat online.",
+    icon: Receipt,
+    href: "/pay-maintenance",
   },
 ];
 

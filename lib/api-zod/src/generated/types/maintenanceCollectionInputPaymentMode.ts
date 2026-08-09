@@ -14,4 +14,5 @@ export const MaintenanceCollectionInputPaymentMode = {
   cheque: 'cheque',
   upi: 'upi',
   bank_transfer: 'bank_transfer',
+  online: 'online',
 } as const;

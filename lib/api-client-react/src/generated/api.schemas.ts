@@ -840,6 +840,7 @@ export const MaintenanceCollectionPaymentMode = {
   cheque: 'cheque',
   upi: 'upi',
   bank_transfer: 'bank_transfer',
+  online: 'online',
 } as const;
 
 export interface MaintenanceCollection {
@@ -867,6 +868,7 @@ export const MaintenanceCollectionInputPaymentMode = {
   cheque: 'cheque',
   upi: 'upi',
   bank_transfer: 'bank_transfer',
+  online: 'online',
 } as const;
 
 export interface MaintenanceCollectionInput {
@@ -882,6 +884,34 @@ export interface MaintenanceCollectionInput {
   forMonth: string;
   referenceNumber?: string;
   notes?: string;
+}
+
+export interface MyMaintenanceDue {
+  forMonth: string;
+  /** @nullable */
+  buildingName: string | null;
+  flatNumber: string;
+  expectedAmountPaise: number;
+  collectedAmountPaise: number;
+  dueAmountPaise: number;
+}
+
+export type PayMaintenanceResultStatus = typeof PayMaintenanceResultStatus[keyof typeof PayMaintenanceResultStatus];
+
+
+export const PayMaintenanceResultStatus = {
+  nothing_due: 'nothing_due',
+  requires_payment: 'requires_payment',
+} as const;
+
+export interface PayMaintenanceResult {
+  status: PayMaintenanceResultStatus;
+  /** @nullable */
+  checkoutUrl?: string | null;
+}
+
+export interface ConfirmMaintenancePaymentInput {
+  sessionId: string;
 }
 
 export type DueListEntryFlatType = typeof DueListEntryFlatType[keyof typeof DueListEntryFlatType];
