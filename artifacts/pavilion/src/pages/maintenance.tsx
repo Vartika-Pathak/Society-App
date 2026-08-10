@@ -29,6 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 
 const categoryLabels: Record<MaintenanceRequestCategory, string> = {
   plumbing: "Plumbing",
@@ -54,7 +55,15 @@ const statusVariants: Record<MaintenanceRequestStatus, "secondary" | "default" |
 
 const MAX_PHOTOS = 6;
 
-function RequestCard({ request, canManage }: { request: MaintenanceRequest; canManage: boolean }) {
+function RequestRow({
+  serialNumber,
+  request,
+  canManage,
+}: {
+  serialNumber: number;
+  request: MaintenanceRequest;
+  canManage: boolean;
+}) {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const [vendorDialogOpen, setVendorDialogOpen] = useState(false);
@@ -123,46 +132,34 @@ function RequestCard({ request, canManage }: { request: MaintenanceRequest; canM
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <CardTitle className="text-lg">{categoryLabels[request.category]}</CardTitle>
-            <p className="text-sm text-muted-foreground mt-1">
-              {request.residentName} · Flat {request.residentFlatNumber} ·{" "}
-              {new Date(request.createdAt).toLocaleString()}
-            </p>
-          </div>
-          <Badge variant={statusVariants[request.status]}>{statusLabels[request.status]}</Badge>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <p className="text-sm">{request.description}</p>
-
-        {request.photoUrls.length > 0 && (
-          <div className="flex flex-wrap gap-2">
+    <TableRow>
+      <TableCell className="text-muted-foreground">{serialNumber}</TableCell>
+      <TableCell className="font-medium whitespace-nowrap">{request.residentName}</TableCell>
+      <TableCell className="whitespace-nowrap">{request.residentFlatNumber}</TableCell>
+      <TableCell className="whitespace-nowrap">{categoryLabels[request.category]}</TableCell>
+      <TableCell className="min-w-48 max-w-80">{request.description}</TableCell>
+      <TableCell>
+        {request.photoUrls.length > 0 ? (
+          <div className="flex flex-wrap gap-1">
             {request.photoUrls.map((url) => (
               <a key={url} href={url} target="_blank" rel="noreferrer">
-                <img
-                  src={url}
-                  alt="Attached"
-                  className="h-20 w-20 rounded-lg object-cover border"
-                />
+                <img src={url} alt="Attached" className="h-10 w-10 rounded object-cover border" />
               </a>
             ))}
           </div>
+        ) : (
+          <span className="text-muted-foreground">—</span>
         )}
-
-        {request.vendorName && (
-          <p className="text-sm text-muted-foreground">
-            Assigned to <span className="font-medium text-foreground">{request.vendorName}</span>
-          </p>
-        )}
-
-        {canManage && (
+      </TableCell>
+      <TableCell className="whitespace-nowrap">
+        {new Date(request.createdAt).toLocaleDateString()}
+      </TableCell>
+      <TableCell className="whitespace-nowrap">{request.vendorName ?? <span className="text-muted-foreground">—</span>}</TableCell>
+      <TableCell>
+        {canManage ? (
           <>
             <Select value={request.status} onValueChange={handleStatusChange}>
-              <SelectTrigger className="w-48">
+              <SelectTrigger className="w-40">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -213,11 +210,14 @@ function RequestCard({ request, canManage }: { request: MaintenanceRequest; canM
               </DialogContent>
             </Dialog>
           </>
+        ) : (
+          <Badge variant={statusVariants[request.status]}>{statusLabels[request.status]}</Badge>
         )}
-
+      </TableCell>
+      <TableCell className="min-w-48">
         {!canManage && request.status === "resolved" && (
-          <div className="space-y-3 pt-2 border-t">
-            <p className="text-sm font-medium">Are you satisfied with this resolution?</p>
+          <div className="space-y-2">
+            <p className="text-xs font-medium">Satisfied with this resolution?</p>
             <div className="flex flex-wrap gap-2">
               <Button
                 type="button"
@@ -234,19 +234,23 @@ function RequestCard({ request, canManage }: { request: MaintenanceRequest; canM
                 disabled={reopen.isPending}
                 onClick={() => reopen.mutate({ params: { id: request.id } })}
               >
-                Not satisfied, reopen
+                Reopen
               </Button>
             </div>
           </div>
         )}
 
         {!canManage && request.status === "closed" && (
-          <div className="flex items-center gap-2 rounded-lg border border-primary/30 bg-primary/5 p-3 text-primary text-sm">
-            <CheckCircle2 className="h-4 w-4 shrink-0" /> You confirmed this is resolved.
+          <div className="flex items-center gap-1.5 text-primary text-xs">
+            <CheckCircle2 className="h-3.5 w-3.5 shrink-0" /> Confirmed resolved
           </div>
         )}
-      </CardContent>
-    </Card>
+
+        {(canManage || (request.status !== "resolved" && request.status !== "closed")) && (
+          <span className="text-muted-foreground">—</span>
+        )}
+      </TableCell>
+    </TableRow>
   );
 }
 
@@ -299,18 +303,23 @@ export default function Maintenance() {
 
   return (
     <div className="w-full">
-      <div className="bg-primary/5 py-16 border-b">
-        <div className="container mx-auto px-4 md:px-8">
-          <h1 className="text-3xl md:text-4xl font-serif font-medium mb-2">Maintenance</h1>
-          <p className="text-muted-foreground">
+      <div className="relative overflow-hidden bg-primary py-16 border-b">
+        <img
+          src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1600&q=80"
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover opacity-20"
+        />
+        <div className="relative z-10 container mx-auto px-4 md:px-8">
+          <h1 className="text-3xl md:text-4xl font-serif font-medium mb-2 text-primary-foreground">Maintenance</h1>
+          <p className="text-primary-foreground/80">
             Report a repair or maintenance issue, with photos, to the building staff.
           </p>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 md:px-8 py-16 max-w-2xl space-y-10">
+      <div className="container mx-auto px-4 md:px-8 py-16 space-y-10">
         {!canManage && (
-          <Card>
+          <Card className="max-w-2xl">
             <CardHeader>
               <CardTitle className="text-lg">Report an issue</CardTitle>
             </CardHeader>
@@ -394,11 +403,31 @@ export default function Maintenance() {
           {requests.isLoading ? (
             <p className="text-muted-foreground text-sm">Loading…</p>
           ) : requests.data && requests.data.length > 0 ? (
-            <div className="space-y-4">
-              {requests.data.map((request) => (
-                <RequestCard key={request.id} request={request} canManage={canManage} />
-              ))}
-            </div>
+            <Card>
+              <CardContent className="pt-6 overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>S.No</TableHead>
+                      <TableHead>Resident</TableHead>
+                      <TableHead>Flat</TableHead>
+                      <TableHead>Issue</TableHead>
+                      <TableHead>Description</TableHead>
+                      <TableHead>Photos</TableHead>
+                      <TableHead>Reported</TableHead>
+                      <TableHead>Vendor</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {requests.data.map((request, index) => (
+                      <RequestRow key={request.id} serialNumber={index + 1} request={request} canManage={canManage} />
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
           ) : (
             <p className="text-muted-foreground text-sm">No maintenance requests yet.</p>
           )}

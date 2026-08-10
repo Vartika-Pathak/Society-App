@@ -26,6 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 
 const categoryLabels: Record<ComplaintCategory, string> = {
   maintenance: "Maintenance",
@@ -48,7 +49,15 @@ const statusVariants: Record<ComplaintStatus, "secondary" | "default" | "outline
   closed: "secondary",
 };
 
-function ComplaintCard({ complaint, canManage }: { complaint: Complaint; canManage: boolean }) {
+function ComplaintRow({
+  serialNumber,
+  complaint,
+  canManage,
+}: {
+  serialNumber: number;
+  complaint: Complaint;
+  canManage: boolean;
+}) {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   const [note, setNote] = useState(complaint.resolutionNote ?? "");
@@ -95,110 +104,94 @@ function ComplaintCard({ complaint, canManage }: { complaint: Complaint; canMana
   });
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <CardTitle className="text-lg">{categoryLabels[complaint.category]}</CardTitle>
-            <p className="text-sm text-muted-foreground mt-1">
-              {complaint.residentName} · Flat {complaint.residentFlatNumber} ·{" "}
-              {new Date(complaint.createdAt).toLocaleString()}
-            </p>
-          </div>
-          <Badge variant={statusVariants[complaint.status]}>{statusLabels[complaint.status]}</Badge>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <p className="text-sm">{complaint.description}</p>
-
-        {complaint.resolutionNote && !canManage && (
-          <div className="rounded-lg bg-muted p-3 text-sm">
-            <p className="font-medium mb-1">Note from the committee</p>
-            <p className="text-muted-foreground whitespace-pre-line">{complaint.resolutionNote}</p>
-          </div>
+    <TableRow>
+      <TableCell className="text-muted-foreground">{serialNumber}</TableCell>
+      <TableCell className="font-medium whitespace-nowrap">{complaint.residentName}</TableCell>
+      <TableCell className="whitespace-nowrap">{complaint.residentFlatNumber}</TableCell>
+      <TableCell className="whitespace-nowrap">{categoryLabels[complaint.category]}</TableCell>
+      <TableCell className="min-w-48 max-w-80">{complaint.description}</TableCell>
+      <TableCell className="whitespace-nowrap">{new Date(complaint.createdAt).toLocaleDateString()}</TableCell>
+      <TableCell className="min-w-56">
+        {canManage ? (
+          <Textarea
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            placeholder="Note for the resident (optional)"
+            className="min-h-16 text-sm"
+          />
+        ) : complaint.resolutionNote ? (
+          <p className="text-muted-foreground whitespace-pre-line">{complaint.resolutionNote}</p>
+        ) : (
+          <span className="text-muted-foreground">—</span>
         )}
-
+      </TableCell>
+      <TableCell>
+        {canManage ? (
+          <Select
+            value={complaint.status}
+            onValueChange={(value) =>
+              updateStatus.mutate({
+                id: complaint.id,
+                data: { status: value as ComplaintStatus, resolutionNote: note || undefined },
+              })
+            }
+          >
+            <SelectTrigger className="w-40">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {(Object.keys(statusLabels) as ComplaintStatus[]).map((status) => (
+                <SelectItem key={status} value={status}>
+                  {statusLabels[status]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        ) : (
+          <Badge variant={statusVariants[complaint.status]}>{statusLabels[complaint.status]}</Badge>
+        )}
+      </TableCell>
+      <TableCell className="min-w-56">
         {!canManage && complaint.status === "resolved" && (
-          <div className="space-y-3 pt-2 border-t">
-            <p className="text-sm font-medium">Are you satisfied with this resolution?</p>
-            <div className="flex flex-wrap gap-2">
-              <Button
-                type="button"
-                size="sm"
-                disabled={confirmResolved.isPending}
-                onClick={() => confirmResolved.mutate({ id: complaint.id })}
-              >
-                <CheckCircle2 className="h-3.5 w-3.5 mr-1.5" /> Yes, close it
-              </Button>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor={`reopen-note-${complaint.id}`} className="text-xs text-muted-foreground">
-                Not satisfied? Tell us what's still wrong, then reopen it
-              </Label>
-              <Textarea
-                id={`reopen-note-${complaint.id}`}
-                value={reopenNote}
-                onChange={(e) => setReopenNote(e.target.value)}
-                placeholder="e.g. Still leaking after the fix"
-                className="min-h-16"
-              />
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                disabled={reopen.isPending}
-                onClick={() => reopen.mutate({ id: complaint.id, data: { note: reopenNote || undefined } })}
-              >
-                Not satisfied, reopen
-              </Button>
-            </div>
+          <div className="space-y-2">
+            <p className="text-xs font-medium">Satisfied?</p>
+            <Button
+              type="button"
+              size="sm"
+              disabled={confirmResolved.isPending}
+              onClick={() => confirmResolved.mutate({ id: complaint.id })}
+            >
+              <CheckCircle2 className="h-3.5 w-3.5 mr-1.5" /> Yes, close it
+            </Button>
+            <Textarea
+              value={reopenNote}
+              onChange={(e) => setReopenNote(e.target.value)}
+              placeholder="Not satisfied? What's still wrong…"
+              className="min-h-12 text-sm"
+            />
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              disabled={reopen.isPending}
+              onClick={() => reopen.mutate({ id: complaint.id, data: { note: reopenNote || undefined } })}
+            >
+              Reopen
+            </Button>
           </div>
         )}
 
         {!canManage && complaint.status === "closed" && (
-          <div className="flex items-center gap-2 rounded-lg border border-primary/30 bg-primary/5 p-3 text-primary text-sm">
-            <CheckCircle2 className="h-4 w-4 shrink-0" /> You confirmed this is resolved.
+          <div className="flex items-center gap-1.5 text-primary text-xs">
+            <CheckCircle2 className="h-3.5 w-3.5 shrink-0" /> Confirmed resolved
           </div>
         )}
 
-        {canManage && (
-          <div className="space-y-3 pt-2 border-t">
-            <div className="space-y-2">
-              <Label htmlFor={`note-${complaint.id}`} className="text-xs text-muted-foreground">
-                Note for the resident (optional)
-              </Label>
-              <Textarea
-                id={`note-${complaint.id}`}
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                placeholder="e.g. Plumber scheduled for Tuesday"
-                className="min-h-16"
-              />
-            </div>
-            <Select
-              value={complaint.status}
-              onValueChange={(value) =>
-                updateStatus.mutate({
-                  id: complaint.id,
-                  data: { status: value as ComplaintStatus, resolutionNote: note || undefined },
-                })
-              }
-            >
-              <SelectTrigger className="w-48">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {(Object.keys(statusLabels) as ComplaintStatus[]).map((status) => (
-                  <SelectItem key={status} value={status}>
-                    {statusLabels[status]}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+        {(canManage || (complaint.status !== "resolved" && complaint.status !== "closed")) && (
+          <span className="text-muted-foreground">—</span>
         )}
-      </CardContent>
-    </Card>
+      </TableCell>
+    </TableRow>
   );
 }
 
@@ -238,18 +231,23 @@ export default function Complain() {
 
   return (
     <div className="w-full">
-      <div className="bg-primary/5 py-16 border-b">
-        <div className="container mx-auto px-4 md:px-8">
-          <h1 className="text-3xl md:text-4xl font-serif font-medium mb-2">Complain</h1>
-          <p className="text-muted-foreground">
+      <div className="relative overflow-hidden bg-primary py-16 border-b">
+        <img
+          src="https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1600&q=80"
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover opacity-20"
+        />
+        <div className="relative z-10 container mx-auto px-4 md:px-8">
+          <h1 className="text-3xl md:text-4xl font-serif font-medium mb-2 text-primary-foreground">Complain</h1>
+          <p className="text-primary-foreground/80">
             Raise a complaint about amenities, the lift, or anything else and track its status.
           </p>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 md:px-8 py-16 max-w-2xl space-y-10">
+      <div className="container mx-auto px-4 md:px-8 py-16 space-y-10">
         {!canManage && (
-          <Card>
+          <Card className="max-w-2xl">
             <CardHeader>
               <CardTitle className="text-lg">Raise a complaint</CardTitle>
             </CardHeader>
@@ -298,11 +296,35 @@ export default function Complain() {
           {complaints.isLoading ? (
             <p className="text-muted-foreground text-sm">Loading…</p>
           ) : complaints.data && complaints.data.length > 0 ? (
-            <div className="space-y-4">
-              {complaints.data.map((complaint) => (
-                <ComplaintCard key={complaint.id} complaint={complaint} canManage={canManage} />
-              ))}
-            </div>
+            <Card>
+              <CardContent className="pt-6 overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>S.No</TableHead>
+                      <TableHead>Resident</TableHead>
+                      <TableHead>Flat</TableHead>
+                      <TableHead>Category</TableHead>
+                      <TableHead>Description</TableHead>
+                      <TableHead>Reported</TableHead>
+                      <TableHead>Note</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {complaints.data.map((complaint, index) => (
+                      <ComplaintRow
+                        key={complaint.id}
+                        serialNumber={index + 1}
+                        complaint={complaint}
+                        canManage={canManage}
+                      />
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
           ) : (
             <p className="text-muted-foreground text-sm">No complaints yet.</p>
           )}
