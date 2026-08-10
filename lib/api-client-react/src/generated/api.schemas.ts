@@ -1115,6 +1115,10 @@ export interface BackfillMaintenanceCollectionsResult {
   skippedCount: number;
 }
 
+export type UpdateMaintenanceStatusParams = {
+id: number;
+};
+
 export type GetAmenityAvailabilityParams = {
 amenityId: string;
 date: string;

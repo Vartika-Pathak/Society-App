@@ -577,13 +577,13 @@ paths:
         "401":
           description: Not signed in
 
-  /maintenance/{id}/status:
+  /maintenance/status:
     post:
       operationId: updateMaintenanceStatus
       tags: [maintenance]
       summary: Update a maintenance request's status (guard/admin only)
       parameters:
-        - in: path
+        - in: query
           name: id
           required: true
           schema:

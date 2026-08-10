@@ -120,6 +120,7 @@ export * from './societyRuleInput';
 export * from './specialContribution';
 export * from './specialContributionInput';
 export * from './syncFlatResidentsResult';
+export * from './updateMaintenanceStatusParams';
 export * from './vendor';
 export * from './vendorBill';
 export * from './vendorBillInput';

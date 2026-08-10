@@ -99,6 +99,7 @@ import type {
   SpecialContribution,
   SpecialContributionInput,
   SyncFlatResidentsResult,
+  UpdateMaintenanceStatusParams,
   Vendor,
   VendorBill,
   VendorBillInput,
@@ -2288,21 +2289,28 @@ export const useCreateMaintenanceRequest = <TError = ErrorType<void>,
       return useMutation(getCreateMaintenanceRequestMutationOptions(options));
     }
 
-export const getUpdateMaintenanceStatusUrl = (id: number,) => {
+export const getUpdateMaintenanceStatusUrl = (params: UpdateMaintenanceStatusParams,) => {
+  const normalizedParams = new URLSearchParams();
 
+  Object.entries(params || {}).forEach(([key, value]) => {
 
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
 
+  const stringifiedParams = normalizedParams.toString();
 
-  return `/api/maintenance/${id}/status`
+  return stringifiedParams.length > 0 ? `/api/maintenance/status?${stringifiedParams}` : `/api/maintenance/status`
 }
 
 /**
  * @summary Update a maintenance request's status (guard/admin only)
  */
-export const updateMaintenanceStatus = async (id: number,
-    maintenanceStatusInput: MaintenanceStatusInput, options?: RequestInit): Promise<MaintenanceRequest> => {
+export const updateMaintenanceStatus = async (maintenanceStatusInput: MaintenanceStatusInput,
+    params: UpdateMaintenanceStatusParams, options?: RequestInit): Promise<MaintenanceRequest> => {
 
-  return customFetch<MaintenanceRequest>(getUpdateMaintenanceStatusUrl(id),
+  return customFetch<MaintenanceRequest>(getUpdateMaintenanceStatusUrl(params),
   {
     ...options,
     method: 'POST',
@@ -2316,8 +2324,8 @@ export const updateMaintenanceStatus = async (id: number,
 
 
 export const getUpdateMaintenanceStatusMutationOptions = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateMaintenanceStatus>>, TError,{id: number;data: BodyType<MaintenanceStatusInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof updateMaintenanceStatus>>, TError,{id: number;data: BodyType<MaintenanceStatusInput>}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateMaintenanceStatus>>, TError,{data: BodyType<MaintenanceStatusInput>;params: UpdateMaintenanceStatusParams}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateMaintenanceStatus>>, TError,{data: BodyType<MaintenanceStatusInput>;params: UpdateMaintenanceStatusParams}, TContext> => {
 
 const mutationKey = ['updateMaintenanceStatus'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -2329,10 +2337,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateMaintenanceStatus>>, {id: number;data: BodyType<MaintenanceStatusInput>}> = (props) => {
-          const {id,data} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateMaintenanceStatus>>, {data: BodyType<MaintenanceStatusInput>;params: UpdateMaintenanceStatusParams}> = (props) => {
+          const {data,params} = props ?? {};
 
-          return  updateMaintenanceStatus(id,data,requestOptions)
+          return  updateMaintenanceStatus(data,params,requestOptions)
         }
 
 
@@ -2350,11 +2358,11 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
  * @summary Update a maintenance request's status (guard/admin only)
  */
 export const useUpdateMaintenanceStatus = <TError = ErrorType<void>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateMaintenanceStatus>>, TError,{id: number;data: BodyType<MaintenanceStatusInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateMaintenanceStatus>>, TError,{data: BodyType<MaintenanceStatusInput>;params: UpdateMaintenanceStatusParams}, TContext>, request?: SecondParameter<typeof customFetch>}
  ): UseMutationResult<
         Awaited<ReturnType<typeof updateMaintenanceStatus>>,
         TError,
-        {id: number;data: BodyType<MaintenanceStatusInput>},
+        {data: BodyType<MaintenanceStatusInput>;params: UpdateMaintenanceStatusParams},
         TContext
       > => {
       return useMutation(getUpdateMaintenanceStatusMutationOptions(options));

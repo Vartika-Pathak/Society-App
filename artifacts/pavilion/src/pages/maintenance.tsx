@@ -101,7 +101,7 @@ function RequestCard({ request, canManage }: { request: MaintenanceRequest; canM
           <Select
             value={request.status}
             onValueChange={(value) =>
-              updateStatus.mutate({ id: request.id, data: { status: value as MaintenanceRequestStatus } })
+              updateStatus.mutate({ params: { id: request.id }, data: { status: value as MaintenanceRequestStatus } })
             }
           >
             <SelectTrigger className="w-48">

@@ -519,7 +519,7 @@ export const CreateMaintenanceRequestResponse = zod.object({
 /**
  * @summary Update a maintenance request's status (guard/admin only)
  */
-export const UpdateMaintenanceStatusParams = zod.object({
+export const UpdateMaintenanceStatusQueryParams = zod.object({
   "id": zod.coerce.number()
 })
 
