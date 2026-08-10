@@ -608,6 +608,60 @@ paths:
         "404":
           description: Request not found
 
+  /maintenance/confirm:
+    post:
+      operationId: confirmMaintenanceResolved
+      tags: [maintenance]
+      summary: The resident confirms they're satisfied with a resolved request, closing it
+      parameters:
+        - in: query
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Request closed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MaintenanceRequest"
+        "400":
+          description: Not currently resolved
+        "401":
+          description: Not signed in
+        "403":
+          description: Not your request
+        "404":
+          description: Request not found
+
+  /maintenance/reopen:
+    post:
+      operationId: reopenMaintenanceRequest
+      tags: [maintenance]
+      summary: The resident isn't satisfied with a resolved request, so it goes back to open
+      parameters:
+        - in: query
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Request reopened
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MaintenanceRequest"
+        "400":
+          description: Not currently resolved
+        "401":
+          description: Not signed in
+        "403":
+          description: Not your request
+        "404":
+          description: Request not found
+
   /complaints:
     get:
       operationId: listComplaints
@@ -2787,11 +2841,17 @@ components:
             type: string
         status:
           type: string
-          enum: [open, in_progress, resolved]
+          enum: [open, in_progress, resolved, closed]
         residentName:
           type: string
         residentFlatNumber:
           type: string
+        vendorId:
+          type: integer
+          nullable: true
+        vendorName:
+          type: string
+          nullable: true
         createdAt:
           type: string
           format: date-time
@@ -2818,7 +2878,10 @@ components:
       properties:
         status:
           type: string
-          enum: [open, in_progress, resolved]
+          enum: [open, in_progress, resolved, closed]
+        vendorId:
+          type: integer
+          nullable: true
 
     Complaint:
       type: object
@@ -3212,6 +3275,10 @@ components:
           type: ["string", "null"]
         openingBalancePaise:
           type: integer
+        category:
+          type: string
+          nullable: true
+          enum: [plumbing, electrical, appliance, structural, other]
 
     VendorInput:
       type: object
@@ -3233,6 +3300,10 @@ components:
         openingBalancePaise:
           type: integer
           minimum: 0
+        category:
+          type: string
+          nullable: true
+          enum: [plumbing, electrical, appliance, structural, other]
 
     MaintenanceRate:
       type: object

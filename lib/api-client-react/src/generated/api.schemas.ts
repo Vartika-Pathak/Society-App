@@ -272,6 +272,7 @@ export const MaintenanceRequestStatus = {
   open: 'open',
   in_progress: 'in_progress',
   resolved: 'resolved',
+  closed: 'closed',
 } as const;
 
 export interface MaintenanceRequest {
@@ -282,6 +283,8 @@ export interface MaintenanceRequest {
   status: MaintenanceRequestStatus;
   residentName: string;
   residentFlatNumber: string;
+  vendorId?: number | null;
+  vendorName?: string | null;
   createdAt: string;
 }
 
@@ -310,10 +313,12 @@ export const MaintenanceStatusInputStatus = {
   open: 'open',
   in_progress: 'in_progress',
   resolved: 'resolved',
+  closed: 'closed',
 } as const;
 
 export interface MaintenanceStatusInput {
   status: MaintenanceStatusInputStatus;
+  vendorId?: number | null;
 }
 
 export type ComplaintCategory = typeof ComplaintCategory[keyof typeof ComplaintCategory];
@@ -640,6 +645,17 @@ export interface ExpenseCategoryInput {
   gstSlabPercent: number;
 }
 
+export type VendorCategory = typeof VendorCategory[keyof typeof VendorCategory] | null;
+
+
+export const VendorCategory = {
+  plumbing: 'plumbing',
+  electrical: 'electrical',
+  appliance: 'appliance',
+  structural: 'structural',
+  other: 'other',
+} as const;
+
 export interface Vendor {
   id: number;
   name: string;
@@ -650,7 +666,19 @@ export interface Vendor {
   /** @nullable */
   gstNumber: string | null;
   openingBalancePaise: number;
+  category?: VendorCategory;
 }
+
+export type VendorInputCategory = typeof VendorInputCategory[keyof typeof VendorInputCategory] | null;
+
+
+export const VendorInputCategory = {
+  plumbing: 'plumbing',
+  electrical: 'electrical',
+  appliance: 'appliance',
+  structural: 'structural',
+  other: 'other',
+} as const;
 
 export interface VendorInput {
   /** @minLength 1 */
@@ -663,6 +691,7 @@ export interface VendorInput {
   gstNumber?: string;
   /** @minimum 0 */
   openingBalancePaise?: number;
+  category?: VendorInputCategory;
 }
 
 export type MaintenanceRateFlatType = typeof MaintenanceRateFlatType[keyof typeof MaintenanceRateFlatType];
@@ -1116,6 +1145,14 @@ export interface BackfillMaintenanceCollectionsResult {
 }
 
 export type UpdateMaintenanceStatusParams = {
+id: number;
+};
+
+export type ConfirmMaintenanceResolvedParams = {
+id: number;
+};
+
+export type ReopenMaintenanceRequestParams = {
 id: number;
 };
 

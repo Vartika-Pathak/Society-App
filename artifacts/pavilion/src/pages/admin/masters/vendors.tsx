@@ -8,6 +8,7 @@ import {
   useDeleteVendor,
   getListVendorsQueryKey,
   type Vendor,
+  type VendorCategory,
 } from "@workspace/api-client-react";
 import { useToast } from "@/hooks/use-toast";
 import { AdminLayout } from "@/components/admin-layout";
@@ -16,6 +17,23 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+const NO_CATEGORY = "none" as const;
+
+const categoryLabels: Record<Exclude<VendorCategory, null>, string> = {
+  plumbing: "Plumbing",
+  electrical: "Electrical",
+  appliance: "Appliance",
+  structural: "Structural",
+  other: "Other",
+};
 
 const emptyForm = {
   name: "",
@@ -24,6 +42,7 @@ const emptyForm = {
   address: "",
   gstNumber: "",
   openingBalanceRupees: "",
+  category: NO_CATEGORY as Exclude<VendorCategory, null> | typeof NO_CATEGORY,
 };
 
 function formatRupees(paise: number): string {
@@ -76,6 +95,7 @@ export default function VendorMaster() {
       address: vendor.address ?? "",
       gstNumber: vendor.gstNumber ?? "",
       openingBalanceRupees: (vendor.openingBalancePaise / 100).toString(),
+      category: vendor.category ?? NO_CATEGORY,
     });
   };
 
@@ -87,6 +107,7 @@ export default function VendorMaster() {
       contactNumber: form.contactNumber,
       address: form.address || undefined,
       gstNumber: form.gstNumber || undefined,
+      category: form.category === NO_CATEGORY ? undefined : form.category,
       openingBalancePaise: form.openingBalanceRupees
         ? Math.round(Number(form.openingBalanceRupees) * 100)
         : 0,
@@ -175,6 +196,30 @@ export default function VendorMaster() {
                     onChange={(e) => setForm((f) => ({ ...f, openingBalanceRupees: e.target.value }))}
                   />
                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="vendor-category">Category</Label>
+                  <Select
+                    value={form.category}
+                    onValueChange={(v) =>
+                      setForm((f) => ({ ...f, category: v as Exclude<VendorCategory, null> | typeof NO_CATEGORY }))
+                    }
+                  >
+                    <SelectTrigger id="vendor-category">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={NO_CATEGORY}>No category</SelectItem>
+                      {(Object.keys(categoryLabels) as Exclude<VendorCategory, null>[]).map((cat) => (
+                        <SelectItem key={cat} value={cat}>
+                          {categoryLabels[cat]}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">
+                    Restricts which vendors can be assigned to a maintenance request of this category.
+                  </p>
+                </div>
               </div>
               <div className="flex gap-2">
                 <Button type="submit" disabled={isSaving}>
@@ -203,6 +248,7 @@ export default function VendorMaster() {
                     <TableHead>Contact No.</TableHead>
                     <TableHead>Address</TableHead>
                     <TableHead>GST No.</TableHead>
+                    <TableHead>Category</TableHead>
                     <TableHead>Opening Balance</TableHead>
                     <TableHead className="text-right">Action</TableHead>
                   </TableRow>
@@ -215,6 +261,7 @@ export default function VendorMaster() {
                       <TableCell>{vendor.contactNumber}</TableCell>
                       <TableCell>{vendor.address || "—"}</TableCell>
                       <TableCell>{vendor.gstNumber || "—"}</TableCell>
+                      <TableCell>{vendor.category ? categoryLabels[vendor.category] : "—"}</TableCell>
                       <TableCell>{formatRupees(vendor.openingBalancePaise)}</TableCell>
                       <TableCell className="text-right space-x-2">
                         <Button type="button" size="sm" variant="outline" onClick={() => startEdit(vendor)}>

@@ -9,4 +9,5 @@ import type { MaintenanceStatusInputStatus } from './maintenanceStatusInputStatu
 
 export interface MaintenanceStatusInput {
   status: MaintenanceStatusInputStatus;
+  vendorId?: number | null;
 }

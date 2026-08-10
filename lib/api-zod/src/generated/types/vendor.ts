@@ -5,6 +5,7 @@
  * Pavilion community website API
  * OpenAPI spec version: 0.1.0
  */
+import type { VendorCategory } from './vendorCategory';
 
 export interface Vendor {
   id: number;
@@ -16,4 +17,5 @@ export interface Vendor {
   /** @nullable */
   gstNumber: string | null;
   openingBalancePaise: number;
+  category?: VendorCategory;
 }

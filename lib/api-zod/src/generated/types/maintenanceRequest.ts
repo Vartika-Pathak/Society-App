@@ -16,5 +16,7 @@ export interface MaintenanceRequest {
   status: MaintenanceRequestStatus;
   residentName: string;
   residentFlatNumber: string;
+  vendorId?: number | null;
+  vendorName?: string | null;
   createdAt: Date;
 }

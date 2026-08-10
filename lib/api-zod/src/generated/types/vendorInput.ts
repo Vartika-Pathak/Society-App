@@ -5,6 +5,7 @@
  * Pavilion community website API
  * OpenAPI spec version: 0.1.0
  */
+import type { VendorInputCategory } from './vendorInputCategory';
 
 export interface VendorInput {
   /** @minLength 1 */
@@ -17,4 +18,5 @@ export interface VendorInput {
   gstNumber?: string;
   /** @minimum 0 */
   openingBalancePaise?: number;
+  category?: VendorInputCategory;
 }

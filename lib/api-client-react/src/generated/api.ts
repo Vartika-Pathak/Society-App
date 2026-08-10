@@ -41,6 +41,7 @@ import type {
   ComplaintStatusInput,
   ConfirmAmenityBookingInput,
   ConfirmMaintenancePaymentInput,
+  ConfirmMaintenanceResolvedParams,
   ContactMessage,
   ContactMessageInput,
   DashboardSummary,
@@ -89,6 +90,7 @@ import type {
   Notice,
   NoticeInput,
   PayMaintenanceResult,
+  ReopenMaintenanceRequestParams,
   Service,
   ServiceInput,
   SignupInput,
@@ -2366,6 +2368,162 @@ export const useUpdateMaintenanceStatus = <TError = ErrorType<void>,
         TContext
       > => {
       return useMutation(getUpdateMaintenanceStatusMutationOptions(options));
+    }
+
+export const getConfirmMaintenanceResolvedUrl = (params: ConfirmMaintenanceResolvedParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/maintenance/confirm?${stringifiedParams}` : `/api/maintenance/confirm`
+}
+
+/**
+ * @summary The resident confirms they're satisfied with a resolved request, closing it
+ */
+export const confirmMaintenanceResolved = async (params: ConfirmMaintenanceResolvedParams, options?: RequestInit): Promise<MaintenanceRequest> => {
+
+  return customFetch<MaintenanceRequest>(getConfirmMaintenanceResolvedUrl(params),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getConfirmMaintenanceResolvedMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof confirmMaintenanceResolved>>, TError,{params: ConfirmMaintenanceResolvedParams}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof confirmMaintenanceResolved>>, TError,{params: ConfirmMaintenanceResolvedParams}, TContext> => {
+
+const mutationKey = ['confirmMaintenanceResolved'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof confirmMaintenanceResolved>>, {params: ConfirmMaintenanceResolvedParams}> = (props) => {
+          const {params} = props ?? {};
+
+          return  confirmMaintenanceResolved(params,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ConfirmMaintenanceResolvedMutationResult = NonNullable<Awaited<ReturnType<typeof confirmMaintenanceResolved>>>
+
+    export type ConfirmMaintenanceResolvedMutationError = ErrorType<void>
+
+    /**
+ * @summary The resident confirms they're satisfied with a resolved request, closing it
+ */
+export const useConfirmMaintenanceResolved = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof confirmMaintenanceResolved>>, TError,{params: ConfirmMaintenanceResolvedParams}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof confirmMaintenanceResolved>>,
+        TError,
+        {params: ConfirmMaintenanceResolvedParams},
+        TContext
+      > => {
+      return useMutation(getConfirmMaintenanceResolvedMutationOptions(options));
+    }
+
+export const getReopenMaintenanceRequestUrl = (params: ReopenMaintenanceRequestParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/maintenance/reopen?${stringifiedParams}` : `/api/maintenance/reopen`
+}
+
+/**
+ * @summary The resident isn't satisfied with a resolved request, so it goes back to open
+ */
+export const reopenMaintenanceRequest = async (params: ReopenMaintenanceRequestParams, options?: RequestInit): Promise<MaintenanceRequest> => {
+
+  return customFetch<MaintenanceRequest>(getReopenMaintenanceRequestUrl(params),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getReopenMaintenanceRequestMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof reopenMaintenanceRequest>>, TError,{params: ReopenMaintenanceRequestParams}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof reopenMaintenanceRequest>>, TError,{params: ReopenMaintenanceRequestParams}, TContext> => {
+
+const mutationKey = ['reopenMaintenanceRequest'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof reopenMaintenanceRequest>>, {params: ReopenMaintenanceRequestParams}> = (props) => {
+          const {params} = props ?? {};
+
+          return  reopenMaintenanceRequest(params,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ReopenMaintenanceRequestMutationResult = NonNullable<Awaited<ReturnType<typeof reopenMaintenanceRequest>>>
+
+    export type ReopenMaintenanceRequestMutationError = ErrorType<void>
+
+    /**
+ * @summary The resident isn't satisfied with a resolved request, so it goes back to open
+ */
+export const useReopenMaintenanceRequest = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof reopenMaintenanceRequest>>, TError,{params: ReopenMaintenanceRequestParams}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof reopenMaintenanceRequest>>,
+        TError,
+        {params: ReopenMaintenanceRequestParams},
+        TContext
+      > => {
+      return useMutation(getReopenMaintenanceRequestMutationOptions(options));
     }
 
 export const getListComplaintsUrl = () => {

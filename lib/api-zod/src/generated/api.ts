@@ -484,9 +484,11 @@ export const ListMaintenanceRequestsResponseItem = zod.object({
   "category": zod.enum(['plumbing', 'electrical', 'appliance', 'structural', 'other']),
   "description": zod.string(),
   "photoUrls": zod.array(zod.string()),
-  "status": zod.enum(['open', 'in_progress', 'resolved']),
+  "status": zod.enum(['open', 'in_progress', 'resolved', 'closed']),
   "residentName": zod.string(),
   "residentFlatNumber": zod.string(),
+  "vendorId": zod.number().nullish(),
+  "vendorName": zod.string().nullish(),
   "createdAt": zod.coerce.date()
 })
 export const ListMaintenanceRequestsResponse = zod.array(ListMaintenanceRequestsResponseItem)
@@ -509,9 +511,11 @@ export const CreateMaintenanceRequestResponse = zod.object({
   "category": zod.enum(['plumbing', 'electrical', 'appliance', 'structural', 'other']),
   "description": zod.string(),
   "photoUrls": zod.array(zod.string()),
-  "status": zod.enum(['open', 'in_progress', 'resolved']),
+  "status": zod.enum(['open', 'in_progress', 'resolved', 'closed']),
   "residentName": zod.string(),
   "residentFlatNumber": zod.string(),
+  "vendorId": zod.number().nullish(),
+  "vendorName": zod.string().nullish(),
   "createdAt": zod.coerce.date()
 })
 
@@ -524,7 +528,8 @@ export const UpdateMaintenanceStatusQueryParams = zod.object({
 })
 
 export const UpdateMaintenanceStatusBody = zod.object({
-  "status": zod.enum(['open', 'in_progress', 'resolved'])
+  "status": zod.enum(['open', 'in_progress', 'resolved', 'closed']),
+  "vendorId": zod.number().nullish()
 })
 
 export const UpdateMaintenanceStatusResponse = zod.object({
@@ -532,9 +537,53 @@ export const UpdateMaintenanceStatusResponse = zod.object({
   "category": zod.enum(['plumbing', 'electrical', 'appliance', 'structural', 'other']),
   "description": zod.string(),
   "photoUrls": zod.array(zod.string()),
-  "status": zod.enum(['open', 'in_progress', 'resolved']),
+  "status": zod.enum(['open', 'in_progress', 'resolved', 'closed']),
   "residentName": zod.string(),
   "residentFlatNumber": zod.string(),
+  "vendorId": zod.number().nullish(),
+  "vendorName": zod.string().nullish(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary The resident confirms they're satisfied with a resolved request, closing it
+ */
+export const ConfirmMaintenanceResolvedQueryParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const ConfirmMaintenanceResolvedResponse = zod.object({
+  "id": zod.number(),
+  "category": zod.enum(['plumbing', 'electrical', 'appliance', 'structural', 'other']),
+  "description": zod.string(),
+  "photoUrls": zod.array(zod.string()),
+  "status": zod.enum(['open', 'in_progress', 'resolved', 'closed']),
+  "residentName": zod.string(),
+  "residentFlatNumber": zod.string(),
+  "vendorId": zod.number().nullish(),
+  "vendorName": zod.string().nullish(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary The resident isn't satisfied with a resolved request, so it goes back to open
+ */
+export const ReopenMaintenanceRequestQueryParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const ReopenMaintenanceRequestResponse = zod.object({
+  "id": zod.number(),
+  "category": zod.enum(['plumbing', 'electrical', 'appliance', 'structural', 'other']),
+  "description": zod.string(),
+  "photoUrls": zod.array(zod.string()),
+  "status": zod.enum(['open', 'in_progress', 'resolved', 'closed']),
+  "residentName": zod.string(),
+  "residentFlatNumber": zod.string(),
+  "vendorId": zod.number().nullish(),
+  "vendorName": zod.string().nullish(),
   "createdAt": zod.coerce.date()
 })
 
@@ -1161,7 +1210,8 @@ export const ListVendorsResponseItem = zod.object({
   "contactNumber": zod.string(),
   "address": zod.string().nullable(),
   "gstNumber": zod.string().nullable(),
-  "openingBalancePaise": zod.number()
+  "openingBalancePaise": zod.number(),
+  "category": zod.enum(['plumbing', 'electrical', 'appliance', 'structural', 'other']).nullish()
 })
 export const ListVendorsResponse = zod.array(ListVendorsResponseItem)
 
@@ -1182,7 +1232,8 @@ export const CreateVendorBody = zod.object({
   "contactNumber": zod.string().min(1),
   "address": zod.string().optional(),
   "gstNumber": zod.string().optional(),
-  "openingBalancePaise": zod.number().min(createVendorBodyOpeningBalancePaiseMin).optional()
+  "openingBalancePaise": zod.number().min(createVendorBodyOpeningBalancePaiseMin).optional(),
+  "category": zod.enum(['plumbing', 'electrical', 'appliance', 'structural', 'other']).nullish()
 })
 
 export const CreateVendorResponse = zod.object({
@@ -1192,7 +1243,8 @@ export const CreateVendorResponse = zod.object({
   "contactNumber": zod.string(),
   "address": zod.string().nullable(),
   "gstNumber": zod.string().nullable(),
-  "openingBalancePaise": zod.number()
+  "openingBalancePaise": zod.number(),
+  "category": zod.enum(['plumbing', 'electrical', 'appliance', 'structural', 'other']).nullish()
 })
 
 
@@ -1216,7 +1268,8 @@ export const UpdateVendorBody = zod.object({
   "contactNumber": zod.string().min(1),
   "address": zod.string().optional(),
   "gstNumber": zod.string().optional(),
-  "openingBalancePaise": zod.number().min(updateVendorBodyOpeningBalancePaiseMin).optional()
+  "openingBalancePaise": zod.number().min(updateVendorBodyOpeningBalancePaiseMin).optional(),
+  "category": zod.enum(['plumbing', 'electrical', 'appliance', 'structural', 'other']).nullish()
 })
 
 export const UpdateVendorResponse = zod.object({
@@ -1226,7 +1279,8 @@ export const UpdateVendorResponse = zod.object({
   "contactNumber": zod.string(),
   "address": zod.string().nullable(),
   "gstNumber": zod.string().nullable(),
-  "openingBalancePaise": zod.number()
+  "openingBalancePaise": zod.number(),
+  "category": zod.enum(['plumbing', 'electrical', 'appliance', 'structural', 'other']).nullish()
 })
 
 
