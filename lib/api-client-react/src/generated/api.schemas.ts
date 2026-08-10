@@ -321,6 +321,42 @@ export interface MaintenanceStatusInput {
   vendorId?: number | null;
 }
 
+export type VehicleVehicleType = typeof VehicleVehicleType[keyof typeof VehicleVehicleType];
+
+
+export const VehicleVehicleType = {
+  car: 'car',
+  bike: 'bike',
+  other: 'other',
+} as const;
+
+export interface Vehicle {
+  id: number;
+  plateNumber: string;
+  vehicleType: VehicleVehicleType;
+  ownerName: string;
+  flatNumber: string;
+  ownerPhone: string;
+  createdAt: string;
+}
+
+export type VehicleInputVehicleType = typeof VehicleInputVehicleType[keyof typeof VehicleInputVehicleType];
+
+
+export const VehicleInputVehicleType = {
+  car: 'car',
+  bike: 'bike',
+  other: 'other',
+} as const;
+
+export interface VehicleInput {
+  /** @minLength 1 */
+  plateNumber: string;
+  vehicleType: VehicleInputVehicleType;
+  /** @minLength 1 */
+  ownerPhone: string;
+}
+
 export type ComplaintCategory = typeof ComplaintCategory[keyof typeof ComplaintCategory];
 
 
@@ -1153,6 +1189,10 @@ id: number;
 };
 
 export type ReopenMaintenanceRequestParams = {
+id: number;
+};
+
+export type DeleteVehicleParams = {
 id: number;
 };
 

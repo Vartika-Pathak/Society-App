@@ -662,6 +662,63 @@ paths:
         "404":
           description: Request not found
 
+  /vehicles:
+    get:
+      operationId: listVehicles
+      tags: [vehicles]
+      summary: List vehicles — residents see only their own, guard/admin see everyone's
+      responses:
+        "200":
+          description: Vehicles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Vehicle"
+        "401":
+          description: Not signed in
+    post:
+      operationId: registerVehicle
+      tags: [vehicles]
+      summary: Register a vehicle against the signed-in resident's account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VehicleInput"
+      responses:
+        "201":
+          description: Vehicle registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vehicle"
+        "400":
+          description: Validation error
+        "401":
+          description: Not signed in
+    delete:
+      operationId: deleteVehicle
+      tags: [vehicles]
+      summary: Remove a vehicle — the owning resident or an admin only
+      parameters:
+        - in: query
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Vehicle removed
+        "401":
+          description: Not signed in
+        "403":
+          description: Not your vehicle
+        "404":
+          description: Vehicle not found
+
   /complaints:
     get:
       operationId: listComplaints
@@ -2882,6 +2939,42 @@ components:
         vendorId:
           type: integer
           nullable: true
+
+    Vehicle:
+      type: object
+      required:
+        [id, plateNumber, vehicleType, ownerName, flatNumber, ownerPhone, createdAt]
+      properties:
+        id:
+          type: integer
+        plateNumber:
+          type: string
+        vehicleType:
+          type: string
+          enum: [car, bike, other]
+        ownerName:
+          type: string
+        flatNumber:
+          type: string
+        ownerPhone:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    VehicleInput:
+      type: object
+      required: [plateNumber, vehicleType, ownerPhone]
+      properties:
+        plateNumber:
+          type: string
+          minLength: 1
+        vehicleType:
+          type: string
+          enum: [car, bike, other]
+        ownerPhone:
+          type: string
+          minLength: 1
 
     Complaint:
       type: object

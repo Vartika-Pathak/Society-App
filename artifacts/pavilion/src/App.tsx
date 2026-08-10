@@ -19,6 +19,7 @@ import Dashboard from './pages/dashboard';
 import Entry from './pages/entry';
 import Gate from './pages/gate';
 import Maintenance from './pages/maintenance';
+import Vehicles from './pages/vehicles';
 import Complain from './pages/complain';
 import Emergency from './pages/emergency';
 import Amenities from './pages/amenities';
@@ -108,6 +109,11 @@ function Router() {
       <Route path="/complain">
         <RequireAuth>
           <Complain />
+        </RequireAuth>
+      </Route>
+      <Route path="/vehicles">
+        <RequireAuth>
+          <Vehicles />
         </RequireAuth>
       </Route>
       <Route path="/emergency">

@@ -589,6 +589,55 @@ export const ReopenMaintenanceRequestResponse = zod.object({
 
 
 /**
+ * @summary List vehicles — residents see only their own, guard/admin see everyone's
+ */
+export const ListVehiclesResponseItem = zod.object({
+  "id": zod.number(),
+  "plateNumber": zod.string(),
+  "vehicleType": zod.enum(['car', 'bike', 'other']),
+  "ownerName": zod.string(),
+  "flatNumber": zod.string(),
+  "ownerPhone": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+export const ListVehiclesResponse = zod.array(ListVehiclesResponseItem)
+
+
+/**
+ * @summary Register a vehicle against the signed-in resident's account
+ */
+
+
+
+
+export const RegisterVehicleBody = zod.object({
+  "plateNumber": zod.string().min(1),
+  "vehicleType": zod.enum(['car', 'bike', 'other']),
+  "ownerPhone": zod.string().min(1)
+})
+
+export const RegisterVehicleResponse = zod.object({
+  "id": zod.number(),
+  "plateNumber": zod.string(),
+  "vehicleType": zod.enum(['car', 'bike', 'other']),
+  "ownerName": zod.string(),
+  "flatNumber": zod.string(),
+  "ownerPhone": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Remove a vehicle — the owning resident or an admin only
+ */
+export const DeleteVehicleQueryParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const DeleteVehicleResponse = zod.void()
+
+
+/**
  * @summary List complaints — residents see only their own, guard/admin see everyone's
  */
 export const ListComplaintsResponseItem = zod.object({
