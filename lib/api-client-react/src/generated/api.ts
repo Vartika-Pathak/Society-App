@@ -42,6 +42,7 @@ import type {
   ConfirmAmenityBookingInput,
   ConfirmMaintenancePaymentInput,
   ConfirmMaintenanceResolvedParams,
+  ConfirmParkingPassInput,
   ContactMessage,
   ContactMessageInput,
   DashboardSummary,
@@ -90,7 +91,9 @@ import type {
   NewsPostInput,
   Notice,
   NoticeInput,
+  ParkingPass,
   PayMaintenanceResult,
+  PurchaseParkingPassResult,
   ReopenMaintenanceRequestParams,
   Service,
   ServiceInput,
@@ -3792,6 +3795,225 @@ export const useConfirmAmenityBooking = <TError = ErrorType<void>,
         TContext
       > => {
       return useMutation(getConfirmAmenityBookingMutationOptions(options));
+    }
+
+export const getGetMyParkingPassUrl = () => {
+
+
+
+
+  return `/api/parking`
+}
+
+/**
+ * @summary The signed-in resident's flat's parking pass, or null if it hasn't been bought yet
+ */
+export const getMyParkingPass = async ( options?: RequestInit): Promise<ParkingPass> => {
+
+  return customFetch<ParkingPass>(getGetMyParkingPassUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetMyParkingPassQueryKey = () => {
+    return [
+    `/api/parking`
+    ] as const;
+    }
+
+
+export const getGetMyParkingPassQueryOptions = <TData = Awaited<ReturnType<typeof getMyParkingPass>>, TError = ErrorType<void>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getMyParkingPass>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetMyParkingPassQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getMyParkingPass>>> = ({ signal }) => getMyParkingPass({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getMyParkingPass>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetMyParkingPassQueryResult = NonNullable<Awaited<ReturnType<typeof getMyParkingPass>>>
+export type GetMyParkingPassQueryError = ErrorType<void>
+
+
+/**
+ * @summary The signed-in resident's flat's parking pass, or null if it hasn't been bought yet
+ */
+
+export function useGetMyParkingPass<TData = Awaited<ReturnType<typeof getMyParkingPass>>, TError = ErrorType<void>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getMyParkingPass>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetMyParkingPassQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getPurchaseParkingPassUrl = () => {
+
+
+
+
+  return `/api/parking/purchase`
+}
+
+/**
+ * @summary Start a Stripe Checkout session to buy a one-time parking pass for the resident's flat
+ */
+export const purchaseParkingPass = async ( options?: RequestInit): Promise<PurchaseParkingPassResult> => {
+
+  return customFetch<PurchaseParkingPassResult>(getPurchaseParkingPassUrl(),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getPurchaseParkingPassMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof purchaseParkingPass>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof purchaseParkingPass>>, TError,void, TContext> => {
+
+const mutationKey = ['purchaseParkingPass'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof purchaseParkingPass>>, void> = () => {
+
+
+          return  purchaseParkingPass(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PurchaseParkingPassMutationResult = NonNullable<Awaited<ReturnType<typeof purchaseParkingPass>>>
+
+    export type PurchaseParkingPassMutationError = ErrorType<void>
+
+    /**
+ * @summary Start a Stripe Checkout session to buy a one-time parking pass for the resident's flat
+ */
+export const usePurchaseParkingPass = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof purchaseParkingPass>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof purchaseParkingPass>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getPurchaseParkingPassMutationOptions(options));
+    }
+
+export const getConfirmParkingPassUrl = () => {
+
+
+
+
+  return `/api/parking/confirm`
+}
+
+/**
+ * @summary Confirm the parking pass purchase after a successful Stripe Checkout redirect
+ */
+export const confirmParkingPass = async (confirmParkingPassInput: ConfirmParkingPassInput, options?: RequestInit): Promise<ParkingPass> => {
+
+  return customFetch<ParkingPass>(getConfirmParkingPassUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(confirmParkingPassInput)
+  }
+);}
+
+
+
+
+
+export const getConfirmParkingPassMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof confirmParkingPass>>, TError,{data: BodyType<ConfirmParkingPassInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof confirmParkingPass>>, TError,{data: BodyType<ConfirmParkingPassInput>}, TContext> => {
+
+const mutationKey = ['confirmParkingPass'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof confirmParkingPass>>, {data: BodyType<ConfirmParkingPassInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  confirmParkingPass(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ConfirmParkingPassMutationResult = NonNullable<Awaited<ReturnType<typeof confirmParkingPass>>>
+    export type ConfirmParkingPassMutationBody = BodyType<ConfirmParkingPassInput>
+    export type ConfirmParkingPassMutationError = ErrorType<void>
+
+    /**
+ * @summary Confirm the parking pass purchase after a successful Stripe Checkout redirect
+ */
+export const useConfirmParkingPass = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof confirmParkingPass>>, TError,{data: BodyType<ConfirmParkingPassInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof confirmParkingPass>>,
+        TError,
+        {data: BodyType<ConfirmParkingPassInput>},
+        TContext
+      > => {
+      return useMutation(getConfirmParkingPassMutationOptions(options));
     }
 
 export const getGetSocietyInfoUrl = () => {

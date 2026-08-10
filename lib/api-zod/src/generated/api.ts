@@ -890,6 +890,50 @@ export const ConfirmAmenityBookingResponse = zod.object({
 
 
 /**
+ * @summary The signed-in resident's flat's parking pass, or null if it hasn't been bought yet
+ */
+export const GetMyParkingPassResponse = zod.object({
+  "id": zod.number(),
+  "flatNumber": zod.string(),
+  "purchasedByName": zod.string(),
+  "amountPaidCents": zod.number(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Start a Stripe Checkout session to buy a one-time parking pass for the resident's flat
+ */
+export const PurchaseParkingPassResponse = zod.object({
+  "status": zod.enum(['requires_payment']),
+  "pass": zod.object({
+  "id": zod.number(),
+  "flatNumber": zod.string(),
+  "purchasedByName": zod.string(),
+  "amountPaidCents": zod.number(),
+  "createdAt": zod.coerce.date()
+}).optional(),
+  "checkoutUrl": zod.string().optional()
+})
+
+
+/**
+ * @summary Confirm the parking pass purchase after a successful Stripe Checkout redirect
+ */
+export const ConfirmParkingPassBody = zod.object({
+  "sessionId": zod.string()
+})
+
+export const ConfirmParkingPassResponse = zod.object({
+  "id": zod.number(),
+  "flatNumber": zod.string(),
+  "purchasedByName": zod.string(),
+  "amountPaidCents": zod.number(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
  * @summary Get the society's profile (admin only)
  */
 export const GetSocietyInfoResponse = zod.object({

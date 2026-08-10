@@ -699,6 +699,8 @@ paths:
           description: Validation error
         "401":
           description: Not signed in
+        "402":
+          description: The resident's flat doesn't have a parking pass yet
     delete:
       operationId: deleteVehicle
       tags: [vehicles]
@@ -1031,6 +1033,67 @@ paths:
           description: Payment was not completed
         "409":
           description: Payment succeeded but the slot was taken meanwhile — refunded automatically
+
+  /parking:
+    get:
+      operationId: getMyParkingPass
+      tags: [parking]
+      summary: The signed-in resident's flat's parking pass, or null if it hasn't been bought yet
+      responses:
+        "200":
+          description: The flat's parking pass, or an empty body if none exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ParkingPass"
+        "401":
+          description: Not signed in
+
+  /parking/purchase:
+    post:
+      operationId: purchaseParkingPass
+      tags: [parking]
+      summary: Start a Stripe Checkout session to buy a one-time parking pass for the resident's flat
+      responses:
+        "200":
+          description: A Stripe Checkout session to complete payment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PurchaseParkingPassResult"
+        "401":
+          description: Not signed in
+        "409":
+          description: The flat already has a parking pass
+        "503":
+          description: Payments aren't configured on this server yet
+
+  /parking/confirm:
+    post:
+      operationId: confirmParkingPass
+      tags: [parking]
+      summary: Confirm the parking pass purchase after a successful Stripe Checkout redirect
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ConfirmParkingPassInput"
+      responses:
+        "200":
+          description: Parking pass confirmed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ParkingPass"
+        "401":
+          description: Not signed in
+        "402":
+          description: Payment was not completed
+        "403":
+          description: This payment session doesn't belong to you
+        "409":
+          description: Payment succeeded but the flat already had a pass meanwhile — refunded automatically
 
   /society-info:
     get:
@@ -3153,6 +3216,41 @@ components:
           type: string
 
     ConfirmAmenityBookingInput:
+      type: object
+      required: [sessionId]
+      properties:
+        sessionId:
+          type: string
+
+    ParkingPass:
+      type: object
+      required: [id, flatNumber, purchasedByName, amountPaidCents, createdAt]
+      properties:
+        id:
+          type: integer
+        flatNumber:
+          type: string
+        purchasedByName:
+          type: string
+        amountPaidCents:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+
+    PurchaseParkingPassResult:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [requires_payment]
+        pass:
+          $ref: "#/components/schemas/ParkingPass"
+        checkoutUrl:
+          type: string
+
+    ConfirmParkingPassInput:
       type: object
       required: [sessionId]
       properties:

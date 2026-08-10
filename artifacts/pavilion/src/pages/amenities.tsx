@@ -1,23 +1,42 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Check } from "lucide-react";
+import { Check, Trash2 } from "lucide-react";
 import {
   useListAmenities,
   useGetAmenityAvailability,
   useListMyAmenityBookings,
   useBookAmenity,
   useConfirmAmenityBooking,
+  useGetMyParkingPass,
+  usePurchaseParkingPass,
+  useConfirmParkingPass,
+  useListVehicles,
+  useRegisterVehicle,
+  useDeleteVehicle,
   getGetAmenityAvailabilityQueryKey,
   getListMyAmenityBookingsQueryKey,
   getListAmenitiesQueryKey,
+  getGetMyParkingPassQueryKey,
+  getListVehiclesQueryKey,
   type Amenity,
   type AmenityBookingSlot,
+  type VehicleInputVehicleType,
 } from "@workspace/api-client-react";
+import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const slotLabels: Record<AmenityBookingSlot, string> = {
   morning: "Morning (9am–12pm)",
@@ -33,6 +52,12 @@ const slotEndHour: Record<AmenityBookingSlot, number> = {
   evening: 21,
 };
 
+const vehicleTypeLabels: Record<VehicleInputVehicleType, string> = {
+  car: "Car",
+  bike: "Bike",
+  other: "Other",
+};
+
 function isSlotPast(dateStr: string, slot: AmenityBookingSlot): boolean {
   const slotEnd = new Date(`${dateStr}T00:00:00`);
   slotEnd.setHours(slotEndHour[slot], 0, 0, 0);
@@ -43,8 +68,307 @@ function formatPrice(cents: number): string {
   return cents === 0 ? "Free" : `$${(cents / 100).toFixed(2)}`;
 }
 
+function formatRupees(paise: number): string {
+  return `₹${(paise / 100).toLocaleString("en-IN")}`;
+}
+
 function todayIsoDate(): string {
   return new Date().toISOString().slice(0, 10);
+}
+
+function VehicleParkingSection() {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const confirmedParkingRef = useRef(false);
+
+  const canManage = user?.role === "guard" || user?.role === "admin";
+  const isAdmin = user?.role === "admin";
+
+  const [plateNumber, setPlateNumber] = useState("");
+  const [vehicleType, setVehicleType] = useState<VehicleInputVehicleType>("car");
+  const [ownerPhone, setOwnerPhone] = useState("");
+
+  const myPass = useGetMyParkingPass({
+    query: { queryKey: getGetMyParkingPassQueryKey(), enabled: !canManage },
+  });
+
+  const vehicles = useListVehicles({ query: { queryKey: getListVehiclesQueryKey() } });
+
+  const invalidateVehicles = () => queryClient.invalidateQueries({ queryKey: getListVehiclesQueryKey() });
+
+  const purchasePass = usePurchaseParkingPass({
+    mutation: {
+      onSuccess: (result) => {
+        if (result.checkoutUrl) {
+          window.location.href = result.checkoutUrl;
+        }
+      },
+      onError: (error) => {
+        toast({
+          title: "Couldn't start payment",
+          description: error instanceof Error ? error.message : "Please try again.",
+          variant: "destructive",
+        });
+      },
+    },
+  });
+
+  const confirmPass = useConfirmParkingPass({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: getGetMyParkingPassQueryKey() });
+        toast({ title: "Payment received", description: "Your flat's parking pass is active — forever." });
+      },
+      onError: (error) => {
+        toast({
+          title: "We couldn't confirm your parking pass",
+          description: error instanceof Error ? error.message : "Please contact the committee.",
+          variant: "destructive",
+        });
+      },
+    },
+  });
+
+  const registerVehicle = useRegisterVehicle({
+    mutation: {
+      onSuccess: () => {
+        invalidateVehicles();
+        toast({ title: "Vehicle registered" });
+        setPlateNumber("");
+        setOwnerPhone("");
+      },
+      onError: (error) => {
+        toast({
+          title: "Couldn't register vehicle",
+          description: error instanceof Error ? error.message : "Please try again.",
+          variant: "destructive",
+        });
+      },
+    },
+  });
+
+  const deleteVehicle = useDeleteVehicle({
+    mutation: {
+      onSuccess: () => {
+        invalidateVehicles();
+        toast({ title: "Vehicle removed" });
+      },
+      onError: () => {
+        toast({ title: "Couldn't remove vehicle", description: "Please try again.", variant: "destructive" });
+      },
+    },
+  });
+
+  // Coming back from Stripe Checkout for a parking pass: confirm it once, then strip
+  // parking_session_id out of the URL so a page refresh doesn't re-run it. Uses a distinct
+  // query param from amenity bookings (session_id) so the two confirm flows can't collide.
+  useEffect(() => {
+    if (confirmedParkingRef.current) return;
+    const params = new URLSearchParams(window.location.search);
+    const sessionId = params.get("parking_session_id");
+    if (!sessionId) return;
+    confirmedParkingRef.current = true;
+    confirmPass.mutate({ data: { sessionId } });
+    params.delete("parking_session_id");
+    const newSearch = params.toString();
+    window.history.replaceState({}, "", window.location.pathname + (newSearch ? `?${newSearch}` : ""));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleRegister = (e: React.FormEvent) => {
+    e.preventDefault();
+    registerVehicle.mutate({ data: { plateNumber, vehicleType, ownerPhone } });
+  };
+
+  const canDeleteRow = !canManage || isAdmin;
+
+  return (
+    <div>
+      <h2 className="text-lg font-serif font-medium mb-4">Vehicle Parking</h2>
+
+      {canManage ? (
+        <div>
+          <p className="text-sm text-muted-foreground mb-4">Look up which vehicle belongs to which flat.</p>
+          {vehicles.isLoading ? (
+            <p className="text-muted-foreground text-sm">Loading…</p>
+          ) : vehicles.data && vehicles.data.length > 0 ? (
+            <Card>
+              <CardContent className="pt-6 overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Plate Number</TableHead>
+                      <TableHead>Type</TableHead>
+                      <TableHead>Owner</TableHead>
+                      <TableHead>Flat</TableHead>
+                      <TableHead>Contact</TableHead>
+                      {canDeleteRow && <TableHead className="text-right">Action</TableHead>}
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {vehicles.data.map((vehicle) => (
+                      <TableRow key={vehicle.id}>
+                        <TableCell className="font-medium">{vehicle.plateNumber}</TableCell>
+                        <TableCell>{vehicleTypeLabels[vehicle.vehicleType]}</TableCell>
+                        <TableCell>{vehicle.ownerName}</TableCell>
+                        <TableCell>{vehicle.flatNumber}</TableCell>
+                        <TableCell>{vehicle.ownerPhone}</TableCell>
+                        {canDeleteRow && (
+                          <TableCell className="text-right">
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="destructive"
+                              disabled={deleteVehicle.isPending}
+                              onClick={() => deleteVehicle.mutate({ params: { id: vehicle.id } })}
+                            >
+                              <Trash2 className="h-3.5 w-3.5 mr-1" /> Remove
+                            </Button>
+                          </TableCell>
+                        )}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </CardContent>
+            </Card>
+          ) : (
+            <p className="text-muted-foreground text-sm">No vehicles registered yet.</p>
+          )}
+        </div>
+      ) : myPass.isLoading ? (
+        <p className="text-muted-foreground text-sm">Loading…</p>
+      ) : myPass.data ? (
+        <div className="space-y-6">
+          <div className="flex items-center gap-3 rounded-lg border p-4">
+            <Badge>Active</Badge>
+            <p className="text-sm text-muted-foreground">
+              Your flat's parking pass was bought by {myPass.data.purchasedByName} for{" "}
+              {formatRupees(myPass.data.amountPaidCents)} — it never expires.
+            </p>
+          </div>
+
+          <Card className="max-w-2xl">
+            <CardHeader>
+              <CardTitle className="text-lg">Register a vehicle</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleRegister} className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="plateNumber">Plate number</Label>
+                  <Input
+                    id="plateNumber"
+                    value={plateNumber}
+                    onChange={(e) => setPlateNumber(e.target.value)}
+                    placeholder="e.g. MH12AB1234"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="vehicleType">Vehicle type</Label>
+                  <Select
+                    value={vehicleType}
+                    onValueChange={(v) => setVehicleType(v as VehicleInputVehicleType)}
+                  >
+                    <SelectTrigger id="vehicleType">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(Object.keys(vehicleTypeLabels) as VehicleInputVehicleType[]).map((type) => (
+                        <SelectItem key={type} value={type}>
+                          {vehicleTypeLabels[type]}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="ownerPhone">Contact number</Label>
+                  <Input
+                    id="ownerPhone"
+                    value={ownerPhone}
+                    onChange={(e) => setOwnerPhone(e.target.value)}
+                    placeholder="e.g. 9876543210"
+                    required
+                  />
+                </div>
+
+                <Button type="submit" disabled={registerVehicle.isPending} className="w-full">
+                  {registerVehicle.isPending ? "Registering…" : "Register vehicle"}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+
+          <div>
+            <h3 className="text-base font-medium mb-3">Your vehicles</h3>
+            {vehicles.isLoading ? (
+              <p className="text-muted-foreground text-sm">Loading…</p>
+            ) : vehicles.data && vehicles.data.length > 0 ? (
+              <Card>
+                <CardContent className="pt-6 overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Plate Number</TableHead>
+                        <TableHead>Type</TableHead>
+                        <TableHead>Contact</TableHead>
+                        <TableHead className="text-right">Action</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {vehicles.data.map((vehicle) => (
+                        <TableRow key={vehicle.id}>
+                          <TableCell className="font-medium">{vehicle.plateNumber}</TableCell>
+                          <TableCell>{vehicleTypeLabels[vehicle.vehicleType]}</TableCell>
+                          <TableCell>{vehicle.ownerPhone}</TableCell>
+                          <TableCell className="text-right">
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="destructive"
+                              disabled={deleteVehicle.isPending}
+                              onClick={() => deleteVehicle.mutate({ params: { id: vehicle.id } })}
+                            >
+                              <Trash2 className="h-3.5 w-3.5 mr-1" /> Remove
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            ) : (
+              <p className="text-muted-foreground text-sm">No vehicles registered yet.</p>
+            )}
+          </div>
+        </div>
+      ) : (
+        <Card className="max-w-2xl">
+          <CardHeader>
+            <CardTitle className="text-lg">Buy a parking pass — {formatRupees(500000)}</CardTitle>
+            <CardDescription>
+              One-time payment for your flat. Once bought, it never expires — register as many vehicles
+              as you own, whenever you like.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button
+              className="w-full"
+              disabled={purchasePass.isPending}
+              onClick={() => purchasePass.mutate()}
+            >
+              {purchasePass.isPending ? "Starting checkout…" : `Buy & pay ${formatRupees(500000)}`}
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
 }
 
 export default function Amenities() {
@@ -141,7 +465,7 @@ export default function Amenities() {
         />
         <div className="relative z-10 container mx-auto px-4 md:px-8">
           <h1 className="text-3xl md:text-4xl font-serif font-medium mb-2 text-primary-foreground">Amenities</h1>
-          <p className="text-primary-foreground/80">Book the clubhouse, pool, tennis court, or party hall.</p>
+          <p className="text-primary-foreground/80">Book the clubhouse, pool, tennis court, or party hall — or buy a parking pass.</p>
         </div>
       </div>
 
@@ -274,6 +598,8 @@ export default function Amenities() {
             <p className="text-muted-foreground text-sm">No bookings yet.</p>
           )}
         </div>
+
+        <VehicleParkingSection />
       </div>
     </div>
   );

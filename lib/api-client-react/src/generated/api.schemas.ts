@@ -518,6 +518,31 @@ export interface ConfirmAmenityBookingInput {
   sessionId: string;
 }
 
+export interface ParkingPass {
+  id: number;
+  flatNumber: string;
+  purchasedByName: string;
+  amountPaidCents: number;
+  createdAt: string;
+}
+
+export type PurchaseParkingPassResultStatus = typeof PurchaseParkingPassResultStatus[keyof typeof PurchaseParkingPassResultStatus];
+
+
+export const PurchaseParkingPassResultStatus = {
+  requires_payment: 'requires_payment',
+} as const;
+
+export interface PurchaseParkingPassResult {
+  status: PurchaseParkingPassResultStatus;
+  pass?: ParkingPass;
+  checkoutUrl?: string;
+}
+
+export interface ConfirmParkingPassInput {
+  sessionId: string;
+}
+
 export interface SocietyInfo {
   id: number;
   name: string;

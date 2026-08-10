@@ -5,7 +5,7 @@ import { useAuth } from "@/context/auth-context";
 import { useListActiveEmergencyAlerts, getListActiveEmergencyAlertsQueryKey } from "@workspace/api-client-react";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { DoorOpen, Wrench, MessageSquareWarning, CalendarCheck, Siren, ShieldCheck, BadgeCheck, Home, BookUser, Receipt, Car } from "lucide-react";
+import { DoorOpen, Wrench, MessageSquareWarning, CalendarCheck, Siren, ShieldCheck, BadgeCheck, Home, BookUser, Receipt } from "lucide-react";
 
 // Matches the polling interval on the Emergency page — the dashboard banner
 // should surface a new alert without anyone needing to refresh.
@@ -40,7 +40,7 @@ const featureTiles: FeatureTile[] = [
   },
   {
     title: "Amenities",
-    description: "Book a slot for shared amenities, with payment if the amenity requires it.",
+    description: "Book a slot for shared amenities, or buy a one-time parking pass for your flat.",
     icon: CalendarCheck,
     href: "/amenities",
   },
@@ -61,12 +61,6 @@ const featureTiles: FeatureTile[] = [
     description: "Pay this month's maintenance due for your flat online.",
     icon: Receipt,
     href: "/pay-maintenance",
-  },
-  {
-    title: "Vehicle Parking",
-    description: "Register your vehicle so the gate can identify it, or look up who a plate belongs to.",
-    icon: Car,
-    href: "/vehicles",
   },
 ];
 
