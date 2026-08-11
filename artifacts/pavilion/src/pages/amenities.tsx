@@ -29,6 +29,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import {
   Select,
@@ -72,6 +73,15 @@ function formatRupees(paise: number): string {
   return `₹${(paise / 100).toLocaleString("en-IN")}`;
 }
 
+// Matches the backend's VehicleRequest.plateNumber pattern — kept in sync so an obviously
+// invalid plate is caught before the round trip instead of just relying on the 400.
+const STANDARD_PLATE_REGEX = /^[A-Z]{2}[0-9]{2}[A-Z]{2}[0-9]{4}$/;
+const BHARAT_PLATE_REGEX = /^[0-9]{2}BH[0-9]{4}[A-Z]{1,2}$/;
+
+function normalizePlateInput(value: string): string {
+  return value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+}
+
 function todayIsoDate(): string {
   return new Date().toISOString().slice(0, 10);
 }
@@ -86,6 +96,7 @@ function VehicleParkingSection() {
   const isAdmin = user?.role === "admin";
 
   const [plateNumber, setPlateNumber] = useState("");
+  const [isBharatSeries, setIsBharatSeries] = useState(false);
   const [vehicleType, setVehicleType] = useState<VehicleInputVehicleType>("car");
   const [ownerPhone, setOwnerPhone] = useState("");
 
@@ -178,6 +189,17 @@ function VehicleParkingSection() {
 
   const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();
+    const expectedFormat = isBharatSeries ? BHARAT_PLATE_REGEX : STANDARD_PLATE_REGEX;
+    if (!expectedFormat.test(plateNumber)) {
+      toast({
+        title: "That doesn't look like a valid plate number",
+        description: isBharatSeries
+          ? "Bharat-series plates look like 22BH1234AB — 2 digits, \"BH\", 4 digits, then 1–2 letters."
+          : "Plates look like MH12AB1234 — 2 letters, 2 digits, 2 letters, then 4 digits.",
+        variant: "destructive",
+      });
+      return;
+    }
     registerVehicle.mutate({ data: { plateNumber, vehicleType, ownerPhone } });
   };
 
@@ -260,10 +282,17 @@ function VehicleParkingSection() {
                   <Input
                     id="plateNumber"
                     value={plateNumber}
-                    onChange={(e) => setPlateNumber(e.target.value)}
-                    placeholder="e.g. MH12AB1234"
+                    onChange={(e) => setPlateNumber(normalizePlateInput(e.target.value))}
+                    placeholder={isBharatSeries ? "e.g. 22BH1234AB" : "e.g. MH12AB1234"}
+                    maxLength={10}
                     required
                   />
+                  <div className="flex items-center gap-3 pt-1">
+                    <Switch id="isBharatSeries" checked={isBharatSeries} onCheckedChange={setIsBharatSeries} />
+                    <Label htmlFor="isBharatSeries" className="font-normal text-muted-foreground">
+                      This is a Bharat (BH) series plate
+                    </Label>
+                  </div>
                 </div>
 
                 <div className="space-y-2">
