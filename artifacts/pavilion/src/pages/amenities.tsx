@@ -82,6 +82,13 @@ function normalizePlateInput(value: string): string {
   return value.toUpperCase().replace(/[^A-Z0-9]/g, "");
 }
 
+// Matches the backend's ValidationPatterns.PHONE_10_DIGIT — 10 digits, first digit 6-9.
+const PHONE_REGEX = /^[6-9][0-9]{9}$/;
+
+function normalizePhoneInput(value: string): string {
+  return value.replace(/\D/g, "").slice(0, 10);
+}
+
 function todayIsoDate(): string {
   return new Date().toISOString().slice(0, 10);
 }
@@ -196,6 +203,14 @@ function VehicleParkingSection() {
         description: isBharatSeries
           ? "Bharat-series plates look like 22BH1234AB — 2 digits, \"BH\", 4 digits, then 1–2 letters."
           : "Plates look like MH12AB1234 — 2 letters, 2 digits, 2 letters, then 4 digits.",
+        variant: "destructive",
+      });
+      return;
+    }
+    if (!PHONE_REGEX.test(ownerPhone)) {
+      toast({
+        title: "That doesn't look like a valid phone number",
+        description: "Enter a 10-digit mobile number starting with 6-9.",
         variant: "destructive",
       });
       return;
@@ -318,9 +333,14 @@ function VehicleParkingSection() {
                   <Label htmlFor="ownerPhone">Contact number</Label>
                   <Input
                     id="ownerPhone"
+                    type="tel"
                     value={ownerPhone}
-                    onChange={(e) => setOwnerPhone(e.target.value)}
+                    onChange={(e) => setOwnerPhone(normalizePhoneInput(e.target.value))}
                     placeholder="e.g. 9876543210"
+                    inputMode="numeric"
+                    pattern="[6-9][0-9]{9}"
+                    title="10-digit mobile number starting with 6-9"
+                    maxLength={10}
                     required
                   />
                 </div>

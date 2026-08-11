@@ -160,9 +160,16 @@ export default function VendorMaster() {
                   <Label htmlFor="vendor-contact-no">Contact No.</Label>
                   <Input
                     id="vendor-contact-no"
-                    placeholder="Enter contact number"
+                    type="tel"
+                    placeholder="e.g. 9876543210"
                     value={form.contactNumber}
-                    onChange={(e) => setForm((f) => ({ ...f, contactNumber: e.target.value }))}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, contactNumber: e.target.value.replace(/\D/g, "").slice(0, 10) }))
+                    }
+                    inputMode="numeric"
+                    pattern="[6-9][0-9]{9}"
+                    title="10-digit mobile number starting with 6-9"
+                    maxLength={10}
                     required
                   />
                 </div>

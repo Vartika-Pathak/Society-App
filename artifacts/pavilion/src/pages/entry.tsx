@@ -263,8 +263,8 @@ export default function Entry() {
                     onChange={(e) => setVisitorPhone(e.target.value.replace(/\D/g, "").slice(0, 10))}
                     placeholder="For the gate to reach them if needed"
                     inputMode="numeric"
-                    pattern="[0-9]{10}"
-                    title="10-digit mobile number"
+                    pattern="[6-9][0-9]{9}"
+                    title="10-digit mobile number starting with 6-9"
                     maxLength={10}
                   />
                 </div>
