@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { useSearch } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
 import { Trash2 } from "lucide-react";
 import {
@@ -38,12 +39,41 @@ const emptyForm = {
 export default function BillPayments() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const search = useSearch();
   const [form, setForm] = useState(emptyForm);
+  const prefilledFromBillId = useRef<number | null>(null);
 
   const payments = useListBillPayments(undefined, { query: { queryKey: getListBillPaymentsQueryKey() } });
   const bills = useListVendorBills(undefined, { query: { queryKey: getListVendorBillsQueryKey() } });
 
   const billsById = new Map((bills.data ?? []).map((b) => [b.id, b]));
+
+  // Arriving from "Pay" on the Maintenance Expenses page (?billId=123): pre-select that bill and
+  // default the amount to whatever's still owed on it. Only runs once per billId so it doesn't
+  // fight with the user's own edits or re-fire after the form resets on a successful submit.
+  //
+  // The setForm is deferred a tick: setting the Select's value synchronously on mount races
+  // Radix's SelectItem registration — if the value is set before its items have registered,
+  // Radix treats it as unrecognized and immediately fires onValueChange("") to "correct" it.
+  useEffect(() => {
+    const billId = Number(new URLSearchParams(search).get("billId"));
+    if (!billId || prefilledFromBillId.current === billId) return;
+    const bill = billsById.get(billId);
+    if (!bill) return;
+
+    prefilledFromBillId.current = billId;
+    const remainingPaise = Math.max(0, bill.amountPaise - bill.paidAmountPaise);
+    const timer = setTimeout(() => {
+      setForm((f) => ({
+        ...f,
+        vendorBillId: String(billId),
+        amountRupees: (remainingPaise / 100).toFixed(2),
+        paymentDate: f.paymentDate || new Date().toISOString().slice(0, 10),
+      }));
+    }, 0);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search, bills.data]);
 
   const onMutated = (message: string) => {
     queryClient.invalidateQueries({ queryKey: getListBillPaymentsQueryKey() });

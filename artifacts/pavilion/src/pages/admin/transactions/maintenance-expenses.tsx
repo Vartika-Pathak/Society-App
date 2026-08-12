@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useLocation } from "wouter";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   useListVendorBills,
@@ -17,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Trash2 } from "lucide-react";
+import { Trash2, Receipt } from "lucide-react";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 
@@ -44,6 +45,7 @@ const statusLabels: Record<string, string> = {
 export default function MaintenanceExpenses() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [, navigate] = useLocation();
   const [form, setForm] = useState(emptyForm);
 
   const bills = useListVendorBills(undefined, { query: { queryKey: getListVendorBillsQueryKey() } });
@@ -211,7 +213,16 @@ export default function MaintenanceExpenses() {
                       <TableCell>
                         <Badge variant={statusVariants[bill.status]}>{statusLabels[bill.status]}</Badge>
                       </TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="text-right space-x-2">
+                        {bill.status !== "paid" && (
+                          <Button
+                            type="button"
+                            size="sm"
+                            onClick={() => navigate(`/admin/transactions/bill-payments?billId=${bill.id}`)}
+                          >
+                            <Receipt className="h-3.5 w-3.5 mr-1" /> Pay
+                          </Button>
+                        )}
                         <Button
                           type="button"
                           size="sm"
