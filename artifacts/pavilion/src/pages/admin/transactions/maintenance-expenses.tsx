@@ -220,7 +220,7 @@ export default function MaintenanceExpenses() {
                             size="sm"
                             onClick={() => navigate(`/admin/transactions/bill-payments?billId=${bill.id}`)}
                           >
-                            <Receipt className="h-3.5 w-3.5 mr-1" /> Pay
+                            <Receipt className="h-3.5 w-3.5 mr-1" /> Record Payment
                           </Button>
                         )}
                         <Button

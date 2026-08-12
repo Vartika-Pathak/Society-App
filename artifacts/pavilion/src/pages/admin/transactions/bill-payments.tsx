@@ -117,7 +117,10 @@ export default function BillPayments() {
       <div className="container mx-auto px-4 md:px-8 py-10 max-w-5xl space-y-8">
         <div>
           <h1 className="text-2xl font-serif font-medium mb-1">Bill Payments</h1>
-          <p className="text-muted-foreground text-sm">Record payments made against vendor bills.</p>
+          <p className="text-muted-foreground text-sm">
+            Log a payment you've already made to a vendor — cash, cheque, UPI, or bank transfer.
+            No money moves through this app; this just keeps the books accurate.
+          </p>
         </div>
 
         <Card>
