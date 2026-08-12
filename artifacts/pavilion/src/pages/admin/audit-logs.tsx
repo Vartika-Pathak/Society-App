@@ -30,6 +30,8 @@ export default function AuditLogs() {
           <CardContent className="overflow-x-auto">
             {logs.isLoading ? (
               <p className="text-muted-foreground text-sm">Loading…</p>
+            ) : logs.isError ? (
+              <p className="text-destructive text-sm">Couldn't load audit logs — try refreshing the page.</p>
             ) : logs.data && logs.data.length > 0 ? (
               <Table>
                 <TableHeader>

@@ -198,7 +198,9 @@ export default function Members() {
           <CardContent className="overflow-x-auto">
             {isLoading ? (
               <p className="text-muted-foreground text-sm">Loading…</p>
-            ) : members && members.length > 0 ? (
+            ) : members === null ? (
+              <p className="text-destructive text-sm">Couldn't load members — try refreshing the page.</p>
+            ) : members.length > 0 ? (
               <Table>
                 <TableHeader>
                   <TableRow>

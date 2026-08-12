@@ -51,6 +51,8 @@ export default function FlatDirectory() {
         <CardContent>
           {directory.isLoading ? (
             <p className="text-muted-foreground text-sm">Loading…</p>
+          ) : directory.isError ? (
+            <p className="text-destructive text-sm">Couldn't load the directory — try refreshing the page.</p>
           ) : filtered && filtered.length > 0 ? (
             <Table>
               <TableHeader>

@@ -402,6 +402,8 @@ export default function Maintenance() {
           </h2>
           {requests.isLoading ? (
             <p className="text-muted-foreground text-sm">Loading…</p>
+          ) : requests.isError ? (
+            <p className="text-destructive text-sm">Couldn't load requests — try refreshing the page.</p>
           ) : requests.data && requests.data.length > 0 ? (
             <Card>
               <CardContent className="pt-6 overflow-x-auto">

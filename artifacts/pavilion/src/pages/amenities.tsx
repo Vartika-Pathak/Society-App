@@ -229,6 +229,8 @@ function VehicleParkingSection() {
           <p className="text-sm text-muted-foreground mb-4">Look up which vehicle belongs to which flat.</p>
           {vehicles.isLoading ? (
             <p className="text-muted-foreground text-sm">Loading…</p>
+          ) : vehicles.isError ? (
+            <p className="text-destructive text-sm">Couldn't load vehicles — try refreshing the page.</p>
           ) : vehicles.data && vehicles.data.length > 0 ? (
             <Card>
               <CardContent className="pt-6 overflow-x-auto">
@@ -356,6 +358,8 @@ function VehicleParkingSection() {
             <h3 className="text-base font-medium mb-3">Your vehicles</h3>
             {vehicles.isLoading ? (
               <p className="text-muted-foreground text-sm">Loading…</p>
+            ) : vehicles.isError ? (
+              <p className="text-destructive text-sm">Couldn't load vehicles — try refreshing the page.</p>
             ) : vehicles.data && vehicles.data.length > 0 ? (
               <Card>
                 <CardContent className="pt-6 overflow-x-auto">
@@ -629,6 +633,8 @@ export default function Amenities() {
           <h2 className="text-lg font-serif font-medium mb-4">Your bookings</h2>
           {myBookings.isLoading ? (
             <p className="text-muted-foreground text-sm">Loading…</p>
+          ) : myBookings.isError ? (
+            <p className="text-destructive text-sm">Couldn't load bookings — try refreshing the page.</p>
           ) : myBookings.data && myBookings.data.length > 0 ? (
             <div className="space-y-3">
               {myBookings.data.map((booking) => (

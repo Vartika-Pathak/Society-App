@@ -86,6 +86,8 @@ function ComplaintsCard() {
       <CardContent className="overflow-x-auto">
         {complaints.isLoading ? (
           <p className="text-muted-foreground text-sm">Loading…</p>
+        ) : complaints.isError ? (
+          <p className="text-destructive text-sm">Couldn't load complaints — try refreshing the page.</p>
         ) : complaints.data && complaints.data.length > 0 ? (
           <Table>
             <TableHeader>

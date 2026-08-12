@@ -125,6 +125,8 @@ export default function SpecialContributions() {
           <CardContent className="pt-6">
             {contributions.isLoading ? (
               <p className="text-muted-foreground text-sm">Loading…</p>
+            ) : contributions.isError ? (
+              <p className="text-destructive text-sm">Couldn't load contributions — try refreshing the page.</p>
             ) : contributions.data && contributions.data.length > 0 ? (
               <Table>
                 <TableHeader>

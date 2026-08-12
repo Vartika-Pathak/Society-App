@@ -32,6 +32,8 @@ export default function IncomeVsExpenseTrend() {
           <CardContent>
             {trend.isLoading ? (
               <p className="text-muted-foreground text-sm">Loading…</p>
+            ) : trend.isError ? (
+              <p className="text-destructive text-sm">Couldn't load the trend — try refreshing the page.</p>
             ) : chartData.length > 0 ? (
               <div className="h-80 w-full">
                 <ResponsiveContainer width="100%" height="100%">

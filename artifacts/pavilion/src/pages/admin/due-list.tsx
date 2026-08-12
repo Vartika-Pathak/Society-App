@@ -64,6 +64,8 @@ export default function DueList() {
           <CardContent className="overflow-x-auto">
             {dueList.isLoading ? (
               <p className="text-muted-foreground text-sm">Loading…</p>
+            ) : dueList.isError ? (
+              <p className="text-destructive text-sm">Couldn't load the due list — try refreshing the page.</p>
             ) : dueList.data && dueList.data.length > 0 ? (
               <Table>
                 <TableHeader>

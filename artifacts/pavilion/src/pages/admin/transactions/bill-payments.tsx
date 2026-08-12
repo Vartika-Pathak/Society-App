@@ -183,6 +183,8 @@ export default function BillPayments() {
           <CardContent className="pt-6 overflow-x-auto">
             {payments.isLoading ? (
               <p className="text-muted-foreground text-sm">Loading…</p>
+            ) : payments.isError ? (
+              <p className="text-destructive text-sm">Couldn't load payments — try refreshing the page.</p>
             ) : payments.data && payments.data.length > 0 ? (
               <Table>
                 <TableHeader>

@@ -246,6 +246,8 @@ export default function VendorMaster() {
           <CardContent className="pt-6 overflow-x-auto">
             {vendors.isLoading ? (
               <p className="text-muted-foreground text-sm">Loading…</p>
+            ) : vendors.isError ? (
+              <p className="text-destructive text-sm">Couldn't load vendors — try refreshing the page.</p>
             ) : vendors.data && vendors.data.length > 0 ? (
               <Table>
                 <TableHeader>

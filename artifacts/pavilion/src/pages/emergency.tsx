@@ -193,6 +193,8 @@ export default function Emergency() {
           </h2>
           {activeAlerts.isLoading ? (
             <p className="text-muted-foreground text-sm">Loading…</p>
+          ) : activeAlerts.isError ? (
+            <p className="text-destructive text-sm">Couldn't load alerts — try refreshing the page.</p>
           ) : (isStaff ? activeAlerts.data : otherActiveAlerts)?.length ? (
             <div className="space-y-3">
               {(isStaff ? activeAlerts.data! : otherActiveAlerts).map((alert) => (

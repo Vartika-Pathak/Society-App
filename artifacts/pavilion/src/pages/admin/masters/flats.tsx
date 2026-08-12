@@ -320,6 +320,8 @@ export default function FlatResident() {
           <CardContent>
             {flats.isLoading ? (
               <p className="text-muted-foreground text-sm">Loading…</p>
+            ) : flats.isError ? (
+              <p className="text-destructive text-sm">Couldn't load flats — try refreshing the page.</p>
             ) : flats.data && flats.data.length > 0 ? (
               <Table>
                 <TableHeader>
@@ -384,6 +386,8 @@ export default function FlatResident() {
           <CardContent>
             {changeRequests.isLoading ? (
               <p className="text-muted-foreground text-sm">Loading…</p>
+            ) : changeRequests.isError ? (
+              <p className="text-destructive text-sm">Couldn't load change requests — try refreshing the page.</p>
             ) : changeRequests.data && changeRequests.data.length > 0 ? (
               <Table>
                 <TableHeader>

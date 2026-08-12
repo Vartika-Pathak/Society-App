@@ -126,6 +126,8 @@ export default function AdminEvents() {
           <CardContent className="pt-6 overflow-x-auto">
             {events.isLoading ? (
               <p className="text-muted-foreground text-sm">Loading…</p>
+            ) : events.isError ? (
+              <p className="text-destructive text-sm">Couldn't load events — try refreshing the page.</p>
             ) : events.data && events.data.length > 0 ? (
               <Table>
                 <TableHeader>

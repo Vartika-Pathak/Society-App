@@ -144,7 +144,9 @@ export default function PayMaintenance() {
             )}
           </CardContent>
         </Card>
-      ) : null}
+      ) : (
+        <p className="text-destructive text-sm">Couldn't load your maintenance due — try refreshing the page.</p>
+      )}
     </div>
   );
 }

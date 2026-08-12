@@ -183,6 +183,8 @@ export default function MaintenanceDiscounts() {
           <CardContent className="pt-6">
             {discounts.isLoading ? (
               <p className="text-muted-foreground text-sm">Loading…</p>
+            ) : discounts.isError ? (
+              <p className="text-destructive text-sm">Couldn't load discounts — try refreshing the page.</p>
             ) : discounts.data && discounts.data.length > 0 ? (
               <Table>
                 <TableHeader>

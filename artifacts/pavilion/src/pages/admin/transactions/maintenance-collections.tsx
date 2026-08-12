@@ -249,6 +249,8 @@ export default function MaintenanceCollections() {
           <CardContent className="overflow-x-auto">
             {collections.isLoading ? (
               <p className="text-muted-foreground text-sm">Loading…</p>
+            ) : collections.isError ? (
+              <p className="text-destructive text-sm">Couldn't load collections — try refreshing the page.</p>
             ) : collections.data && collections.data.length > 0 ? (
               <Table>
                 <TableHeader>

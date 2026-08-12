@@ -191,6 +191,8 @@ export default function Notices() {
           <CardContent className="pt-6">
             {notices.isLoading ? (
               <p className="text-muted-foreground text-sm">Loading…</p>
+            ) : notices.isError ? (
+              <p className="text-destructive text-sm">Couldn't load notices — try refreshing the page.</p>
             ) : notices.data && notices.data.length > 0 ? (
               <Table>
                 <TableHeader>

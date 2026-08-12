@@ -295,6 +295,8 @@ export default function Complain() {
           </h2>
           {complaints.isLoading ? (
             <p className="text-muted-foreground text-sm">Loading…</p>
+          ) : complaints.isError ? (
+            <p className="text-destructive text-sm">Couldn't load complaints — try refreshing the page.</p>
           ) : complaints.data && complaints.data.length > 0 ? (
             <Card>
               <CardContent className="pt-6 overflow-x-auto">

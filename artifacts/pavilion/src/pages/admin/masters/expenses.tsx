@@ -127,6 +127,8 @@ export default function ExpenseMaster() {
           <CardContent className="pt-6">
             {categories.isLoading ? (
               <p className="text-muted-foreground text-sm">Loading…</p>
+            ) : categories.isError ? (
+              <p className="text-destructive text-sm">Couldn't load expense categories — try refreshing the page.</p>
             ) : categories.data && categories.data.length > 0 ? (
               <Table>
                 <TableHeader>

@@ -92,6 +92,8 @@ export default function MyFlat() {
             </Button>
           </CardContent>
         </Card>
+      ) : myFlat.isError ? (
+        <p className="text-destructive text-sm">Couldn't load your flat — try refreshing the page.</p>
       ) : (
         <Card>
           <CardContent className="py-10 text-center">

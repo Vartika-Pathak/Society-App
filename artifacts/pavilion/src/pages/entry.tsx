@@ -292,6 +292,8 @@ export default function Entry() {
           <h2 className="text-lg font-serif font-medium mb-4">Your recent entries</h2>
           {myVisits.isLoading ? (
             <p className="text-muted-foreground text-sm">Loading…</p>
+          ) : myVisits.isError ? (
+            <p className="text-destructive text-sm">Couldn't load your entries — try refreshing the page.</p>
           ) : myVisits.data && myVisits.data.length > 0 ? (
             <div className="space-y-3">
               {myVisits.data.map((visit) => (

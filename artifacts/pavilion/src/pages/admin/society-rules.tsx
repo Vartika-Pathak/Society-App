@@ -129,6 +129,8 @@ export default function SocietyRules() {
           <CardContent className="pt-6">
             {rules.isLoading ? (
               <p className="text-muted-foreground text-sm">Loading…</p>
+            ) : rules.isError ? (
+              <p className="text-destructive text-sm">Couldn't load rules — try refreshing the page.</p>
             ) : rules.data && rules.data.length > 0 ? (
               <Table>
                 <TableHeader>

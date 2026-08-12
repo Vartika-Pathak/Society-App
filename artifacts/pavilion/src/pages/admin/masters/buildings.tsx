@@ -140,6 +140,8 @@ export default function BuildingMaster() {
           <CardContent>
             {buildings.isLoading ? (
               <p className="text-muted-foreground text-sm">Loading…</p>
+            ) : buildings.isError ? (
+              <p className="text-destructive text-sm">Couldn't load buildings — try refreshing the page.</p>
             ) : buildings.data && buildings.data.length > 0 ? (
               <Table>
                 <TableHeader>

@@ -156,6 +156,8 @@ export default function Services() {
           <CardContent className="pt-6 overflow-x-auto">
             {services.isLoading ? (
               <p className="text-muted-foreground text-sm">Loading…</p>
+            ) : services.isError ? (
+              <p className="text-destructive text-sm">Couldn't load services — try refreshing the page.</p>
             ) : services.data && services.data.length > 0 ? (
               <Table>
                 <TableHeader>

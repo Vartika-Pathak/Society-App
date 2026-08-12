@@ -183,6 +183,8 @@ export default function MaintenanceExpenses() {
           <CardContent className="pt-6 overflow-x-auto">
             {bills.isLoading ? (
               <p className="text-muted-foreground text-sm">Loading…</p>
+            ) : bills.isError ? (
+              <p className="text-destructive text-sm">Couldn't load bills — try refreshing the page.</p>
             ) : bills.data && bills.data.length > 0 ? (
               <Table>
                 <TableHeader>
