@@ -185,6 +185,7 @@ export const VisitStatus = {
   pending: 'pending',
   approved: 'approved',
   denied: 'denied',
+  revoked: 'revoked',
 } as const;
 
 export interface Visit {
@@ -239,6 +240,7 @@ export const VisitLookupResultStatus = {
   pending: 'pending',
   approved: 'approved',
   denied: 'denied',
+  revoked: 'revoked',
 } as const;
 
 export interface VisitLookupResult {
@@ -272,6 +274,7 @@ export const VisitLogEntryStatus = {
   awaiting_verification: 'awaiting_verification',
   approved: 'approved',
   denied: 'denied',
+  revoked: 'revoked',
 } as const;
 
 export interface VisitLogEntry {

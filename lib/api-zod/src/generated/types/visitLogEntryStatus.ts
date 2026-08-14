@@ -14,4 +14,5 @@ export const VisitLogEntryStatus = {
   awaiting_verification: 'awaiting_verification',
   approved: 'approved',
   denied: 'denied',
+  revoked: 'revoked',
 } as const;

@@ -13,4 +13,5 @@ export const VisitLookupResultStatus = {
   pending: 'pending',
   approved: 'approved',
   denied: 'denied',
+  revoked: 'revoked',
 } as const;

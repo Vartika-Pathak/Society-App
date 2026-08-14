@@ -7,6 +7,7 @@ import {
 } from "@workspace/api-client-react";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -112,6 +113,9 @@ export default function Gate() {
               <CardTitle className="text-lg">Visitor details</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
+              {found.visitType === "household_help" && found.status === "approved" && (
+                <Badge variant="outline">Standing pass — already approved before, checking in again</Badge>
+              )}
               <dl className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <dt className="text-muted-foreground">Visitor</dt>

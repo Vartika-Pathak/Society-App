@@ -33,11 +33,21 @@ const statusVariants: Record<string, "secondary" | "default" | "destructive" | "
   pending: "secondary",
   approved: "default",
   denied: "destructive",
+  revoked: "outline",
 };
 
 const statusLabels: Record<string, string> = {
   awaiting_verification: "Awaiting verification",
+  revoked: "revoked",
 };
+
+// Pending: still usable at the gate, hasn't been checked yet. Approved on a household-help
+// standing pass: also still usable — the same pass gets rechecked every day rather than being
+// consumed by a single entry. Everything else (approved one-shot, denied, revoked, expired) is done.
+function isRevocable(visit: Pick<VisitLike, "status" | "visitType">): boolean {
+  if (visit.status === "pending") return true;
+  return visit.status === "approved" && visit.visitType === "household_help";
+}
 
 // A subset of Visit fields, hand-typed because the create/confirm endpoints
 // go through apiPost rather than the generated client (see api-fetch.ts).
@@ -50,6 +60,7 @@ type VisitLike = Pick<
 
 function OtpDisplay({ visit, onDismiss }: { visit: VisitLike; onDismiss: () => void }) {
   const [copied, setCopied] = useState(false);
+  const isStandingPass = visit.visitType === "household_help";
 
   const copy = async () => {
     if (!visit.otpCode) return;
@@ -61,7 +72,9 @@ function OtpDisplay({ visit, onDismiss }: { visit: VisitLike; onDismiss: () => v
   return (
     <Card className="border-primary bg-primary/5">
       <CardHeader>
-        <CardTitle className="text-lg">Share this OTP with {visit.visitorName}</CardTitle>
+        <CardTitle className="text-lg">
+          {isStandingPass ? `Standing pass for ${visit.visitorName}` : `Share this OTP with ${visit.visitorName}`}
+        </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-center gap-4">
@@ -71,8 +84,9 @@ function OtpDisplay({ visit, onDismiss }: { visit: VisitLike; onDismiss: () => v
           </Button>
         </div>
         <p className="text-sm text-muted-foreground">
-          Valid until {formatDateTime(visit.expiresAt)}. The gate guard will ask for
-          this code.
+          {isStandingPass
+            ? `This code doesn't expire after one use — ${visit.visitorName} can give the guard this same code every day. Valid until ${formatDateTime(visit.expiresAt)}, or until you revoke it from "Your recent entries" below.`
+            : `Valid until ${formatDateTime(visit.expiresAt)}. The gate guard will ask for this code.`}
         </p>
         <Button variant="ghost" size="sm" onClick={onDismiss}>
           Log another visitor
@@ -190,12 +204,36 @@ export default function Entry() {
     }
   };
 
+  const [revokingId, setRevokingId] = useState<number | null>(null);
+
+  const handleRevoke = async (visit: VisitLike) => {
+    setRevokingId(visit.id);
+    try {
+      await apiPost<VisitLike>(`/api/visits/${visit.id}/revoke`, {});
+      queryClient.invalidateQueries({ queryKey: getListMyVisitsQueryKey() });
+      toast({ title: "Entry revoked", description: `${visit.visitorName} can no longer use this code.` });
+    } catch (error) {
+      toast({
+        title: "Couldn't revoke this entry",
+        description: error instanceof ApiFetchError ? error.message : "Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setRevokingId(null);
+    }
+  };
+
   return (
     <div className="w-full">
-      <div className="bg-primary/5 py-16 border-b">
-        <div className="container mx-auto px-4 md:px-8">
-          <h1 className="text-3xl md:text-4xl font-serif font-medium mb-2">Entry</h1>
-          <p className="text-muted-foreground">
+      <div className="relative overflow-hidden bg-primary py-16 border-b">
+        <img
+          src="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1600&q=80"
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover opacity-20"
+        />
+        <div className="relative z-10 container mx-auto px-4 md:px-8">
+          <h1 className="text-3xl md:text-4xl font-serif font-medium mb-2 text-primary-foreground">Entry</h1>
+          <p className="text-primary-foreground/80">
             Log a visitor and get an OTP to share with them for the gate.
           </p>
         </div>
@@ -240,6 +278,12 @@ export default function Entry() {
                       </Label>
                     ))}
                   </RadioGroup>
+                  {visitType === "household_help" && (
+                    <p className="text-sm text-muted-foreground">
+                      This gets a long-term pass (valid 90 days) instead of a one-time code — made for
+                      someone who visits every day. You can revoke it anytime from "Your recent entries" below.
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -284,7 +328,13 @@ export default function Entry() {
                 </div>
 
                 <Button type="submit" disabled={isSubmitting} className="w-full">
-                  {isSubmitting ? "Generating OTP…" : "Generate OTP"}
+                  {visitType === "household_help"
+                    ? isSubmitting
+                      ? "Generating pass…"
+                      : "Generate pass"
+                    : isSubmitting
+                      ? "Generating OTP…"
+                      : "Generate OTP"}
                 </Button>
               </form>
             </CardContent>
@@ -308,9 +358,23 @@ export default function Entry() {
                     <p className="font-medium">{visit.visitorName}</p>
                     <p className="text-sm text-muted-foreground">
                       {visitTypeLabels[visit.visitType]} · {formatDateTime(visit.createdAt)}
+                      {visit.visitType === "household_help" && visit.status === "approved" && " · Standing pass"}
                     </p>
                   </div>
-                  <Badge variant={statusVariants[visit.status]}>{statusLabels[visit.status] ?? visit.status}</Badge>
+                  <div className="flex items-center gap-2">
+                    <Badge variant={statusVariants[visit.status]}>{statusLabels[visit.status] ?? visit.status}</Badge>
+                    {isRevocable(visit) && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        disabled={revokingId === visit.id}
+                        onClick={() => handleRevoke(visit)}
+                      >
+                        {revokingId === visit.id ? "Revoking…" : "Revoke"}
+                      </Button>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>

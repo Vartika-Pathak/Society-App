@@ -409,7 +409,7 @@ export const CreateVisitResponse = zod.object({
   "visitorName": zod.string(),
   "visitorPhone": zod.string().nullish(),
   "otpCode": zod.string(),
-  "status": zod.enum(['pending', 'approved', 'denied']),
+  "status": zod.enum(['pending', 'approved', 'denied', 'revoked']),
   "expiresAt": zod.coerce.date(),
   "createdAt": zod.coerce.date()
 })
@@ -423,7 +423,7 @@ export const ListAllVisitsResponseItem = zod.object({
   "visitType": zod.enum(['cab_delivery', 'guest', 'household_help', 'maintenance_staff']),
   "visitorName": zod.string(),
   "visitorPhone": zod.string().nullish(),
-  "status": zod.enum(['pending', 'awaiting_verification', 'approved', 'denied']),
+  "status": zod.enum(['pending', 'awaiting_verification', 'approved', 'denied', 'revoked']),
   "expiresAt": zod.coerce.date(),
   "createdAt": zod.coerce.date(),
   "residentName": zod.string(),
@@ -441,7 +441,7 @@ export const ListMyVisitsResponseItem = zod.object({
   "visitorName": zod.string(),
   "visitorPhone": zod.string().nullish(),
   "otpCode": zod.string(),
-  "status": zod.enum(['pending', 'approved', 'denied']),
+  "status": zod.enum(['pending', 'approved', 'denied', 'revoked']),
   "expiresAt": zod.coerce.date(),
   "createdAt": zod.coerce.date()
 })
@@ -463,7 +463,7 @@ export const LookupVisitResponse = zod.object({
   "visitType": zod.enum(['cab_delivery', 'guest', 'household_help', 'maintenance_staff']),
   "visitorName": zod.string(),
   "visitorPhone": zod.string().nullish(),
-  "status": zod.enum(['pending', 'approved', 'denied']),
+  "status": zod.enum(['pending', 'approved', 'denied', 'revoked']),
   "expiresAt": zod.coerce.date(),
   "createdAt": zod.coerce.date(),
   "residentName": zod.string(),
@@ -488,7 +488,7 @@ export const DecideVisitResponse = zod.object({
   "visitorName": zod.string(),
   "visitorPhone": zod.string().nullish(),
   "otpCode": zod.string(),
-  "status": zod.enum(['pending', 'approved', 'denied']),
+  "status": zod.enum(['pending', 'approved', 'denied', 'revoked']),
   "expiresAt": zod.coerce.date(),
   "createdAt": zod.coerce.date()
 })

@@ -2878,7 +2878,7 @@ components:
           type: string
         status:
           type: string
-          enum: [pending, approved, denied]
+          enum: [pending, approved, denied, revoked]
         expiresAt:
           type: string
           format: date-time
@@ -2933,7 +2933,7 @@ components:
           type: ["string", "null"]
         status:
           type: string
-          enum: [pending, approved, denied]
+          enum: [pending, approved, denied, revoked]
         expiresAt:
           type: string
           format: date-time
@@ -2970,7 +2970,7 @@ components:
           type: ["string", "null"]
         status:
           type: string
-          enum: [pending, awaiting_verification, approved, denied]
+          enum: [pending, awaiting_verification, approved, denied, revoked]
         expiresAt:
           type: string
           format: date-time

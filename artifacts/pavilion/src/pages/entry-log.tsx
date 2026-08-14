@@ -29,6 +29,7 @@ const statusVariants: Record<string, "secondary" | "default" | "destructive" | "
   pending: "secondary",
   approved: "default",
   denied: "destructive",
+  revoked: "outline",
 };
 
 const statusLabels: Record<string, string> = {
@@ -36,6 +37,7 @@ const statusLabels: Record<string, string> = {
   pending: "Pending",
   approved: "Approved",
   denied: "Denied",
+  revoked: "Revoked",
 };
 
 const PAGE_SIZE_OPTIONS = [10, 25, 50, 100] as const;
@@ -119,6 +121,9 @@ export default function EntryLog() {
                         <TableCell className="font-medium">{visit.visitorName}</TableCell>
                         <TableCell>
                           <Badge variant="outline">{visitTypeLabels[visit.visitType]}</Badge>
+                          {visit.visitType === "household_help" && visit.status === "approved" && (
+                            <span className="block text-xs text-muted-foreground mt-1">Standing pass</span>
+                          )}
                         </TableCell>
                         <TableCell>
                           <Badge variant={statusVariants[visit.status]}>

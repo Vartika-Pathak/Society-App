@@ -13,4 +13,5 @@ export const VisitStatus = {
   pending: 'pending',
   approved: 'approved',
   denied: 'denied',
+  revoked: 'revoked',
 } as const;
