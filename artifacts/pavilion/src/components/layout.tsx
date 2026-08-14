@@ -7,6 +7,7 @@ import { useAuth } from "@/context/auth-context";
 import { ChatWidget } from "@/components/chat-widget";
 import { PavilionMark } from "@/components/pavilion-mark";
 import { GlobalLoadingBar } from "@/components/global-loading-bar";
+import { PrivacyDialog, TermsDialog } from "@/components/legal-dialogs";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -209,11 +210,11 @@ export function Layout({ children }: LayoutProps) {
             </div>
           </div>
           
-          <div className="mt-6 pt-4 border-t flex flex-col items-center gap-4 text-sm text-muted-foreground">
-            <p className="text-center">© {new Date().getFullYear()} Pavilion Residents' Society. All rights reserved.</p>
+          <div className="mt-6 pt-4 border-t flex flex-wrap justify-between items-center gap-4 text-sm text-muted-foreground">
+            <p>© {new Date().getFullYear()} Pavilion Residents' Society. All rights reserved.</p>
             <div className="flex gap-4">
-              <a href="#" className="hover:text-foreground">Privacy</a>
-              <a href="#" className="hover:text-foreground">Terms</a>
+              <PrivacyDialog trigger="Privacy" />
+              <TermsDialog trigger="Terms" />
             </div>
           </div>
         </div>
