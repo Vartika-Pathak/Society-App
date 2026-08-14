@@ -57,6 +57,7 @@ const reportsLinks = [
 const noticesAndEventsLinks = [
   { href: "/admin/notices", label: "Society Notices" },
   { href: "/admin/events", label: "Events" },
+  { href: "/admin/gallery", label: "Gallery" },
 ];
 
 interface NavSection {
@@ -69,7 +70,7 @@ const sections: NavSection[] = [
   { icon: Building2, label: "Masters", links: mastersLinks },
   { icon: Receipt, label: "Transactions", links: transactionsLinks },
   { icon: BarChart3, label: "Reports", links: reportsLinks },
-  { icon: BookText, label: "Notices & Events", links: noticesAndEventsLinks },
+  { icon: BookText, label: "Notices, Events & Gallery", links: noticesAndEventsLinks },
 ];
 
 // A dedicated left-nav shell for the /admin/* area, separate from the site's public top nav.

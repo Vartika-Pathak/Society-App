@@ -232,16 +232,12 @@ export const ListGalleryPhotosResponse = zod.array(ListGalleryPhotosResponseItem
 
 
 /**
- * @summary Add a photo to the gallery
+ * @summary Upload a photo to the gallery (admin only)
  */
-
-
-
 export const AddGalleryPhotoBody = zod.object({
-  "imageUrl": zod.string().min(1),
+  "photo": zod.instanceof(File),
   "title": zod.string().optional(),
-  "description": zod.string().optional(),
-  "uploadedBy": zod.string().optional()
+  "description": zod.string().optional()
 })
 
 export const AddGalleryPhotoResponse = zod.object({

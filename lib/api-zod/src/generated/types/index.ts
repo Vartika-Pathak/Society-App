@@ -65,7 +65,7 @@ export * from './flatInputFlatType';
 export * from './flatInputOwnershipType';
 export * from './flatOwnershipType';
 export * from './galleryPhoto';
-export * from './galleryPhotoInput';
+export * from './galleryPhotoUploadInput';
 export * from './getAmenityAvailabilityParams';
 export * from './getDueListParams';
 export * from './getIncomeStatementParams';

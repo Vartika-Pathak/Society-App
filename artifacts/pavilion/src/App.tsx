@@ -51,6 +51,7 @@ import SocietyRules from './pages/admin/society-rules';
 import AdminServices from './pages/admin/services';
 import Notices from './pages/admin/notices';
 import AdminEvents from './pages/admin/events';
+import AdminGallery from './pages/admin/gallery';
 import AuditLogs from './pages/admin/audit-logs';
 import NotFound from '@/pages/not-found';
 
@@ -264,6 +265,11 @@ function Router() {
       <Route path="/admin/events">
         <RequireAuth roles={["admin"]}>
           <AdminEvents />
+        </RequireAuth>
+      </Route>
+      <Route path="/admin/gallery">
+        <RequireAuth roles={["admin"]}>
+          <AdminGallery />
         </RequireAuth>
       </Route>
       <Route path="/admin/audit-logs">

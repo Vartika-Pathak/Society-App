@@ -77,12 +77,10 @@ export interface GalleryPhoto {
   uploadedAt: string;
 }
 
-export interface GalleryPhotoInput {
-  /** @minLength 1 */
-  imageUrl: string;
+export interface GalleryPhotoUploadInput {
+  photo: Blob;
   title?: string;
   description?: string;
-  uploadedBy?: string;
 }
 
 export interface JoinRequestInput {

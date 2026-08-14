@@ -300,13 +300,13 @@ paths:
     post:
       operationId: addGalleryPhoto
       tags: [gallery]
-      summary: Add a photo to the gallery
+      summary: Upload a photo to the gallery (admin only)
       requestBody:
         required: true
         content:
-          application/json:
+          multipart/form-data:
             schema:
-              $ref: "#/components/schemas/GalleryPhotoInput"
+              $ref: "#/components/schemas/GalleryPhotoUploadInput"
       responses:
         "201":
           description: Photo added
@@ -314,6 +314,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/GalleryPhoto"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not an admin
 
   /gallery/{id}:
     delete:
@@ -2715,18 +2719,16 @@ components:
           type: string
           format: date-time
 
-    GalleryPhotoInput:
+    GalleryPhotoUploadInput:
       type: object
-      required: [imageUrl]
+      required: [photo]
       properties:
-        imageUrl:
+        photo:
           type: string
-          minLength: 1
+          format: binary
         title:
           type: string
         description:
-          type: string
-        uploadedBy:
           type: string
 
     JoinRequestInput:

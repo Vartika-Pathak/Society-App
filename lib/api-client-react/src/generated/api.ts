@@ -60,7 +60,7 @@ import type {
   FlatDirectoryEntry,
   FlatInput,
   GalleryPhoto,
-  GalleryPhotoInput,
+  GalleryPhotoUploadInput,
   GetAmenityAvailabilityParams,
   GetDueListParams,
   GetIncomeStatementParams,
@@ -1211,16 +1211,24 @@ export const getAddGalleryPhotoUrl = () => {
 }
 
 /**
- * @summary Add a photo to the gallery
+ * @summary Upload a photo to the gallery (admin only)
  */
-export const addGalleryPhoto = async (galleryPhotoInput: GalleryPhotoInput, options?: RequestInit): Promise<GalleryPhoto> => {
+export const addGalleryPhoto = async (galleryPhotoUploadInput: GalleryPhotoUploadInput, options?: RequestInit): Promise<GalleryPhoto> => {
+    const formData = new FormData();
+formData.append(`photo`, galleryPhotoUploadInput.photo);
+if(galleryPhotoUploadInput.title !== undefined) {
+ formData.append(`title`, galleryPhotoUploadInput.title);
+ }
+if(galleryPhotoUploadInput.description !== undefined) {
+ formData.append(`description`, galleryPhotoUploadInput.description);
+ }
 
   return customFetch<GalleryPhoto>(getAddGalleryPhotoUrl(),
   {
     ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
-    body: JSON.stringify(galleryPhotoInput)
+    method: 'POST'
+    ,
+    body: formData
   }
 );}
 
@@ -1228,9 +1236,9 @@ export const addGalleryPhoto = async (galleryPhotoInput: GalleryPhotoInput, opti
 
 
 
-export const getAddGalleryPhotoMutationOptions = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof addGalleryPhoto>>, TError,{data: BodyType<GalleryPhotoInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof addGalleryPhoto>>, TError,{data: BodyType<GalleryPhotoInput>}, TContext> => {
+export const getAddGalleryPhotoMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof addGalleryPhoto>>, TError,{data: BodyType<GalleryPhotoUploadInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof addGalleryPhoto>>, TError,{data: BodyType<GalleryPhotoUploadInput>}, TContext> => {
 
 const mutationKey = ['addGalleryPhoto'];
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -1242,7 +1250,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof addGalleryPhoto>>, {data: BodyType<GalleryPhotoInput>}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof addGalleryPhoto>>, {data: BodyType<GalleryPhotoUploadInput>}> = (props) => {
           const {data} = props ?? {};
 
           return  addGalleryPhoto(data,requestOptions)
@@ -1256,18 +1264,18 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type AddGalleryPhotoMutationResult = NonNullable<Awaited<ReturnType<typeof addGalleryPhoto>>>
-    export type AddGalleryPhotoMutationBody = BodyType<GalleryPhotoInput>
-    export type AddGalleryPhotoMutationError = ErrorType<unknown>
+    export type AddGalleryPhotoMutationBody = BodyType<GalleryPhotoUploadInput>
+    export type AddGalleryPhotoMutationError = ErrorType<void>
 
     /**
- * @summary Add a photo to the gallery
+ * @summary Upload a photo to the gallery (admin only)
  */
-export const useAddGalleryPhoto = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof addGalleryPhoto>>, TError,{data: BodyType<GalleryPhotoInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+export const useAddGalleryPhoto = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof addGalleryPhoto>>, TError,{data: BodyType<GalleryPhotoUploadInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
  ): UseMutationResult<
         Awaited<ReturnType<typeof addGalleryPhoto>>,
         TError,
-        {data: BodyType<GalleryPhotoInput>},
+        {data: BodyType<GalleryPhotoUploadInput>},
         TContext
       > => {
       return useMutation(getAddGalleryPhotoMutationOptions(options));
