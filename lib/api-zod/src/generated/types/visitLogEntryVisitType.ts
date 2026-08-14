@@ -6,10 +6,10 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export type VisitVisitType = typeof VisitVisitType[keyof typeof VisitVisitType];
+export type VisitLogEntryVisitType = typeof VisitLogEntryVisitType[keyof typeof VisitLogEntryVisitType];
 
 
-export const VisitVisitType = {
+export const VisitLogEntryVisitType = {
   cab_delivery: 'cab_delivery',
   guest: 'guest',
   household_help: 'household_help',

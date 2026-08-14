@@ -2,7 +2,7 @@ import { sqliteTable, integer, text } from "drizzle-orm/sqlite-core";
 import { sql } from "drizzle-orm";
 import { z } from "zod/v4";
 
-export const visitTypes = ["cab_delivery", "guest", "household_help"] as const;
+export const visitTypes = ["cab_delivery", "guest", "household_help", "maintenance_staff"] as const;
 export type VisitType = (typeof visitTypes)[number];
 
 export const visitStatuses = ["pending", "approved", "denied"] as const;

@@ -13,4 +13,5 @@ export const VisitInputVisitType = {
   cab_delivery: 'cab_delivery',
   guest: 'guest',
   household_help: 'household_help',
+  maintenance_staff: 'maintenance_staff',
 } as const;

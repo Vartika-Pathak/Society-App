@@ -175,6 +175,7 @@ export const VisitVisitType = {
   cab_delivery: 'cab_delivery',
   guest: 'guest',
   household_help: 'household_help',
+  maintenance_staff: 'maintenance_staff',
 } as const;
 
 export type VisitStatus = typeof VisitStatus[keyof typeof VisitStatus];
@@ -205,6 +206,7 @@ export const VisitInputVisitType = {
   cab_delivery: 'cab_delivery',
   guest: 'guest',
   household_help: 'household_help',
+  maintenance_staff: 'maintenance_staff',
 } as const;
 
 export interface VisitInput {
@@ -226,6 +228,7 @@ export const VisitLookupResultVisitType = {
   cab_delivery: 'cab_delivery',
   guest: 'guest',
   household_help: 'household_help',
+  maintenance_staff: 'maintenance_staff',
 } as const;
 
 export type VisitLookupResultStatus = typeof VisitLookupResultStatus[keyof typeof VisitLookupResultStatus];
@@ -244,6 +247,39 @@ export interface VisitLookupResult {
   /** @nullable */
   visitorPhone?: string | null;
   status: VisitLookupResultStatus;
+  expiresAt: string;
+  createdAt: string;
+  residentName: string;
+  residentFlatNumber: string;
+}
+
+export type VisitLogEntryVisitType = typeof VisitLogEntryVisitType[keyof typeof VisitLogEntryVisitType];
+
+
+export const VisitLogEntryVisitType = {
+  cab_delivery: 'cab_delivery',
+  guest: 'guest',
+  household_help: 'household_help',
+  maintenance_staff: 'maintenance_staff',
+} as const;
+
+export type VisitLogEntryStatus = typeof VisitLogEntryStatus[keyof typeof VisitLogEntryStatus];
+
+
+export const VisitLogEntryStatus = {
+  pending: 'pending',
+  awaiting_verification: 'awaiting_verification',
+  approved: 'approved',
+  denied: 'denied',
+} as const;
+
+export interface VisitLogEntry {
+  id: number;
+  visitType: VisitLogEntryVisitType;
+  visitorName: string;
+  /** @nullable */
+  visitorPhone?: string | null;
+  status: VisitLogEntryStatus;
   expiresAt: string;
   createdAt: string;
   residentName: string;

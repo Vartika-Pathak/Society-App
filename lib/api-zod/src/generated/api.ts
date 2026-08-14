@@ -397,14 +397,14 @@ export const GetCurrentUserResponse = zod.object({
 
 
 export const CreateVisitBody = zod.object({
-  "visitType": zod.enum(['cab_delivery', 'guest', 'household_help']),
+  "visitType": zod.enum(['cab_delivery', 'guest', 'household_help', 'maintenance_staff']),
   "visitorName": zod.string().min(1),
   "visitorPhone": zod.string().optional()
 })
 
 export const CreateVisitResponse = zod.object({
   "id": zod.number(),
-  "visitType": zod.enum(['cab_delivery', 'guest', 'household_help']),
+  "visitType": zod.enum(['cab_delivery', 'guest', 'household_help', 'maintenance_staff']),
   "visitorName": zod.string(),
   "visitorPhone": zod.string().nullish(),
   "otpCode": zod.string(),
@@ -415,11 +415,28 @@ export const CreateVisitResponse = zod.object({
 
 
 /**
+ * @summary List every visit ever logged across the society, newest first (guard/admin only)
+ */
+export const ListAllVisitsResponseItem = zod.object({
+  "id": zod.number(),
+  "visitType": zod.enum(['cab_delivery', 'guest', 'household_help', 'maintenance_staff']),
+  "visitorName": zod.string(),
+  "visitorPhone": zod.string().nullish(),
+  "status": zod.enum(['pending', 'awaiting_verification', 'approved', 'denied']),
+  "expiresAt": zod.coerce.date(),
+  "createdAt": zod.coerce.date(),
+  "residentName": zod.string(),
+  "residentFlatNumber": zod.string()
+})
+export const ListAllVisitsResponse = zod.array(ListAllVisitsResponseItem)
+
+
+/**
  * @summary List the current resident's own visit entries, newest first
  */
 export const ListMyVisitsResponseItem = zod.object({
   "id": zod.number(),
-  "visitType": zod.enum(['cab_delivery', 'guest', 'household_help']),
+  "visitType": zod.enum(['cab_delivery', 'guest', 'household_help', 'maintenance_staff']),
   "visitorName": zod.string(),
   "visitorPhone": zod.string().nullish(),
   "otpCode": zod.string(),
@@ -442,7 +459,7 @@ export const LookupVisitBody = zod.object({
 
 export const LookupVisitResponse = zod.object({
   "id": zod.number(),
-  "visitType": zod.enum(['cab_delivery', 'guest', 'household_help']),
+  "visitType": zod.enum(['cab_delivery', 'guest', 'household_help', 'maintenance_staff']),
   "visitorName": zod.string(),
   "visitorPhone": zod.string().nullish(),
   "status": zod.enum(['pending', 'approved', 'denied']),
@@ -466,7 +483,7 @@ export const DecideVisitBody = zod.object({
 
 export const DecideVisitResponse = zod.object({
   "id": zod.number(),
-  "visitType": zod.enum(['cab_delivery', 'guest', 'household_help']),
+  "visitType": zod.enum(['cab_delivery', 'guest', 'household_help', 'maintenance_staff']),
   "visitorName": zod.string(),
   "visitorPhone": zod.string().nullish(),
   "otpCode": zod.string(),

@@ -467,6 +467,23 @@ paths:
                 $ref: "#/components/schemas/Visit"
         "401":
           description: Not signed in
+    get:
+      operationId: listAllVisits
+      tags: [visits]
+      summary: List every visit ever logged across the society, newest first (guard/admin only)
+      responses:
+        "200":
+          description: Every visit, with the resident who logged it
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VisitLogEntry"
+        "401":
+          description: Not signed in
+        "403":
+          description: Not a guard or admin
 
   /visits/mine:
     get:
@@ -2852,7 +2869,7 @@ components:
           type: integer
         visitType:
           type: string
-          enum: [cab_delivery, guest, household_help]
+          enum: [cab_delivery, guest, household_help, maintenance_staff]
         visitorName:
           type: string
         visitorPhone:
@@ -2875,7 +2892,7 @@ components:
       properties:
         visitType:
           type: string
-          enum: [cab_delivery, guest, household_help]
+          enum: [cab_delivery, guest, household_help, maintenance_staff]
         visitorName:
           type: string
           minLength: 1
@@ -2908,7 +2925,7 @@ components:
           type: integer
         visitType:
           type: string
-          enum: [cab_delivery, guest, household_help]
+          enum: [cab_delivery, guest, household_help, maintenance_staff]
         visitorName:
           type: string
         visitorPhone:
@@ -2916,6 +2933,43 @@ components:
         status:
           type: string
           enum: [pending, approved, denied]
+        expiresAt:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        residentName:
+          type: string
+        residentFlatNumber:
+          type: string
+
+    VisitLogEntry:
+      type: object
+      required:
+        [
+          id,
+          visitType,
+          visitorName,
+          status,
+          expiresAt,
+          createdAt,
+          residentName,
+          residentFlatNumber,
+        ]
+      properties:
+        id:
+          type: integer
+        visitType:
+          type: string
+          enum: [cab_delivery, guest, household_help, maintenance_staff]
+        visitorName:
+          type: string
+        visitorPhone:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [pending, awaiting_verification, approved, denied]
         expiresAt:
           type: string
           format: date-time

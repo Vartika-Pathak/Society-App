@@ -20,6 +20,7 @@ const visitTypeLabels: Record<VisitVisitType, string> = {
   cab_delivery: "Cab / Delivery",
   guest: "Guest",
   household_help: "Household help",
+  maintenance_staff: "Maintenance staff",
 };
 
 // "awaiting_verification" only exists on backends (Java) that email the
@@ -223,7 +224,7 @@ export default function Entry() {
                   <RadioGroup
                     value={visitType}
                     onValueChange={(v) => setVisitType(v as VisitVisitType)}
-                    className="grid grid-cols-1 sm:grid-cols-3 gap-3"
+                    className="grid grid-cols-1 sm:grid-cols-2 gap-3"
                   >
                     {(Object.keys(visitTypeLabels) as VisitVisitType[]).map((type) => (
                       <Label

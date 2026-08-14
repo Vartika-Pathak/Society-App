@@ -17,6 +17,7 @@ import Login from './pages/login';
 import Signup from './pages/signup';
 import Dashboard from './pages/dashboard';
 import Entry from './pages/entry';
+import EntryLog from './pages/entry-log';
 import Gate from './pages/gate';
 import Maintenance from './pages/maintenance';
 import Complain from './pages/complain';
@@ -98,6 +99,11 @@ function Router() {
       <Route path="/gate">
         <RequireAuth roles={["guard", "admin"]}>
           <Gate />
+        </RequireAuth>
+      </Route>
+      <Route path="/entry-log">
+        <RequireAuth roles={["guard", "admin"]}>
+          <EntryLog />
         </RequireAuth>
       </Route>
       <Route path="/maintenance">

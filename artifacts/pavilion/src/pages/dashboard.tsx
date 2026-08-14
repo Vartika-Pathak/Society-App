@@ -5,7 +5,7 @@ import { useAuth } from "@/context/auth-context";
 import { useListActiveEmergencyAlerts, getListActiveEmergencyAlertsQueryKey } from "@workspace/api-client-react";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { DoorOpen, Wrench, MessageSquareWarning, CalendarCheck, Siren, ShieldCheck, BadgeCheck, Home, BookUser, Receipt } from "lucide-react";
+import { DoorOpen, Wrench, MessageSquareWarning, CalendarCheck, Siren, ShieldCheck, BadgeCheck, Home, BookUser, Receipt, ClipboardList } from "lucide-react";
 
 // Matches the polling interval on the Emergency page — the dashboard banner
 // should surface a new alert without anyone needing to refresh.
@@ -174,6 +174,22 @@ export default function Dashboard() {
                       <div>
                         <CardTitle className="text-lg">Flat Directory</CardTitle>
                         <CardDescription>Look up which resident lives in a flat.</CardDescription>
+                      </div>
+                    </div>
+                  </CardHeader>
+                </Card>
+              </Link>
+
+              <Link href="/entry-log">
+                <Card className="cursor-pointer border-primary bg-primary/5 hover:border-primary/70 transition-colors">
+                  <CardHeader>
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                        <ClipboardList className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-lg">Entry Log</CardTitle>
+                        <CardDescription>See everyone who's entered the society, labelled by type.</CardDescription>
                       </div>
                     </div>
                   </CardHeader>

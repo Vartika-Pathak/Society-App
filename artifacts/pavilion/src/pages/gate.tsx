@@ -15,6 +15,7 @@ const visitTypeLabels: Record<VisitVisitType, string> = {
   cab_delivery: "Cab / Delivery",
   guest: "Guest",
   household_help: "Household help",
+  maintenance_staff: "Maintenance staff",
 };
 
 export default function Gate() {
