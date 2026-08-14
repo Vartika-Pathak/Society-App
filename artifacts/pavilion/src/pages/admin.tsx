@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { apiGet, apiPatch, apiPost, ApiFetchError } from "@/lib/api-fetch";
+import { formatDate } from "@/lib/format-date";
 import { AdminLayout } from "@/components/admin-layout";
 
 interface VerificationRequest {
@@ -255,7 +256,7 @@ export default function Admin() {
                         <TableCell className="font-medium">{request.flatNumber}</TableCell>
                         <TableCell>{request.name}</TableCell>
                         <TableCell className="text-muted-foreground">
-                          {new Date(request.createdAt).toLocaleDateString()}
+                          {formatDate(request.createdAt)}
                         </TableCell>
                         <TableCell>
                           <Checkbox
@@ -330,7 +331,7 @@ export default function Admin() {
                         </Badge>
                       </TableCell>
                       <TableCell className="text-muted-foreground">
-                        {request.reviewedAt ? new Date(request.reviewedAt).toLocaleDateString() : "—"}
+                        {request.reviewedAt ? formatDate(request.reviewedAt) : "—"}
                       </TableCell>
                     </TableRow>
                   ))}

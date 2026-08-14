@@ -11,5 +11,6 @@ export interface VisitInput {
   visitType: VisitInputVisitType;
   /** @minLength 1 */
   visitorName: string;
-  visitorPhone?: string;
+  /** @minLength 1 */
+  visitorPhone: string;
 }

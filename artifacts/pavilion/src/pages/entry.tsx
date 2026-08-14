@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Badge } from "@/components/ui/badge";
 import { apiPost, ApiFetchError } from "@/lib/api-fetch";
+import { formatDateTime } from "@/lib/format-date";
 
 const visitTypeLabels: Record<VisitVisitType, string> = {
   cab_delivery: "Cab / Delivery",
@@ -70,7 +71,7 @@ function OtpDisplay({ visit, onDismiss }: { visit: VisitLike; onDismiss: () => v
           </Button>
         </div>
         <p className="text-sm text-muted-foreground">
-          Valid until {new Date(visit.expiresAt).toLocaleString()}. The gate guard will ask for
+          Valid until {formatDateTime(visit.expiresAt)}. The gate guard will ask for
           this code.
         </p>
         <Button variant="ghost" size="sm" onClick={onDismiss}>
@@ -170,7 +171,7 @@ export default function Entry() {
       const visit = await apiPost<VisitLike>("/api/visits", {
         visitType,
         visitorName,
-        visitorPhone: visitorPhone || undefined,
+        visitorPhone,
         visitorEmail: visitorEmail || undefined,
       });
       queryClient.invalidateQueries({ queryKey: getListMyVisitsQueryKey() });
@@ -256,7 +257,7 @@ export default function Entry() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="visitorPhone">Phone (optional)</Label>
+                  <Label htmlFor="visitorPhone">Phone</Label>
                   <Input
                     id="visitorPhone"
                     type="tel"
@@ -267,6 +268,7 @@ export default function Entry() {
                     pattern="[6-9][0-9]{9}"
                     title="10-digit mobile number starting with 6-9"
                     maxLength={10}
+                    required
                   />
                 </div>
 
@@ -305,7 +307,7 @@ export default function Entry() {
                   <div>
                     <p className="font-medium">{visit.visitorName}</p>
                     <p className="text-sm text-muted-foreground">
-                      {visitTypeLabels[visit.visitType]} · {new Date(visit.createdAt).toLocaleString()}
+                      {visitTypeLabels[visit.visitType]} · {formatDateTime(visit.createdAt)}
                     </p>
                   </div>
                   <Badge variant={statusVariants[visit.status]}>{statusLabels[visit.status] ?? visit.status}</Badge>

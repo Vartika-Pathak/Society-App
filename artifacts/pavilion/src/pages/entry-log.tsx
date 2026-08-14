@@ -15,6 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { formatDateTime } from "@/lib/format-date";
 
 const visitTypeLabels: Record<VisitLogEntryVisitType, string> = {
   cab_delivery: "Cab / Delivery",
@@ -129,7 +130,7 @@ export default function EntryLog() {
                         </TableCell>
                         <TableCell className="text-muted-foreground">{visit.visitorPhone ?? "—"}</TableCell>
                         <TableCell className="text-muted-foreground whitespace-nowrap">
-                          {new Date(visit.createdAt).toLocaleString()}
+                          {formatDateTime(visit.createdAt)}
                         </TableCell>
                       </TableRow>
                     ))}

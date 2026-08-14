@@ -13,6 +13,7 @@ import {
 } from "@workspace/api-client-react";
 import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/hooks/use-toast";
+import { formatDate } from "@/lib/format-date";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -110,7 +111,7 @@ function ComplaintRow({
       <TableCell className="whitespace-nowrap">{complaint.residentFlatNumber}</TableCell>
       <TableCell className="whitespace-nowrap">{categoryLabels[complaint.category]}</TableCell>
       <TableCell className="min-w-48 max-w-80">{complaint.description}</TableCell>
-      <TableCell className="whitespace-nowrap">{new Date(complaint.createdAt).toLocaleDateString()}</TableCell>
+      <TableCell className="whitespace-nowrap">{formatDate(complaint.createdAt)}</TableCell>
       <TableCell className="min-w-56">
         {canManage ? (
           <Textarea

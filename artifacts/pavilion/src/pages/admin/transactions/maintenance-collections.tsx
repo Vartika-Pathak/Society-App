@@ -12,6 +12,7 @@ import {
   type MaintenanceCollectionPaymentMode,
 } from "@workspace/api-client-react";
 import { useToast } from "@/hooks/use-toast";
+import { formatDate } from "@/lib/format-date";
 import { AdminLayout } from "@/components/admin-layout";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -272,7 +273,7 @@ export default function MaintenanceCollections() {
                       </TableCell>
                       <TableCell>{collection.payerName}</TableCell>
                       <TableCell>₹{(collection.amountPaise / 100).toFixed(2)}</TableCell>
-                      <TableCell>{collection.paymentDate}</TableCell>
+                      <TableCell>{formatDate(collection.paymentDate)}</TableCell>
                       <TableCell>{collection.forMonth}</TableCell>
                       <TableCell>{paymentModeLabels[collection.paymentMode]}</TableCell>
                       <TableCell className="text-right">

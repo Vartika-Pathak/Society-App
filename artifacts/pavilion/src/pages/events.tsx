@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar as CalendarIcon, Clock, MapPin, User, Users } from "lucide-react";
 import { format, isFuture, parseISO } from "date-fns";
 import { apiGet } from "@/lib/api-fetch";
+import { formatDateTime } from "@/lib/format-date";
 
 interface ResidentMeeting {
   id: number;
@@ -181,7 +182,7 @@ function MeetingCard({ meeting }: { meeting: ResidentMeeting }) {
           <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
             <div className="flex items-center gap-1.5">
               <Clock className="h-4 w-4" />
-              <span>{format(meetingDate, "EEE, MMM d, yyyy 'at' h:mm a")}</span>
+              <span>{formatDateTime(meetingDate)}</span>
             </div>
             <div className="flex items-center gap-1.5">
               <MapPin className="h-4 w-4" />

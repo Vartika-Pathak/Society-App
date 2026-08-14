@@ -12,6 +12,7 @@ import {
   type NoticePriority,
 } from "@workspace/api-client-react";
 import { useToast } from "@/hooks/use-toast";
+import { formatDate } from "@/lib/format-date";
 import { AdminLayout } from "@/components/admin-layout";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -217,7 +218,7 @@ export default function Notices() {
                           {notice.priority}
                         </Badge>
                       </TableCell>
-                      <TableCell>{notice.expiresAt || "—"}</TableCell>
+                      <TableCell>{notice.expiresAt ? formatDate(notice.expiresAt) : "—"}</TableCell>
                       <TableCell className="text-right space-x-2">
                         <Button type="button" size="sm" variant="outline" onClick={() => startEdit(notice)}>
                           <Pencil className="h-3.5 w-3.5 mr-1" /> Edit

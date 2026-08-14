@@ -16,6 +16,7 @@ import {
 } from "@workspace/api-client-react";
 import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/hooks/use-toast";
+import { formatDate } from "@/lib/format-date";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -152,7 +153,7 @@ function RequestRow({
         )}
       </TableCell>
       <TableCell className="whitespace-nowrap">
-        {new Date(request.createdAt).toLocaleDateString()}
+        {formatDate(request.createdAt)}
       </TableCell>
       <TableCell className="whitespace-nowrap">{request.vendorName ?? <span className="text-muted-foreground">—</span>}</TableCell>
       <TableCell>

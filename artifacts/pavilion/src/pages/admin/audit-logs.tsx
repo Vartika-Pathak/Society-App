@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { formatDateTime } from "@/lib/format-date";
 
 const methodVariants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
   POST: "default",
@@ -96,7 +97,7 @@ export default function AuditLogs() {
                     {visibleLogs.map((log) => (
                       <TableRow key={log.id}>
                         <TableCell className="text-muted-foreground whitespace-nowrap">
-                          {new Date(log.createdAt).toLocaleString()}
+                          {formatDateTime(log.createdAt)}
                         </TableCell>
                         <TableCell className="font-medium">{log.adminName}</TableCell>
                         <TableCell>

@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { downloadCsv } from "@/lib/csv-export";
+import { formatDate } from "@/lib/format-date";
 
 function currentMonth(): string {
   return new Date().toISOString().slice(0, 7);
@@ -76,7 +77,7 @@ export default function MonthlyExpenditureReport() {
                       <TableCell className="font-medium">{b.billNumber}</TableCell>
                       <TableCell>{b.vendorName}</TableCell>
                       <TableCell>{b.expenseCategoryName}</TableCell>
-                      <TableCell>{b.billDate}</TableCell>
+                      <TableCell>{formatDate(b.billDate)}</TableCell>
                       <TableCell>₹{(b.amountPaise / 100).toFixed(2)}</TableCell>
                       <TableCell className="capitalize">{b.status.replace("_", " ")}</TableCell>
                     </TableRow>

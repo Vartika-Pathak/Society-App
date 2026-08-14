@@ -2888,7 +2888,7 @@ components:
 
     VisitInput:
       type: object
-      required: [visitType, visitorName]
+      required: [visitType, visitorName, visitorPhone]
       properties:
         visitType:
           type: string
@@ -2898,6 +2898,7 @@ components:
           minLength: 1
         visitorPhone:
           type: string
+          minLength: 1
 
     VisitLookupInput:
       type: object

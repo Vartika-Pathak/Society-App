@@ -8,6 +8,7 @@ import {
   getListSpecialContributionsQueryKey,
 } from "@workspace/api-client-react";
 import { useToast } from "@/hooks/use-toast";
+import { formatDate } from "@/lib/format-date";
 import { AdminLayout } from "@/components/admin-layout";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -144,7 +145,7 @@ export default function SpecialContributions() {
                       <TableCell className="font-medium">{contribution.title}</TableCell>
                       <TableCell>{contribution.description || "—"}</TableCell>
                       <TableCell>₹{(contribution.amountPaise / 100).toFixed(2)}</TableCell>
-                      <TableCell>{contribution.dueDate}</TableCell>
+                      <TableCell>{formatDate(contribution.dueDate)}</TableCell>
                       <TableCell className="text-right">
                         <Button
                           type="button"

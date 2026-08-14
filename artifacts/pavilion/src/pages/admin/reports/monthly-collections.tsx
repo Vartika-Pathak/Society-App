@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { downloadCsv } from "@/lib/csv-export";
+import { formatDate } from "@/lib/format-date";
 
 function currentMonth(): string {
   return new Date().toISOString().slice(0, 7);
@@ -79,7 +80,7 @@ export default function MonthlyCollectionDetail() {
                       <TableCell className="font-medium">{c.flatNumber}</TableCell>
                       <TableCell>{c.payerName}</TableCell>
                       <TableCell>₹{(c.amountPaise / 100).toFixed(2)}</TableCell>
-                      <TableCell>{c.paymentDate}</TableCell>
+                      <TableCell>{formatDate(c.paymentDate)}</TableCell>
                       <TableCell className="capitalize">{c.paymentMode.replace("_", " ")}</TableCell>
                     </TableRow>
                   ))}

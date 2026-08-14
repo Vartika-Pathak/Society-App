@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
+import { formatDateTime } from "@/lib/format-date";
 
 const emptyForm = { title: "", description: "", date: "", location: "", organizer: "" };
 
@@ -143,7 +144,7 @@ export default function AdminEvents() {
                   {events.data.map((event) => (
                     <TableRow key={event.id}>
                       <TableCell className="font-medium">{event.title}</TableCell>
-                      <TableCell>{new Date(event.date).toLocaleString()}</TableCell>
+                      <TableCell>{formatDateTime(event.date)}</TableCell>
                       <TableCell>{event.location}</TableCell>
                       <TableCell>{event.organizer || "—"}</TableCell>
                       <TableCell className="text-right">

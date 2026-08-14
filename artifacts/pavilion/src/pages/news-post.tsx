@@ -2,7 +2,7 @@ import React from "react";
 import { useParams, Link } from "wouter";
 import { useGetNewsPost } from "@workspace/api-client-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { format } from "date-fns";
+import { formatDate } from "@/lib/format-date";
 import { ArrowLeft, User, Calendar, Newspaper } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -62,7 +62,7 @@ export default function NewsPost() {
             <div className="flex items-center gap-2">
               <Calendar className="h-4 w-4" />
               <time dateTime={post.publishedAt}>
-                {format(new Date(post.publishedAt), 'MMMM d, yyyy')}
+                {formatDate(post.publishedAt)}
               </time>
             </div>
             <div className="flex items-center gap-2">

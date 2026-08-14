@@ -396,10 +396,11 @@ export const GetCurrentUserResponse = zod.object({
 
 
 
+
 export const CreateVisitBody = zod.object({
   "visitType": zod.enum(['cab_delivery', 'guest', 'household_help', 'maintenance_staff']),
   "visitorName": zod.string().min(1),
-  "visitorPhone": zod.string().optional()
+  "visitorPhone": zod.string().min(1)
 })
 
 export const CreateVisitResponse = zod.object({

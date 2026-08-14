@@ -12,6 +12,7 @@ import {
   type BillPaymentPaymentMode,
 } from "@workspace/api-client-react";
 import { useToast } from "@/hooks/use-toast";
+import { formatDate } from "@/lib/format-date";
 import { AdminLayout } from "@/components/admin-layout";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -239,7 +240,7 @@ export default function BillPayments() {
                         <TableCell className="font-medium">{bill?.billNumber ?? `#${payment.vendorBillId}`}</TableCell>
                         <TableCell>{bill?.vendorName ?? "—"}</TableCell>
                         <TableCell>₹{(payment.amountPaise / 100).toFixed(2)}</TableCell>
-                        <TableCell>{payment.paymentDate}</TableCell>
+                        <TableCell>{formatDate(payment.paymentDate)}</TableCell>
                         <TableCell>{paymentModeLabels[payment.paymentMode]}</TableCell>
                         <TableCell>{payment.referenceNumber || "—"}</TableCell>
                         <TableCell className="text-right">

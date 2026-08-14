@@ -12,6 +12,7 @@ import {
   getListExpenseCategoriesQueryKey,
 } from "@workspace/api-client-react";
 import { useToast } from "@/hooks/use-toast";
+import { formatDate } from "@/lib/format-date";
 import { AdminLayout } from "@/components/admin-layout";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -207,7 +208,7 @@ export default function MaintenanceExpenses() {
                       <TableCell className="font-medium">{bill.billNumber}</TableCell>
                       <TableCell>{bill.vendorName}</TableCell>
                       <TableCell>{bill.expenseCategoryName}</TableCell>
-                      <TableCell>{bill.billDate}</TableCell>
+                      <TableCell>{formatDate(bill.billDate)}</TableCell>
                       <TableCell>₹{(bill.amountPaise / 100).toFixed(2)}</TableCell>
                       <TableCell>₹{(bill.paidAmountPaise / 100).toFixed(2)}</TableCell>
                       <TableCell>

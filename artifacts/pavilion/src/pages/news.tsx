@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "wouter";
 import { useListNewsPosts } from "@workspace/api-client-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { format } from "date-fns";
+import { formatDate } from "@/lib/format-date";
 import { ArrowRight, Newspaper } from "lucide-react";
 
 export default function News() {
@@ -53,7 +53,7 @@ export default function News() {
                   )}
                   <div className="absolute top-4 left-4">
                     <span className="bg-background/90 backdrop-blur text-foreground text-xs font-medium px-3 py-1.5 rounded-full shadow-sm">
-                      {format(new Date(post.publishedAt), 'MMM dd, yyyy')}
+                      {formatDate(post.publishedAt)}
                     </span>
                   </div>
                 </div>

@@ -12,6 +12,7 @@ import {
 } from "@workspace/api-client-react";
 import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/hooks/use-toast";
+import { formatDateTime } from "@/lib/format-date";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -57,7 +58,7 @@ function AlertRow({ alert, canResolve }: { alert: EmergencyAlert; canResolve: bo
           {alert.residentName} · Flat {alert.residentFlatNumber}
         </p>
         <p className="text-sm text-muted-foreground">
-          Raised {new Date(alert.createdAt).toLocaleString()}
+          Raised {formatDateTime(alert.createdAt)}
         </p>
       </div>
       {canResolve && (

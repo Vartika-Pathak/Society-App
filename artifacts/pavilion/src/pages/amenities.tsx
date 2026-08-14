@@ -24,6 +24,7 @@ import {
 } from "@workspace/api-client-react";
 import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/hooks/use-toast";
+import { formatDate } from "@/lib/format-date";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -642,7 +643,7 @@ export default function Amenities() {
                   <div>
                     <p className="font-medium">{booking.amenityName}</p>
                     <p className="text-sm text-muted-foreground">
-                      {booking.bookingDate} · {slotLabels[booking.slot]}
+                      {formatDate(booking.bookingDate)} · {slotLabels[booking.slot]}
                     </p>
                   </div>
                   <Badge variant="secondary">{formatPrice(booking.amountPaidCents)}</Badge>
