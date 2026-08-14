@@ -173,44 +173,7 @@ export function Layout({ children }: LayoutProps) {
       {/* Footer */}
       <footer className="border-t bg-card mt-auto">
         <div className="container mx-auto px-4 md:px-8 py-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="md:col-span-2">
-              <Link href="/" className="flex items-center gap-2 mb-4">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                  <PavilionMark className="h-5 w-5" />
-                </div>
-                <span className="font-serif text-xl font-semibold tracking-tight">
-                  Pavilion
-                </span>
-              </Link>
-              <p className="text-muted-foreground max-w-sm leading-relaxed">
-                A warm, welcoming community hub for residents. Connecting neighbors, sharing news, and building a better living experience together.
-              </p>
-            </div>
-            
-            <div>
-              <h3 className="font-serif font-medium text-lg mb-4">Quick Links</h3>
-              <ul className="space-y-3">
-                <li><Link href="/events" className="text-muted-foreground hover:text-primary transition-colors">Events Calendar</Link></li>
-                <li><Link href="/news" className="text-muted-foreground hover:text-primary transition-colors">Community News</Link></li>
-                <li><Link href="/contact" className="text-muted-foreground hover:text-primary transition-colors">Contact Committee</Link></li>
-              </ul>
-            </div>
-            
-            <div>
-              <h3 className="font-serif font-medium text-lg mb-4">Join Us</h3>
-              <p className="text-muted-foreground mb-4">
-                Are you a resident? Join our digital community to stay updated.
-              </p>
-              <Link href="/join">
-                <Button variant="outline" className="w-full rounded-full hover:bg-primary hover:text-primary-foreground">
-                  Apply for Access
-                </Button>
-              </Link>
-            </div>
-          </div>
-          
-          <div className="mt-6 pt-4 border-t grid grid-cols-1 md:grid-cols-3 items-center gap-4 text-sm text-muted-foreground">
+          <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-4 text-sm text-muted-foreground">
             <div className="hidden md:block" />
             <p className="text-center">© {new Date().getFullYear()} Pavilion Residents' Society. All rights reserved.</p>
             <div className="flex gap-4 justify-center md:justify-end md:pr-24">
