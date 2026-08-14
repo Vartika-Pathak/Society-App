@@ -209,8 +209,8 @@ export function Layout({ children }: LayoutProps) {
             </div>
           </div>
           
-          <div className="mt-6 pt-4 border-t flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
-            <p>© {new Date().getFullYear()} Pavilion Residents' Society. All rights reserved.</p>
+          <div className="mt-6 pt-4 border-t flex flex-col items-center gap-4 text-sm text-muted-foreground">
+            <p className="text-center">© {new Date().getFullYear()} Pavilion Residents' Society. All rights reserved.</p>
             <div className="flex gap-4">
               <a href="#" className="hover:text-foreground">Privacy</a>
               <a href="#" className="hover:text-foreground">Terms</a>
