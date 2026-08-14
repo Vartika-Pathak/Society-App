@@ -210,9 +210,10 @@ export function Layout({ children }: LayoutProps) {
             </div>
           </div>
           
-          <div className="mt-6 pt-4 border-t flex flex-wrap justify-between items-center gap-4 text-sm text-muted-foreground">
-            <p>© {new Date().getFullYear()} Pavilion Residents' Society. All rights reserved.</p>
-            <div className="flex gap-4">
+          <div className="mt-6 pt-4 border-t grid grid-cols-1 md:grid-cols-3 items-center gap-4 text-sm text-muted-foreground">
+            <div className="hidden md:block" />
+            <p className="text-center">© {new Date().getFullYear()} Pavilion Residents' Society. All rights reserved.</p>
+            <div className="flex gap-4 justify-center md:justify-end md:pr-24">
               <PrivacyDialog trigger="Privacy" />
               <TermsDialog trigger="Terms" />
             </div>
