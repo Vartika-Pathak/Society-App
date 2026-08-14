@@ -201,12 +201,16 @@ export default function Dashboard() {
           </div>
         )}
 
-        <h2 className="text-xl font-serif font-medium mb-6">Resident features</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {featureTiles.map((tile) => (
-            <FeatureTileCard key={tile.title} tile={tile} />
-          ))}
-        </div>
+        {(user?.role === "resident" || user?.role === "admin") && (
+          <>
+            <h2 className="text-xl font-serif font-medium mb-6">Resident features</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {featureTiles.map((tile) => (
+                <FeatureTileCard key={tile.title} tile={tile} />
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
