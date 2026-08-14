@@ -106,7 +106,7 @@ export default function Dashboard() {
 
   return (
     <div className="w-full">
-      <div className="relative overflow-hidden bg-primary py-8 border-b">
+      <div className="relative overflow-hidden bg-primary py-16 border-b">
         <img
           src="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1600&q=80"
           alt=""

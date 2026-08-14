@@ -98,7 +98,7 @@ export default function Contact() {
                 </div>
                 <div>
                   <h3 className="font-medium mb-1">Emergency (Concierge)</h3>
-                  <p className="text-muted-foreground">020 7946 0958</p>
+                  <p className="text-muted-foreground">+91 22 4589 6723</p>
                   <p className="text-xs text-muted-foreground mt-1">Available 24/7 for building emergencies</p>
                 </div>
               </div>

@@ -171,8 +171,8 @@ export function Layout({ children }: LayoutProps) {
 
       {/* Footer */}
       <footer className="border-t bg-card mt-auto">
-        <div className="container mx-auto px-4 md:px-8 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="container mx-auto px-4 md:px-8 py-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="md:col-span-2">
               <Link href="/" className="flex items-center gap-2 mb-4">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
@@ -209,7 +209,7 @@ export function Layout({ children }: LayoutProps) {
             </div>
           </div>
           
-          <div className="mt-12 pt-8 border-t flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
+          <div className="mt-6 pt-4 border-t flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
             <p>© {new Date().getFullYear()} Pavilion Residents' Society. All rights reserved.</p>
             <div className="flex gap-4">
               <a href="#" className="hover:text-foreground">Privacy</a>

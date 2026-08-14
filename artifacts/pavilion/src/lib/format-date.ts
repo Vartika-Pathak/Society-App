@@ -19,6 +19,6 @@ export function formatDate(value: string | number | Date): string {
 // "14 August 2026, 6:58 am" — for timestamps where the time matters too.
 export function formatDateTime(value: string | number | Date): string {
   const date = new Date(value);
-  const time = date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }).toLowerCase();
+  const time = date.toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" }).toLowerCase();
   return `${formatDate(date)}, ${time}`;
 }
