@@ -183,7 +183,6 @@ export default function FlatResident() {
   return (
     <AdminLayout>
       <div className="container mx-auto px-4 md:px-8 py-10 max-w-5xl space-y-8">
-<<<<<<< Updated upstream
         <div className="flex items-start justify-between gap-4">
           <div>
             <h1 className="text-2xl font-serif font-medium mb-1">Flat Resident</h1>
@@ -199,11 +198,6 @@ export default function FlatResident() {
             <RefreshCw className="h-3.5 w-3.5 mr-2" />
             {syncResidents.isPending ? "Syncing…" : "Sync residents by flat number"}
           </Button>
-=======
-        <div>
-          <h1 className="text-2xl font-serif font-medium mb-1">Flat Resident</h1>
-          <p className="text-muted-foreground text-sm">Manage all flats in your society.</p>
->>>>>>> Stashed changes
         </div>
 
         <Card>
